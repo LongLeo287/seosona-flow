@@ -293,6 +293,11 @@
       // Canvas taint → toBlob/record fails sớm; nếu chunks rỗng coi như thất bại.
       if (!chunks.length) throw new Error('EMPTY_OUTPUT');
       var out = new Blob(chunks, { type: fmt.mime || 'video/webm' });
+      // Xem ghi chú ở WebmDuration: thiếu Duration là file không xem được ngoài Chrome.
+      if (fmt.ext === 'webm' && window.WebmDuration) {
+        var _ms = (isFinite(v.duration) && v.duration > 0) ? v.duration * 1000 : 0;
+        out = await window.WebmDuration.patchBlob(out, _ms);
+      }
       out.seosonaExt = fmt.ext;      // đuôi file phải khớp thứ vừa ghi, không đoán
       out.seosonaFellBack = fmt.fellBack;
       return out;

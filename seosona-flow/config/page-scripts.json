@@ -388,6 +388,7 @@
       "../src/core/WatermarkRemover.js",
       "../src/core/WatermarkVerify.js",
       "../src/core/MetadataScrubber.js",
+      "../src/core/WebmDuration.js",
       "../scripts/watermark-tool.js"
     ],
     "pages/workflow-editor.html": [

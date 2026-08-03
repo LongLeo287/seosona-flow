@@ -123,6 +123,7 @@
         "src/core/WatermarkRemover.js",
         "src/core/VeoWatermarkProbe.js",
         "src/core/VeoWatermarkProfile.js",
+        "src/core/WebmDuration.js",
         "content_scripts/watermark-inject.js"
       ],
       "matches": [
@@ -136,6 +137,7 @@
         "src/core/ErrorCatalog.js",
         "src/core/VeoWatermarkProbe.js",
         "src/core/VeoWatermarkProfile.js",
+        "src/core/WebmDuration.js",
         "content_scripts/watermark-inject.js"
       ],
       "matches": [

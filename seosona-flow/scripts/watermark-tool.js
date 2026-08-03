@@ -297,6 +297,12 @@
     }
     try { v.currentTime = 0; v.muted = true; await v.play(); rec.start(); requestAnimationFrame(frame); await stopped; } finally { try { v.pause(); } catch (_) { globalThis.SEOSONA_swallow?.('watermark-tool#frame', _); } }
     S.blob = new Blob(chunks, { type: mime || 'video/webm' }); S.ext = fmt.ext;
+    // WebM của MediaRecorder KHÔNG có Duration → trình phát ngoài Chrome hiện 0:00, không
+    // tua được, có khi không mở nổi. Vá trước khi giao cho người dùng.
+    if (fmt.ext === 'webm' && window.WebmDuration) {
+      var _ms = (isFinite(v.duration) && v.duration > 0) ? v.duration * 1000 : 0;
+      S.blob = await window.WebmDuration.patchBlob(S.blob, _ms);
+    }
     var UP = fmt.ext.toUpperCase();
     setStatus('ok', fmt.fellBack
       ? 'Xong — nhưng trình duyệt này chưa ghi được MP4 nên xuất WebM'
