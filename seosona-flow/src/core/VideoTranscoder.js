@@ -101,9 +101,23 @@
       output = new MB.Output({ format: new MB.Mp4OutputFormat(), target: new MB.BufferTarget() });
       // Codec phải HỎI, không đoán: nguồn HEVC mà ép 'avc' là encoder từ chối cả track.
       var vCodec = await vTrack.getCodec();
+      // BÁM BITRATE NGUỒN thay vì áp công thức cứng. Đây là chỗ quyết định chất lượng:
+      // nguồn nhẹ mà ta encode cao thì file phình vô ích; nguồn nặng mà ta encode thấp thì
+      // MẤT CHẤT LƯỢNG — đúng thứ người dùng không tha thứ ở công cụ xoá watermark.
+      // Thứ tự: người gọi chỉ định → đo từ nguồn → công thức (đường lùi cuối).
+      var srcBitrate = null;
+      try {
+        var ps = await vTrack.computePacketStats(100);
+        srcBitrate = (ps && ps.averageBitrate) || null;
+      } catch (e) {
+        console.warn('[VideoTranscoder] không đo được bitrate nguồn:', e && e.message);
+      }
+      var bps = [opt.bitrate, srcBitrate, _bitrate(W, H, opt.quality)]
+        .map(Number).find(function (v) { return isFinite(v) && v > 0; });
+      stats.bitrate = Math.max(1, Math.round(bps));
       var vSource = new MB.VideoSampleSource({
         codec: vCodec === 'hevc' ? 'hevc' : 'avc',
-        bitrate: _bitrate(W, H, opt.quality),
+        bitrate: stats.bitrate,
       });
       output.addVideoTrack(vSource);
 
