@@ -1238,6 +1238,18 @@
         <!-- TAB: TOOLS -->
         <!-- ======================= -->
         <div id="tab-tools" class="tab-pane">
+          <!-- Panel NHÚNG: công cụ mở ngay trong sidebar thay vì bật cửa sổ rời. Mở cửa sổ
+               khác làm đứt mạch — người dùng đang ở trang Flow, phải nhảy đi rồi quay lại. -->
+          <div id="toolPanel" style="display:none;height:100%;flex-direction:column">
+            <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--border,rgba(255,255,255,.09))">
+              <button id="toolPanelBack" class="tools-item-back" aria-label="Quay lại danh sách công cụ"
+                      style="background:none;border:0;color:inherit;cursor:pointer;font-size:16px;line-height:1;padding:4px 6px">←</button>
+              <span id="toolPanelTitle" style="font-size:13.5px;font-weight:600"></span>
+              <button id="toolPanelPop" title="Mở ra cửa sổ riêng" aria-label="Mở ra cửa sổ riêng"
+                      style="margin-left:auto;background:none;border:0;color:var(--muted,#9498a1);cursor:pointer;font-size:13px;padding:4px 6px">⧉</button>
+            </div>
+            <iframe id="toolPanelFrame" title="Công cụ" style="flex:1;width:100%;border:0;background:transparent"></iframe>
+          </div>
           <div class="tools-grid">
             <button class="tools-item" id="toolsWatermarkBtn">
               <div class="tools-item-icon">

@@ -666,19 +666,46 @@ class GenTab {
     };
     // Cùng một công cụ có thể có NHIỀU điểm vào (thẻ trong tab Tools + nút cũ ở header).
     // Bind theo danh sách id để không nơi nào bị bỏ sót khi đổi bố cục.
-    const _bindTool = (ids, page, w, h) => {
+    // Mở công cụ NGAY TRONG sidebar. Cửa sổ rời chỉ còn là tuỳ chọn (nút ⧉) cho ai cần màn
+    // rộng để soi ảnh — không còn là đường mặc định.
+    const _openInPanel = (page, title, w, h) => {
+      const panel = document.getElementById('toolPanel');
+      const frame = document.getElementById('toolPanelFrame');
+      const grid = document.querySelector('#tab-tools .tools-grid');
+      if (!panel || !frame || !grid) { _openToolWindow(page, w, h); return; }   // thiếu khung → đường cũ
+      frame.src = chrome.runtime.getURL(page);
+      document.getElementById('toolPanelTitle').textContent = title;
+      panel.style.display = 'flex'; grid.style.display = 'none';
+      const pop = document.getElementById('toolPanelPop');
+      if (pop) pop.onclick = () => { _closePanel(); _openToolWindow(page, w, h); };
+    };
+    const _closePanel = () => {
+      const panel = document.getElementById('toolPanel');
+      const frame = document.getElementById('toolPanelFrame');
+      const grid = document.querySelector('#tab-tools .tools-grid');
+      if (!panel) return;
+      panel.style.display = 'none';
+      if (grid) grid.style.display = '';
+      if (frame) frame.src = 'about:blank';   // giải phóng: công cụ video ngốn bộ nhớ
+    };
+    document.getElementById('toolPanelBack')?.addEventListener('click', _closePanel);
+
+    const _bindTool = (ids, page, w, h, title) => {
       ids.forEach((id) => {
         const el = document.getElementById(id);
-        if (el) el.addEventListener('click', () => _openToolWindow(page, w, h));
+        if (!el) return;
+        // Nút ở HEADER vẫn bật cửa sổ rời (thói quen cũ); thẻ trong tab Tools thì mở panel.
+        const inPanel = title && id.indexOf('tools') === 0;
+        el.addEventListener('click', () => (inPanel ? _openInPanel(page, title, w, h) : _openToolWindow(page, w, h)));
       });
     };
 
     // Xoá watermark — nhà chính giờ là thẻ trong tab Tools; nút header giữ để khỏi phá
     // thói quen của người đang dùng.
-    _bindTool(['headerWatermarkBtn', 'toolsWatermarkBtn'], 'pages/watermark-tool.html', 960, 760);
-    _bindTool(['toolsMetadataBtn'], 'pages/metadata-tool.html', 900, 760);
-    _bindTool(['toolsTextOverlayBtn'], 'pages/text-overlay-tool.html', 1020, 780);
-    _bindTool(['toolsStyleAnchorBtn'], 'pages/style-anchor-tool.html', 980, 760);
+    _bindTool(['headerWatermarkBtn', 'toolsWatermarkBtn'], 'pages/watermark-tool.html', 960, 760, 'Xoá watermark');
+    _bindTool(['toolsMetadataBtn'], 'pages/metadata-tool.html', 900, 760, 'Dọn metadata');
+    _bindTool(['toolsTextOverlayBtn'], 'pages/text-overlay-tool.html', 1020, 780, 'Chữ lên ảnh');
+    _bindTool(['toolsStyleAnchorBtn'], 'pages/style-anchor-tool.html', 980, 760, 'Neo phong cách');
 
     // Chẩn đoán selector — mở khi web đổi giao diện để xem chỗ nào gãy + vá nóng.
     // Công cụ dev, giữ ở header (không đưa vào tab Tools của người dùng cuối).
