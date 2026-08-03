@@ -106,3 +106,49 @@ phép. Repo public nên phải làm đúng — giữ nguyên file, chép `LICENS
 baseline `security:vendored` (đang khoá đúng 3 file).
 
 Bản dựng: `node_modules/mediabunny/dist/bundles/mediabunny.min.cjs` (635 KB) — đã cài sẵn.
+
+
+---
+
+# Phần 2 — Rebuild UX/UI (chưa làm)
+
+**Xác nhận 2026-08-03: pipeline WebCodecs CHẠY ĐƯỢC.** Kết quả thật trên máy người dùng:
+`Xong — MP4, 144 khung trong 6s · dấu flow_omni · khớp 86%`. Đúng số khung của clip 6 giây
+24fps. Phần lõi coi như xong; việc còn lại là giao diện.
+
+## Yêu cầu
+
+Bỏ kiểu **mở cửa sổ riêng**. Đưa công cụ vào **panel ngay trong sidebar**, giống sản phẩm
+cùng ngách. Lý do: mở cửa sổ rời làm đứt mạch — người dùng đang ở Flow, phải nhảy sang cửa
+sổ khác rồi quay lại.
+
+## Bố cục của họ (từ ảnh chụp)
+
+Panel trong sidebar:
+- tiêu đề `Xóa watermark` + phụ đề nguồn `Gemini · Flow`, nút thùng rác + đóng ở góc phải
+- ô kéo-thả gọn: `Kéo thêm ảnh/video vào đây` + nút `Chọn từ máy`
+- **danh sách hàng chờ**, mỗi dòng:
+  · ảnh thu nhỏ · tên file
+  · dòng thông số: `7.0 MB (×0.9) · 144 frame · 3.7s`  ← tỉ lệ nén so với gốc
+  · nhãn trạng thái: `● Đã xóa` (xanh) / `● Giữ ảnh gốc` (vàng) kèm LÝ DO `không tìm thấy watermark`
+  · nút `Tải về` riêng từng dòng · nút `✕` bỏ dòng
+- bấm vào dòng → modal so sánh: nhãn `GỐC` / `ĐÃ XÓA`, thanh trượt vạch dọc, **phóng vào
+  đúng góc watermark** kèm chú thích `góc dưới-phải · 333%`, và 3 chỉ số
+  `83ms · 100% Độ sạch · 90% Nhận diện`
+
+## Ta ĐÃ có, chỉ cần chuyển chỗ
+
+- khung phóng góc + 3 chỉ số (`renderZoom` trong scripts/watermark-tool.js) — làm rồi
+- `detectFlowMark().score` → Nhận diện · `markContrast()` trước/sau → Độ sạch · thời gian → Tốc độ
+- engine ảnh + video dùng chung
+
+## Còn thiếu
+
+- hàng chờ NHIỀU file (hiện mỗi lần một file)
+- dòng thông số kèm tỉ lệ nén `(×0.9)`, số khung, thời lượng
+- trạng thái có LÝ DO, tách `đã xoá` / `không tìm thấy watermark` / `không nhận dạng được`
+- nút tải riêng từng dòng
+- chuyển từ cửa sổ rời → panel trong sidebar (giữ `pages/watermark-tool.html` hay không thì
+  tuỳ; nhưng lối vào chính phải là panel)
+
+KHÔNG bê: biểu tượng vương miện gắn tính năng trả phí — ta local-first.
