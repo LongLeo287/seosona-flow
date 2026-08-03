@@ -83,6 +83,52 @@
     handle.addEventListener('touchmove', function (e) { at(e); e.preventDefault(); }, { passive: false });
   }
 
+  // ── Phóng đúng ô watermark + ba chỉ số ──────────────────────────────────
+  // Đây là thứ ta thiếu suốt: xoá xong mà người dùng không kiểm được. Ba chỉ số dưới đây
+  // engine ĐÃ BIẾT sẵn, chỉ là trước giờ ném đi không hiện ra.
+  function renderZoom(beforeImg, afterCv) {
+    var box = $('zoomBox'); if (!box) return;
+    var st = S.stats;
+    if (!st || !st.id || !window.FlowWatermarkProfiles) { box.style.display = 'none'; return; }
+    var p = window.FlowWatermarkProfiles.PROFILES[st.id];
+    var w = afterCv.width, h = afterCv.height;
+    var pl = st.place || { k: Math.min(w, h) / p.ref };
+    if (!st.place) {
+      var k = pl.k, bw = Math.round(p.w * k), bh = Math.round(p.h * k);
+      pl = { k: k, bw: bw, bh: bh, bx: w - Math.round(p.right * k) - bw, by: h - Math.round(p.bottom * k) - bh };
+    }
+    var pad = Math.round(Math.max(6, 10 * pl.k));
+    var sx = Math.max(0, pl.bx - pad), sy = Math.max(0, pl.by - pad);
+    var sw = Math.min(w - sx, pl.bw + pad * 2), sh = Math.min(h - sy, pl.bh + pad * 2);
+    var scale = Math.max(2, Math.min(6, Math.round(300 / Math.max(sw, sh) * 4) / 4 || 3));
+    [['zoomA', beforeImg], ['zoomB', afterCv]].forEach(function (pair) {
+      var c = $(pair[0]); if (!c) return;
+      c.width = Math.round(sw * scale); c.height = Math.round(sh * scale);
+      var g = c.getContext('2d');
+      g.imageSmoothingEnabled = false;   // phải thấy TỪNG PIXEL, làm mượt là che mất phần dư
+      g.drawImage(pair[1], sx, sy, sw, sh, 0, 0, c.width, c.height);
+    });
+    $('zoomCap').textContent = 'góc dưới-phải · phóng ' + Math.round(scale * 100) + '% · ô '
+      + pl.bw + '×' + pl.bh + 'px tại (' + pl.bx + ',' + pl.by + ')';
+    // Độ sạch: dấu còn "nổi" hơn xung quanh bao nhiêu so với lúc chưa xoá.
+    var clean = (st.before && st.before > 1 && st.after != null)
+      ? Math.max(0, Math.min(100, Math.round((1 - st.after / st.before) * 100))) : null;
+    var cells = [
+      [st.ms + '<small>ms</small>', 'Tốc độ', ''],
+      [clean == null ? '—' : clean + '<small>%</small>', 'Độ sạch',
+        clean == null ? '' : (clean >= 90 ? 'ok' : clean >= 70 ? 'warn' : 'bad')],
+      [st.detect == null ? '—' : Math.round(st.detect * 100) + '<small>%</small>', 'Nhận diện',
+        st.detect == null ? '' : (st.detect >= 0.7 ? 'ok' : 'warn')],
+    ];
+    var col = { ok: 'var(--ok,#19d07b)', warn: '#f5c26b', bad: '#ff9a9a', '': 'var(--txt)' };
+    $('metrics').innerHTML = cells.map(function (c, i) {
+      return '<div style="padding:12px 10px;text-align:center' + (i ? ';border-left:1px solid var(--line)' : '') + '">'
+        + '<div style="font-size:20px;font-weight:600;color:' + col[c[2]] + '">' + c[0] + '</div>'
+        + '<div style="font-size:11px;color:var(--mut);margin-top:2px">' + c[1] + '</div></div>';
+    }).join('');
+    box.style.display = 'block';
+  }
+
   // ── Engine trong Web Worker (UI không đơ) + fallback sync ────────────────
   var _worker = null, _workerBad = false, _wid = 0;
   function getWorker() {
@@ -152,18 +198,37 @@
     ctx.drawImage(img, 0, 0);
     var o = opts(), meta = { applied: true };
     var srcImg = ctx.getImageData(0, 0, cw, ch);
-    var SRC = window.WatermarkRemover.SOURCES[S.source];
+    var WR = window.WatermarkRemover;
+    var SRC = WR.SOURCES[S.source];
+    S.stats = null;
+    // Đo TRƯỚC → xoá → đo SAU. Người dùng không tự đánh giá được bằng mắt: dấu Omni chỉ 72px
+    // trong ảnh 1920px, xem vừa khung thì nhỏ hơn đầu kim. Engine phải tự chấm và nói ra.
+    var _grade = function (id, place, t0) {
+      var after = WR.markContrast(ctx, cw, ch, id, place);
+      S.stats = {
+        id: id, place: place || null, ms: Math.round(performance.now() - t0),
+        detect: null, before: null, after: after,
+      };
+      return S.stats;
+    };
     if (SRC && SRC.method === 'profile') {
       // Hồ sơ ĐO TỪ VIDEO THẬT (Omni/Veo). Ảnh tĩnh cũng dùng được vì watermark giống nhau.
-      var okp = window.WatermarkRemover.removeFlowMark(ctx, cw, ch, SRC.profile);
-      meta = okp ? { applied: true } : { applied: false, skipReason: 'not-detected' };
-    } else if (S.source === 'auto' && window.WatermarkRemover.detectFlowMark) {
+      var t0 = performance.now();
+      var before = WR.markContrast(ctx, cw, ch, SRC.profile);
+      var okp = WR.removeFlowMark(ctx, cw, ch, SRC.profile);
+      meta = okp ? { applied: true, flow: SRC.profile } : { applied: false, skipReason: 'not-detected' };
+      if (okp) { _grade(SRC.profile, null, t0).before = before; }
+    } else if (S.source === 'auto' && WR.detectFlowMark) {
       // TỰ ĐỘNG thử hồ sơ Flow TRƯỚC — nó biết chính xác dấu nào ở đâu, alpha bao nhiêu,
       // nên chính xác hơn hẳn dò cạnh rồi vá mù.
-      var fh = window.WatermarkRemover.detectFlowMark(ctx, cw, ch);
+      var t1 = performance.now();
+      var fh = WR.detectFlowMark(ctx, cw, ch);
       if (fh) {
-        window.WatermarkRemover.removeFlowMark(ctx, cw, ch, fh.id, fh.place);
+        var b1 = WR.markContrast(ctx, cw, ch, fh.id, fh.place);
+        WR.removeFlowMark(ctx, cw, ch, fh.id, fh.place);
         meta = { applied: true, flow: fh.id };
+        var st = _grade(fh.id, fh.place, t1);
+        st.before = b1; st.detect = fh.score;
       } else { srcImg = ctx.getImageData(0, 0, cw, ch); }
     }
     if (meta.flow || (SRC && SRC.method === 'profile')) { /* xong */ }
@@ -192,6 +257,7 @@
     S.blob = await toBlob(cv, 'image/png'); S.ext = 'png';
     S.afterURL = URL.createObjectURL(S.blob);
     buildCompare(S.beforeURL, S.afterURL);
+    renderZoom(img, cv);
     if (meta.applied === false || meta.skipReason) {
       setStatus('none', meta.skipReason === 'not-detected'
         ? 'Không tự phát hiện được — thử chọn nguồn hoặc "Khác — tự khoanh vùng"'

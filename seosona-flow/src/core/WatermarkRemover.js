@@ -543,7 +543,47 @@
     return best && best.score >= 0.35 ? best : null;
   }
 
+  /**
+   * Vùng dấu còn "nổi" hơn xung quanh bao nhiêu? Đo TRƯỚC và SAU để biết xoá có ăn không.
+   *
+   * Người dùng không thể tự đánh giá bằng mắt: dấu Omni chỉ 72px trong ảnh 1920px, xem vừa
+   * khung thì nó nhỏ hơn đầu kim. Nên engine phải tự chấm và nói ra con số.
+   *
+   * Cách đo: chênh lệch độ sáng trung bình giữa pixel THUỘC hình dấu và vành ngay ngoài nó.
+   * Còn dấu → chênh lớn; xoá sạch → chênh về gần 0 như mọi vùng ảnh bình thường.
+   * @returns {number|null} độ chênh (mức xám)
+   */
+  function markContrast(ctx, w, h, id, pl) {
+    var FP = root.FlowWatermarkProfiles;
+    var p = FP && FP.PROFILES[id];
+    if (!p || !ctx) return null;
+    if (!pl) pl = _place(p, w, h, Math.min(w, h) / p.ref);
+    var pad = Math.max(4, Math.round(8 * pl.k));
+    var ox = Math.max(0, pl.bx - pad), oy = Math.max(0, pl.by - pad);
+    var ow = Math.min(w - ox, pl.bw + pad * 2), oh = Math.min(h - oy, pl.bh + pad * 2);
+    if (ow < 4 || oh < 4) return null;
+    var d = ctx.getImageData(ox, oy, ow, oh).data;
+    var A = p.method === 'unblend' ? FP.bytes(p.alpha) : null;
+    var M = p.method === 'inpaint' ? FP.bytes(p.mask) : null;
+    var inSum = 0, inN = 0, outSum = 0, outN = 0, x, y, i;
+    for (y = 0; y < oh; y++) for (x = 0; x < ow; x++) {
+      i = (y * ow + x) * 4;
+      var lum = (d[i] + d[i + 1] + d[i + 2]) / 3;
+      var bx = x - (pl.bx - ox), by = y - (pl.by - oy);
+      var on = false;
+      if (bx >= 0 && by >= 0 && bx < pl.bw && by < pl.bh) {
+        var sx = Math.min(p.w - 1, Math.floor(bx * p.w / pl.bw)), sy = Math.min(p.h - 1, Math.floor(by * p.h / pl.bh));
+        if (A) on = A[sy * p.w + sx] / 255 > 0.12;
+        else { var bit = sy * p.w + sx; on = !!((M[bit >> 3] >> (7 - (bit & 7))) & 1); }
+      }
+      if (on) { inSum += lum; inN++; } else { outSum += lum; outN++; }
+    }
+    if (!inN || !outN) return null;
+    return Math.abs(inSum / inN - outSum / outN);
+  }
+
   root.WatermarkRemover = {
+    markContrast: markContrast,
     removeFlowMark: removeFlowMark, detectFlowMark: detectFlowMark,
     pickRecorderMime: pickRecorderMime,
     removeFromBlob: removeFromBlob, removeFromUrl: removeFromUrl, boxFor: boxFor,
