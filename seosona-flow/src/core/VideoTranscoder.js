@@ -43,7 +43,7 @@
     var t0 = Date.now();
     var stats = { frames: 0, sampled: 0, redetects: 0, ms: 0, mark: null, score: null };
 
-    if (!root.Mediabunny) throw VideoError('NO_MEDIABUNNY', 'lib/mediabunny.min.cjs chưa được nạp');
+    if (!root.Mediabunny) throw VideoError('NO_MEDIABUNNY', 'lib/mediabunny.js chưa được nạp');
     if (!root.WatermarkRemover) throw VideoError('NO_CORE', 'WatermarkRemover.js chưa được nạp');
     if (!blob) throw VideoError('NO_INPUT');
     if (blob.size > MAX_INPUT_BYTES) {

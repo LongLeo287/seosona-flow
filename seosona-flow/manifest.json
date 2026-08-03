@@ -124,7 +124,7 @@
         "src/core/VeoWatermarkProbe.js",
         "src/core/VeoWatermarkProfile.js",
         "src/core/WebmDuration.js",
-        "lib/mediabunny.min.cjs",
+        "lib/mediabunny.js",
         "src/core/VideoTranscoder.js",
         "src/core/VideoTranscodeClient.js",
         "content_scripts/watermark-inject.js"
@@ -141,7 +141,7 @@
         "src/core/VeoWatermarkProbe.js",
         "src/core/VeoWatermarkProfile.js",
         "src/core/WebmDuration.js",
-        "lib/mediabunny.min.cjs",
+        "lib/mediabunny.js",
         "src/core/VideoTranscoder.js",
         "src/core/VideoTranscodeClient.js",
         "content_scripts/watermark-inject.js"
@@ -277,7 +277,7 @@
     {
       "resources": [
         "src/core/video-transcode-worker.js",
-        "lib/mediabunny.min.cjs",
+        "lib/mediabunny.js",
         "src/core/VideoTranscoder.js",
         "src/core/WatermarkRemover.js",
         "src/core/FlowWatermarkProfiles.js"

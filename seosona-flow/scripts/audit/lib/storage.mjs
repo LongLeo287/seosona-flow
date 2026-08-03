@@ -10,7 +10,12 @@ const CALL_RE = /chrome\.storage\.(local|sync|session|managed)\.(get|set|remove)
 
 function extJsFiles(root) {
   return trackedFiles(root)
-    .filter((p) => p.startsWith(EXT_PREFIX) && (p.endsWith('.js') || p.endsWith('.mjs')))
+    // `lib/` là mã BÊN NGOÀI đã vendor — nó không có handler message nào của extension, mà
+    // quét vào thì các chuỗi so-sánh-trường bên trong bị nhầm thành action và làm phình
+    // allowlist bảo mật (đo được: 262 → 270 khi mediabunny đổi đuôi thành .js). Nới allowlist
+    // vì mã bên ngoài là mở cửa vô cớ.
+    .filter((p) => p.startsWith(EXT_PREFIX) && (p.endsWith('.js') || p.endsWith('.mjs'))
+      && !p.startsWith(EXT_PREFIX + 'lib/'))
     .map((p) => p.slice(EXT_PREFIX.length));
 }
 

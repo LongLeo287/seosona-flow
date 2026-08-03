@@ -5,7 +5,7 @@
 // vào self để VideoTranscoder tìm thấy. Nạp trong Worker để UI không đơ suốt lúc encode.
 self.module = { exports: {} };
 self.exports = self.module.exports;
-importScripts('../../lib/mediabunny.min.cjs');
+importScripts('../../lib/mediabunny.js');
 self.Mediabunny = self.module.exports;
 
 importScripts('FlowWatermarkProfiles.js', 'WatermarkRemover.js', 'VideoTranscoder.js');

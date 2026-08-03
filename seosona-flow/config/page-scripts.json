@@ -386,7 +386,7 @@
       "../src/core/gwr-bundle.js",
       "../src/core/FlowWatermarkProfiles.js",
       "../src/core/WatermarkRemover.js",
-      "../lib/mediabunny.min.cjs",
+      "../lib/mediabunny.js",
       "../src/core/VideoTranscoder.js",
       "../src/core/VideoTranscodeClient.js",
       "../src/core/WatermarkVerify.js",
