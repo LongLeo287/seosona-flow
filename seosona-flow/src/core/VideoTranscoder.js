@@ -41,7 +41,7 @@
     var onProgress = typeof opt.onProgress === 'function' ? opt.onProgress : function () {};
     var cancelled = typeof opt.isCancelled === 'function' ? opt.isCancelled : function () { return false; };
     var t0 = Date.now();
-    var stats = { frames: 0, sampled: 0, ms: 0, mark: null, score: null };
+    var stats = { frames: 0, sampled: 0, redetects: 0, ms: 0, mark: null, score: null };
 
     if (!root.Mediabunny) throw VideoError('NO_MEDIABUNNY', 'lib/mediabunny.min.cjs chưa được nạp');
     if (!root.WatermarkRemover) throw VideoError('NO_CORE', 'WatermarkRemover.js chưa được nạp');
@@ -78,18 +78,19 @@
       var stamps = [];
       for (var i = 0; i < SAMPLE_FRAMES; i++) stamps.push(duration * (i + 0.5) / SAMPLE_FRAMES);
 
+      // Lấy mẫu KHỚP NHẤT trong 12 chứ không phải mẫu ĐẦU TIÊN bắt được: watermark mờ dần
+      // vào/ra, khung đầu tiên dò ra thường là khung mờ nhất → neo lệch cả clip.
       var hit = null;
       for await (var s of sink.samplesAtTimestamps(stamps)) {
         if (!s) continue;
         s.draw(ctx, 0, 0, W, H);
         s.close();                                  // BẮT BUỘC — không đóng là rò bộ nhớ GPU
         stats.sampled++;
-        if (!hit) {
-          var h = root.WatermarkRemover.detectFlowMark(ctx, W, H);
-          if (h) { hit = h; stats.mark = h.id; stats.score = h.score; }
-        }
+        var h = root.WatermarkRemover.detectFlowMark(ctx, W, H);
+        if (h && (!hit || h.score > hit.score)) hit = h;
         if (cancelled()) throw VideoError('CANCELLED');
       }
+      if (hit) { stats.mark = hit.id; stats.score = hit.score; }
       if (!stats.sampled) throw VideoError('NO_FRAMES', 'không đọc được khung nào');
       if (!hit) {
         stats.ms = Date.now() - t0;
@@ -132,10 +133,20 @@
       // Sink lấy mẫu ở trên ĐÃ ĐỌC HẾT — dùng lại là không ra khung nào. Phải tạo sink MỚI.
       var runSink = new MB.VideoSampleSink(vTrack);
       var total = Math.max(1, Math.round(duration * 30));
+      var place = hit.place, base = null;
       for await (var f of runSink.samples()) {
         if (cancelled()) throw VideoError('CANCELLED');
         f.draw(ctx, 0, 0, W, H);
-        root.WatermarkRemover.removeFlowMark(ctx, W, H, hit.id, hit.place);
+        // KIỂM LẠI vị trí neo mỗi khung. Dò một lần rồi coi là bất biến suốt clip là sai:
+        // watermark có thể trôi hoặc đổi giữa chừng, và lúc đó ta xoá trượt mà KHÔNG HỀ BIẾT.
+        var cur = root.WatermarkRemover.markContrast(ctx, W, H, hit.id, place);
+        if (base == null && cur != null) base = cur;
+        if (base != null && cur != null && cur < base * 0.4) {
+          stats.redetects++;
+          var again = root.WatermarkRemover.detectFlowMark(ctx, W, H);
+          if (again) place = again.place;
+        }
+        root.WatermarkRemover.removeFlowMark(ctx, W, H, hit.id, place);
         if (f.timestamp + tsShift < 0) tsShift = -f.timestamp;
         var out = new MB.VideoSample(cv, { timestamp: f.timestamp + tsShift, duration: f.duration });
         await vSource.add(out);
@@ -146,10 +157,17 @@
       if (!stats.frames) throw VideoError('NO_FRAMES_ENCODED', 'không ghi được khung hình nào');
 
       if (aSink && aSource) {
+        onProgress({ phase: 'audio' });
+        var first = true;
         for await (var pkt of aSink.packets()) {
           if (cancelled()) throw VideoError('CANCELLED');
-          if (aShift) pkt.timestamp += aShift;      // dịch cùng chiều với hình, không lệch tiếng
-          await aSource.add(pkt);
+          // clone chứ KHÔNG sửa mốc tại chỗ — gói là bất biến, gán thẳng thì im lặng không ăn.
+          var p2 = (aShift && pkt.timestamp != null && pkt.clone)
+            ? pkt.clone({ timestamp: pkt.timestamp + aShift }) : pkt;
+          // Gói ĐẦU TIÊN phải mang decoderConfig, nếu không track audio thiếu cấu hình giải mã
+          // → trình phát không phát được tiếng dù dữ liệu vẫn nằm trong file.
+          await aSource.add(p2, first ? { decoderConfig: await aTrack.getDecoderConfig() } : undefined);
+          first = false;
         }
       }
 
@@ -157,6 +175,11 @@
       var buf = output.target.buffer;
       if (!buf) throw VideoError('NO_OUTPUT', 'đóng gói xong nhưng không có dữ liệu');
       stats.ms = Date.now() - t0;
+      stats.redetectRatio = stats.frames ? stats.redetects / stats.frames : 0;
+      if (stats.redetectRatio > 0.25) {
+        console.warn('[VideoTranscoder] phải dò lại ' + (stats.redetectRatio * 100).toFixed(1)
+          + '% khung — Flow có thể đã đổi cách đặt watermark');
+      }
       return { blob: new Blob([buf], { type: 'video/mp4' }), applied: true, stats: stats };
     } finally {
       // Dọn kể cả khi ném — bỏ qua là rò bộ nhớ, và với video vài trăm MB thì thấy ngay.
