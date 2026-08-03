@@ -268,7 +268,48 @@
   }
 
   // ── Video: canvas per-frame (GWR) + audio gốc → MediaRecorder (WebM) ─────
+  // WebCodecs TRƯỚC: ra MP4 thật, nhanh hơn nhiều, và ÂM THANH ĐƯỢC CHÉP NGUYÊN GÓI thay vì
+  // mã hoá lại. MediaRecorder chỉ còn là đường lùi cho máy không hỗ trợ.
+  // @returns {boolean} đã xử lý xong bằng đường này chưa
+  async function tryWebCodecs(f) {
+    var VC = window.VideoTranscodeClient;
+    if (!VC || !VC.available()) return false;
+    setStatus('busy', 'Đang xử lý video (WebCodecs)…');
+    try {
+      var r = await VC.process(f, {
+        onProgress: function (p) {
+          if (p.ratio) setStatus('busy', 'Đang xử lý video ' + Math.round(p.ratio * 100) + '%…');
+        },
+      });
+      if (!r) return false;                       // máy không chạy được → để đường lùi lo
+      if (!r.applied) {
+        setStatus('none', r.reason === 'not_found'
+          ? 'Không tìm thấy watermark Flow trong video này — giữ nguyên file gốc'
+          : 'Không xử lý được (' + r.reason + ') — giữ nguyên file gốc');
+        S.blob = f; S.ext = (f.name || '').split('.').pop() || 'mp4';
+        dlBtn.disabled = false; dlBtn.textContent = 'Tải bản gốc';
+        return true;
+      }
+      S.blob = r.blob; S.ext = 'mp4';
+      var st = r.stats || {};
+      setStatus('ok', 'Xong — MP4, ' + (st.frames || 0) + ' khung trong ' + Math.round((st.ms || 0) / 1000) + 's');
+      if (metaEl) metaEl.textContent = 'dấu ' + (st.mark || '?') + ' · khớp ' + (st.score != null ? Math.round(st.score * 100) + '%' : '?');
+      dlBtn.disabled = false; dlBtn.textContent = 'Tải xuống (MP4)';
+      return true;
+    } catch (e) {
+      // Có MÃ lỗi thì nói đúng vấn đề; ca nào cũng để đường lùi thử tiếp, trừ khi vô nghĩa.
+      var code = e && e.code;
+      if (code === 'TOO_LARGE' || code === 'CANCELLED') {
+        setStatus('err', e.message || code);
+        return true;
+      }
+      console.warn('[watermark-tool] WebCodecs hỏng → dùng MediaRecorder:', code, e && e.message);
+      return false;
+    }
+  }
+
   async function processVideo() {
+    if (await tryWebCodecs(S.file)) return;
     var v = S.videoEl, cw = v.videoWidth, ch = v.videoHeight;
     setStatus('busy', 'Đang xử lý video 0%…'); copyBtn.disabled = true; dlBtn.disabled = true;
     var cv = makeCanvas(cw, ch), ctx = cv.getContext('2d', { willReadFrequently: true });

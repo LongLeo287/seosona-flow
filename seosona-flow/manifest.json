@@ -124,6 +124,9 @@
         "src/core/VeoWatermarkProbe.js",
         "src/core/VeoWatermarkProfile.js",
         "src/core/WebmDuration.js",
+        "lib/mediabunny.min.cjs",
+        "src/core/VideoTranscoder.js",
+        "src/core/VideoTranscodeClient.js",
         "content_scripts/watermark-inject.js"
       ],
       "matches": [
@@ -138,6 +141,9 @@
         "src/core/VeoWatermarkProbe.js",
         "src/core/VeoWatermarkProfile.js",
         "src/core/WebmDuration.js",
+        "lib/mediabunny.min.cjs",
+        "src/core/VideoTranscoder.js",
+        "src/core/VideoTranscodeClient.js",
         "content_scripts/watermark-inject.js"
       ],
       "matches": [
@@ -266,6 +272,21 @@
       "resources": [
         "icons/icon-48.png",
         "icons/icon-128.png"
+      ]
+    },
+    {
+      "resources": [
+        "src/core/video-transcode-worker.js",
+        "lib/mediabunny.min.cjs",
+        "src/core/VideoTranscoder.js",
+        "src/core/WatermarkRemover.js",
+        "src/core/FlowWatermarkProfiles.js"
+      ],
+      "matches": [
+        "https://labs.google/*",
+        "*://chatgpt.com/*",
+        "https://grok.com/*",
+        "*://gemini.google.com/*"
       ]
     }
   ]

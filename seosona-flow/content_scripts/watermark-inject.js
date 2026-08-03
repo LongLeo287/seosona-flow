@@ -186,6 +186,18 @@
   // srcBlob = video đã fetch về (blob same-origin → canvas KHÔNG bị taint). Chạy realtime 1× (play + record).
   async function removeVideoWatermark(srcBlob, opts) {
     opts = opts || {};
+    // WebCodecs TRƯỚC — xem ghi chú ở VideoTranscoder. MediaRecorder là đường lùi.
+    var VC = window.VideoTranscodeClient;
+    if (VC && VC.available()) {
+      try {
+        var r = await VC.process(srcBlob, { onProgress: opts.onProgress });
+        if (r && r.applied && r.blob) { r.blob.seosonaExt = 'mp4'; return r.blob; }
+        if (r && !r.applied) throw new Error('KHÔNG_TÌM_THẤY_WATERMARK');
+      } catch (e) {
+        if (e && e.message === 'KHÔNG_TÌM_THẤY_WATERMARK') throw e;
+        console.warn('[WM video] WebCodecs hỏng → dùng MediaRecorder:', (e && e.code) || (e && e.message));
+      }
+    }
     if (!window.WatermarkRemover || typeof window.WatermarkRemover.inpaintContext !== 'function') throw new Error('ENGINE_MISSING');
     if (!(window.MediaRecorder)) throw new Error('MEDIARECORDER_UNSUPPORTED');
     var url = URL.createObjectURL(srcBlob);
