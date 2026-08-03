@@ -98,7 +98,12 @@
 
       // ── Xử lý toàn bộ khung rồi đóng gói MP4 ─────────────────────────────
       output = new MB.Output({ format: new MB.Mp4OutputFormat(), target: new MB.BufferTarget() });
-      var vSource = new MB.VideoSampleSource({ codec: 'avc', bitrate: _bitrate(W, H, opt.quality) });
+      // Codec phải HỎI, không đoán: nguồn HEVC mà ép 'avc' là encoder từ chối cả track.
+      var vCodec = await vTrack.getCodec();
+      var vSource = new MB.VideoSampleSource({
+        codec: vCodec === 'hevc' ? 'hevc' : 'avc',
+        bitrate: _bitrate(W, H, opt.quality),
+      });
       output.addVideoTrack(vSource);
 
       // ÂM THANH: chép NGUYÊN GÓI, không mã hoá lại. Đây là điểm hơn hẳn MediaRecorder —
@@ -106,30 +111,44 @@
       var aTrack = await input.getPrimaryAudioTrack();
       var aSource = null, aSink = null;
       if (aTrack) {
-        try {
-          aSource = new MB.EncodedAudioPacketSource(aTrack.codec);
+        var aCodec = await aTrack.getCodec();
+        if (aCodec) {
+          aSource = new MB.EncodedAudioPacketSource(aCodec);
           output.addAudioTrack(aSource);
           aSink = new MB.EncodedPacketSink(aTrack);
-        } catch (_e) { aSource = null; aSink = null; }   // codec lạ → bỏ tiếng còn hơn hỏng cả file
+        } else {
+          console.warn('[VideoTranscoder] không nhận ra codec audio → clip ra sẽ KHÔNG có tiếng');
+        }
       }
 
       await output.start();
 
-      var total = Math.max(1, Math.round(duration * (vTrack.packetCount ? 1 : 1)));
-      for await (var f of sink.samples()) {
+      // Mốc thời gian ÂM: MP4 có edit-list hoặc khung B thì khung đầu có thể mang mốc âm.
+      // Đưa thẳng vào muxer là nó LẶNG LẼ BỎ hết khung hình — file ra chỉ còn tiếng. Đây
+      // đúng lỗi đã gặp. Dịch cả track lên cho mốc nhỏ nhất về 0.
+      var tsShift = await _firstShift(vTrack);
+      var aShift = await _firstShift(aTrack);
+
+      // Sink lấy mẫu ở trên ĐÃ ĐỌC HẾT — dùng lại là không ra khung nào. Phải tạo sink MỚI.
+      var runSink = new MB.VideoSampleSink(vTrack);
+      var total = Math.max(1, Math.round(duration * 30));
+      for await (var f of runSink.samples()) {
         if (cancelled()) throw VideoError('CANCELLED');
         f.draw(ctx, 0, 0, W, H);
         root.WatermarkRemover.removeFlowMark(ctx, W, H, hit.id, hit.place);
-        var out = new MB.VideoSample(cv, { timestamp: f.timestamp, duration: f.duration });
+        if (f.timestamp + tsShift < 0) tsShift = -f.timestamp;
+        var out = new MB.VideoSample(cv, { timestamp: f.timestamp + tsShift, duration: f.duration });
         await vSource.add(out);
         out.close(); f.close();
         stats.frames++;
         if (stats.frames % 10 === 0) onProgress({ phase: 'encoding', done: stats.frames, ratio: Math.min(1, stats.frames / Math.max(1, total)) });
       }
+      if (!stats.frames) throw VideoError('NO_FRAMES_ENCODED', 'không ghi được khung hình nào');
 
       if (aSink && aSource) {
         for await (var pkt of aSink.packets()) {
           if (cancelled()) throw VideoError('CANCELLED');
+          if (aShift) pkt.timestamp += aShift;      // dịch cùng chiều với hình, không lệch tiếng
           await aSource.add(pkt);
         }
       }
@@ -143,6 +162,18 @@
       // Dọn kể cả khi ném — bỏ qua là rò bộ nhớ, và với video vài trăm MB thì thấy ngay.
       try { if (output && output.state !== 'finalized') await output.cancel(); } catch (_e) { /* đã đóng */ }
       try { await input.dispose?.(); } catch (_e) { /* không có dispose */ }
+    }
+  }
+
+  /** Mốc đầu tiên của track; âm thì trả số bù để dịch về 0. Đọc hỏng → 0, không chặn cả việc. */
+  async function _firstShift(track) {
+    try {
+      if (!track || typeof track.getFirstTimestamp !== 'function') return 0;
+      var f = await track.getFirstTimestamp();
+      return (isFinite(f) && f < 0) ? -f : 0;
+    } catch (e) {
+      console.warn('[VideoTranscoder] không đọc được mốc đầu:', e && e.message);
+      return 0;
     }
   }
 
