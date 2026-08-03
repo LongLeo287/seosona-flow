@@ -279,7 +279,12 @@
     var vBox = (!vAlpha && WR && WR.boxFor) ? WR.boxFor(cw, ch, { corner: (vsrc && vsrc.corner) || 'br', logoSize: vsrc && vsrc.logoSize }) : null;
     var stream = cv.captureStream(30);
     try { var vs = v.captureStream ? v.captureStream() : (v.mozCaptureStream && v.mozCaptureStream()); if (vs) vs.getAudioTracks().forEach(function (t) { stream.addTrack(t); }); } catch (_) { globalThis.SEOSONA_swallow?.('watermark-tool#processVideo', _); }
-    var mime = (window.MediaRecorder && MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')) ? 'video/webm;codecs=vp9,opus' : (MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus') ? 'video/webm;codecs=vp8,opus' : 'video/webm');
+    // ƯU TIÊN MP4. WebM thì Chrome nào cũng ghi được nhưng TikTok/CapCut/Premiere đều không
+    // nhận — người dùng phải tự convert, mà convert lần nữa là mất chất lượng lần nữa.
+    // (Bản trước chỉ sửa ở nút nổi trên trang Flow, QUÊN chính công cụ này — mà đây mới là
+    // chỗ người dùng kéo file vào.)
+    var fmt = window.WatermarkRemover.pickRecorderMime('mp4');
+    var mime = fmt.mime;
     var rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: Math.min(16000000, Math.max(2500000, Math.round(cw * ch * 30 * 0.15))) });
     var chunks = []; rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
     var stopped = new Promise(function (r) { rec.onstop = r; });
@@ -291,9 +296,12 @@
       if (!v.ended && !v.paused) requestAnimationFrame(frame); else { try { rec.stop(); } catch (_) { globalThis.SEOSONA_swallow?.('watermark-tool#frame', _); } }
     }
     try { v.currentTime = 0; v.muted = true; await v.play(); rec.start(); requestAnimationFrame(frame); await stopped; } finally { try { v.pause(); } catch (_) { globalThis.SEOSONA_swallow?.('watermark-tool#frame', _); } }
-    S.blob = new Blob(chunks, { type: 'video/webm' }); S.ext = 'webm';
-    setStatus('ok', 'Xong — video đã xoá watermark (WebM)');
-    dlBtn.disabled = false; dlBtn.textContent = 'Tải xuống (WebM)';
+    S.blob = new Blob(chunks, { type: mime || 'video/webm' }); S.ext = fmt.ext;
+    var UP = fmt.ext.toUpperCase();
+    setStatus('ok', fmt.fellBack
+      ? 'Xong — nhưng trình duyệt này chưa ghi được MP4 nên xuất WebM'
+      : 'Xong — video đã xoá watermark (' + UP + ')');
+    dlBtn.disabled = false; dlBtn.textContent = 'Tải xuống (' + UP + ')';
   }
 
   // ── Nạp file ─────────────────────────────────────────────────────────────
@@ -327,7 +335,7 @@
     if (/^video\//.test(f.type)) {
       S.isVideo = true; copyBtn.style.display = 'none';
       videoMsg.style.display = 'block';
-      videoMsg.innerHTML = '🎬 Video encode lại WebM (chất lượng giảm nhẹ, giữ audio). Chạy realtime + full pipeline mỗi frame → hơi chậm với video dài.';
+      videoMsg.innerHTML = '🎬 Video được encode lại (MP4 nếu trình duyệt hỗ trợ, không thì WebM) — chất lượng giảm nhẹ, giữ audio. Chạy realtime + full pipeline mỗi frame → hơi chậm với video dài.';
       var v = S.videoEl || document.createElement('video');
       S.videoEl = v; v.muted = true; v.playsInline = true; v.preload = 'auto'; v.controls = true;
       v.className = 'stagevid'; v.style.maxHeight = '64vh'; v.style.maxWidth = '100%';

@@ -133,3 +133,25 @@ test('engine dùng CHUNG một pipeline, không nhân bản', () => {
   assert.match(content, /window\.SEOSONA_removeVideoWatermark\(srcBlob/);
   assert.equal((content.match(/new MediaRecorder\(/g) || []).length, 0, 'content.js không được tự dựng pipeline riêng');
 });
+
+test('MỌI nơi ghi video đều qua pickRecorderMime — không chỗ nào ghi cứng WebM', () => {
+  // Lỗi thật đã xảy ra: sửa MP4 ở nút nổi trên trang Flow nhưng QUÊN công cụ Tools — mà đó
+  // mới là chỗ người dùng kéo file vào. Họ nhận .webm và không mở được ở TikTok/CapCut.
+  // Test theo NƠI GỌI, không theo một file, để lần sau thêm chỗ ghi video mới là gãy ngay.
+  const files = ['scripts/watermark-tool.js', 'content_scripts/watermark-inject.js'];
+  for (const f of files) {
+    const src = read(f);
+    if (!/new MediaRecorder\(/.test(src)) continue;
+    assert.match(src, /pickRecorderMime\(/, `${f}: dựng MediaRecorder mà không hỏi định dạng`);
+    assert.ok(!/isTypeSupported\('video\/webm/.test(src), `${f}: còn tự dò WebM, bỏ qua MP4`);
+    assert.ok(!/S\.ext = 'webm'|ext: 'webm'/.test(src), `${f}: ghi cứng đuôi webm`);
+  }
+});
+
+test('rơi về WebM thì nói ra ở CẢ hai nơi', () => {
+  // Người dùng đang chờ MP4. Im lặng đưa WebM là để họ phát hiện lúc upload thất bại.
+  for (const f of ['scripts/watermark-tool.js', 'content_scripts/watermark-inject.js']) {
+    assert.match(read(f), /fellBack/, `${f}: không xử lý ca rơi về`);
+    assert.match(read(f), /chưa ghi được MP4/, `${f}: rơi về mà im lặng`);
+  }
+});
