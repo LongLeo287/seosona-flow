@@ -4,22 +4,22 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>SEOSONA Flow — chạy prompt AI hàng loạt trên Chrome</title>
-<meta name="description" content="Chrome extension tự động hoá tạo ảnh và video AI trên Google Flow, ChatGPT, Gemini và Grok. Chạy theo lô, 26 loại node workflow, không cần API key trả phí." />
+<meta name="description" content="Chrome extension tự động hoá tạo ảnh và video AI trên Google Flow, ChatGPT, Gemini và Grok. Chạy theo lô, 26 loại node workflow, 410 prompt dựng sẵn, không cần API key trả phí." />
 <meta name="author" content="Hà Đình Long" />
 <meta name="theme-color" content="#0c0a09" />
 <link rel="canonical" href="https://seosona-flow.vercel.app/" />
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='1.4' y='1.4' width='29.2' height='29.2' rx='9' fill='none' stroke='%23fcd34d' stroke-width='2'/><path d='M18.4 6 9.6 17.6h4.8L12.8 26l9-11.8h-5z' fill='%23ff7a00'/></svg>" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="SEOSONA Flow" />
 <meta property="og:title" content="SEOSONA Flow — chạy prompt AI hàng loạt trên Chrome" />
-<meta property="og:description" content="Chrome extension tự động hoá tạo ảnh và video AI trên Google Flow, ChatGPT, Gemini và Grok. Chạy theo lô, 26 loại node workflow, không cần API key trả phí." />
+<meta property="og:description" content="Chrome extension tự động hoá tạo ảnh và video AI trên Google Flow, ChatGPT, Gemini và Grok. Chạy theo lô, 26 loại node workflow, 410 prompt dựng sẵn, không cần API key trả phí." />
 <meta property="og:url" content="https://seosona-flow.vercel.app/" />
 <meta property="og:image" content="https://seosona-flow.vercel.app/cover.jpg" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="600" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="SEOSONA Flow — chạy prompt AI hàng loạt trên Chrome" />
-<meta name="twitter:description" content="Chrome extension tự động hoá tạo ảnh và video AI trên Google Flow, ChatGPT, Gemini và Grok. Chạy theo lô, 26 loại node workflow, không cần API key trả phí." />
+<meta name="twitter:description" content="Chrome extension tự động hoá tạo ảnh và video AI trên Google Flow, ChatGPT, Gemini và Grok. Chạy theo lô, 26 loại node workflow, 410 prompt dựng sẵn, không cần API key trả phí." />
 <meta name="twitter:image" content="https://seosona-flow.vercel.app/cover.jpg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -40,50 +40,48 @@ body{
 }
 img{max-width:100%;height:auto;display:block}
 a{color:inherit}
+svg{display:block}
 .wrap{width:min(1120px,100% - 2.5rem);margin-inline:auto}
 h1,h2,h3{letter-spacing:-.022em}
 :focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:6px}
 
 /* ---------- dải thông báo + thanh điều hướng ---------- */
-.ticker{
-  background:linear-gradient(90deg,rgba(255,122,0,.14),rgba(252,211,77,.09));
+.ticker{background:linear-gradient(90deg,rgba(255,122,0,.14),rgba(252,211,77,.09));
   border-bottom:1px solid var(--line);font-size:.8rem;color:var(--muted);
-  text-align:center;padding:.5rem 1rem;
-}
+  text-align:center;padding:.5rem 1rem}
 .ticker b{color:var(--amber);font-weight:600}
-.bar{
-  position:sticky;top:0;z-index:50;padding:.8rem 0;
-  background:rgba(12,10,9,.85);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);
-}
+.bar{position:sticky;top:0;z-index:50;padding:.7rem 0;
+  background:rgba(12,10,9,.85);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
 .bar-in{display:flex;align-items:center;justify-content:space-between;gap:1rem;
   width:min(1120px,100% - 2.5rem);margin-inline:auto}
-.back{display:inline-flex;align-items:center;gap:.55rem;min-height:44px;
-  font-size:.875rem;font-weight:500;color:var(--muted);text-decoration:none;
-  padding:.5rem .25rem;transition:color .25s var(--ease)}
-.back:hover{color:var(--text)}
-.back svg{transition:transform .3s var(--ease)}
-.back:hover svg{transform:translateX(-3px)}
+.brand{display:inline-flex;align-items:center;gap:.6rem;min-height:44px;
+  font-weight:700;font-size:.95rem;text-decoration:none;letter-spacing:-.01em}
+.brand .logo{flex-shrink:0;transition:transform .4s var(--ease)}
+.brand:hover .logo{transform:rotate(-8deg) scale(1.08)}
+.bar-links{display:flex;align-items:center;gap:.35rem}
+.bar-links a{padding:.5rem .8rem;font-size:.85rem;color:var(--muted);text-decoration:none;
+  border-radius:8px;transition:color .25s var(--ease),background .25s var(--ease)}
+.bar-links a:hover{color:var(--text);background:var(--panel)}
 .bar-cta{display:inline-flex;align-items:center;gap:.5rem;padding:.55rem 1.05rem;
   border-radius:999px;border:1px solid var(--line);background:var(--panel);
-  font-size:.85rem;font-weight:600;text-decoration:none;
+  font-size:.85rem;font-weight:600;text-decoration:none;color:var(--text)!important;
   transition:border-color .25s var(--ease),transform .25s var(--ease),background .25s var(--ease)}
-.bar-cta:hover{border-color:var(--primary);background:var(--panel-2);transform:translateY(-1px)}
+.bar-cta:hover{border-color:var(--primary);background:var(--panel-2)!important;transform:translateY(-1px)}
 
 /* ---------- hero ---------- */
-.hero{position:relative;padding:clamp(3rem,7vw,5rem) 0 clamp(2rem,5vw,3.5rem);overflow:hidden}
-.hero::before{
-  content:'';position:absolute;inset:-25% -10% auto -10%;height:130%;z-index:0;pointer-events:none;
+.hero{position:relative;padding:clamp(2.5rem,6vw,4.5rem) 0 clamp(2rem,5vw,3rem);overflow:hidden}
+.hero::before{content:'';position:absolute;inset:-25% -10% auto -10%;height:130%;z-index:0;
+  pointer-events:none;
   background:radial-gradient(46% 40% at 14% 6%,rgba(255,122,0,.18),transparent 70%),
              radial-gradient(40% 36% at 86% 2%,rgba(252,211,77,.10),transparent 70%);
-  animation:drift 20s ease-in-out infinite alternate;
-}
+  animation:drift 20s ease-in-out infinite alternate}
 @keyframes drift{to{transform:translate3d(2.5%,1.5%,0) scale(1.07)}}
 .hero .wrap{position:relative;z-index:1}
 .hero-grid{display:grid;gap:clamp(2rem,5vw,3.5rem);align-items:center;
   grid-template-columns:minmax(0,1fr) minmax(0,1.05fr)}
 .eyebrow{display:inline-flex;align-items:center;gap:.6rem;font-size:.74rem;font-weight:700;
   letter-spacing:.15em;text-transform:uppercase;color:var(--amber);margin:0 0 1.1rem;
-  padding:.35rem .85rem .35rem .6rem;border:1px solid rgba(252,211,77,.28);border-radius:999px;
+  padding:.35rem .9rem .35rem .65rem;border:1px solid rgba(252,211,77,.28);border-radius:999px;
   background:rgba(252,211,77,.06)}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--ok);
   box-shadow:0 0 0 0 rgba(74,222,128,.55);animation:pulse 2.4s ease-out infinite}
@@ -91,8 +89,8 @@ h1,h2,h3{letter-spacing:-.022em}
 h1{font-size:clamp(2.1rem,5vw,3.5rem);line-height:1.05;font-weight:700;margin:0 0 1.15rem}
 h1 .hl{background:linear-gradient(90deg,var(--primary),var(--amber));
   -webkit-background-clip:text;background-clip:text;color:transparent}
-.tagline{font-size:clamp(1rem,1.9vw,1.2rem);color:var(--muted);margin:0 0 1.9rem;max-width:52ch}
-.actions{display:flex;flex-wrap:wrap;gap:.7rem;margin-bottom:1.9rem}
+.tagline{font-size:clamp(1rem,1.9vw,1.18rem);color:var(--muted);margin:0 0 1.8rem;max-width:52ch}
+.actions{display:flex;flex-wrap:wrap;gap:.7rem;margin-bottom:1.6rem}
 .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.85rem 1.5rem;border-radius:999px;
   font-size:.94rem;font-weight:600;text-decoration:none;border:1px solid transparent;
   transform:translateY(var(--lift,0)) scale(var(--press,1));
@@ -104,24 +102,23 @@ h1 .hl{background:linear-gradient(90deg,var(--primary),var(--amber));
 .btn-primary:hover{box-shadow:0 12px 32px -12px rgba(255,122,0,.7)}
 .btn-ghost{background:transparent;border-color:var(--line-2);color:var(--text)}
 .btn-ghost:hover{border-color:var(--primary);background:rgba(255,122,0,.07)}
-.hero-facts{display:flex;flex-wrap:wrap;gap:.45rem 1.5rem;font-size:.85rem;color:var(--dim)}
-.hero-facts span{display:inline-flex;align-items:center;gap:.4rem}
+.hero-facts{display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;font-size:.85rem;color:var(--dim)}
 .hero-facts b{color:var(--text);font-weight:600}
 
-/* ---------- mockup side panel ---------- */
-.mock{
-  border:1px solid var(--line-2);border-radius:16px;overflow:hidden;background:var(--panel);
-  box-shadow:0 40px 80px -40px rgba(0,0,0,.95),0 0 0 1px rgba(255,255,255,.02) inset;
-  animation:mockIn 1s var(--ease) .35s both;
-}
+/* ---------- mockup chung ---------- */
+.mock{border:1px solid var(--line-2);border-radius:16px;overflow:hidden;background:var(--panel);
+  box-shadow:0 40px 80px -40px rgba(0,0,0,.95),0 0 0 1px rgba(255,255,255,.02) inset}
+.hero .mock{animation:mockIn 1s var(--ease) .35s both}
 @keyframes mockIn{from{opacity:0;transform:translateY(28px) scale(.97)}to{opacity:1;transform:none}}
 .mock-top{display:flex;align-items:center;gap:.5rem;padding:.7rem .9rem;
   border-bottom:1px solid var(--line);background:var(--panel-2)}
 .led{width:10px;height:10px;border-radius:50%;background:#3a322c}
-.mock-title{margin-left:.4rem;font-size:.78rem;font-weight:600;color:var(--muted);letter-spacing:.02em}
+.mock-title{margin-left:.4rem;font-size:.78rem;font-weight:600;color:var(--muted)}
 .mock-badge{margin-left:auto;font-size:.68rem;font-weight:700;letter-spacing:.08em;
   color:var(--amber);border:1px solid rgba(252,211,77,.3);border-radius:999px;padding:.15rem .55rem}
 .mock-body{padding:.9rem}
+.mock-foot{display:flex;justify-content:space-between;font-size:.7rem;color:var(--dim);
+  padding:.55rem .9rem;border-top:1px solid var(--line);background:var(--panel-2)}
 .chips{display:flex;gap:.4rem;margin-bottom:.85rem;flex-wrap:wrap}
 .chip-s{font-size:.72rem;font-weight:600;padding:.32rem .7rem;border-radius:999px;
   border:1px solid var(--line-2);color:var(--dim)}
@@ -131,9 +128,7 @@ h1 .hl{background:linear-gradient(90deg,var(--primary),var(--amber));
 .row{display:flex;align-items:center;gap:.6rem;padding:.55rem .65rem;border-radius:9px;
   border:1px solid var(--line);margin-bottom:.35rem;background:#100d0c;font-size:.8rem}
 .row .txt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
-.row .st{font-size:.68rem;font-weight:700;letter-spacing:.05em;flex-shrink:0}
-/* Bốn hàng chạy lệch pha nhau: xong -> đang chạy -> chờ, lặp vô hạn.
-   Toàn bộ bằng CSS, không JS — panel vẫn "sống" kể cả khi script bị chặn. */
+.row .st{font-size:.68rem;font-weight:700;flex-shrink:0}
 .row .ic{width:15px;height:15px;border-radius:50%;flex-shrink:0;border:2px solid var(--line-2)}
 .row.run .ic{border-color:var(--amber);border-top-color:transparent;animation:spin .8s linear infinite}
 .row.done .ic{border-color:var(--ok);background:var(--ok)}
@@ -148,26 +143,36 @@ h1 .hl{background:linear-gradient(90deg,var(--primary),var(--amber));
   background:linear-gradient(90deg,var(--primary),var(--amber));
   animation:fill 9s var(--ease) infinite}
 @keyframes fill{0%{transform:scaleX(.08)}45%{transform:scaleX(.62)}90%,100%{transform:scaleX(1)}}
-.mock-foot{display:flex;justify-content:space-between;font-size:.7rem;color:var(--dim);
-  padding:.55rem .9rem;border-top:1px solid var(--line);background:var(--panel-2)}
 
 /* ---------- băng nền tảng ---------- */
-.marquee{border-block:1px solid var(--line);padding:1.15rem 0;overflow:hidden;
+.marquee{border-block:1px solid var(--line);padding:1.05rem 0;overflow:hidden;
   background:linear-gradient(180deg,#0e0b0a,#0c0a09)}
-.marquee-in{display:flex;width:max-content;animation:slide 34s linear infinite}
+.marquee-in{display:flex;width:max-content;animation:slide 36s linear infinite}
 .marquee:hover .marquee-in{animation-play-state:paused}
 @keyframes slide{to{transform:translateX(-50%)}}
-.marquee span{display:inline-flex;align-items:center;gap:.75rem;padding-inline:1.9rem;
+.marquee span{display:inline-flex;align-items:center;gap:.65rem;padding-inline:1.8rem;
   font-size:.95rem;font-weight:600;color:#5f5853;white-space:nowrap;
   transition:color .3s var(--ease)}
-.marquee span::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--line-2)}
+.marquee span::before{content:'';width:6px;height:6px;border-radius:1px;
+  background:var(--line-2);transform:rotate(45deg);transition:background .3s var(--ease)}
 .marquee span:hover{color:var(--amber)}
+.marquee span:hover::before{background:var(--amber)}
+
+/* ---------- dải số liệu ---------- */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;
+  background:var(--line);border-block:1px solid var(--line)}
+.stat{background:var(--bg);padding:1.6rem 1.2rem;text-align:center}
+.stat b{display:block;font-size:clamp(1.9rem,4.2vw,2.7rem);line-height:1;font-weight:800;
+  background:linear-gradient(90deg,var(--primary),var(--amber));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  font-variant-numeric:tabular-nums}
+.stat span{display:block;margin-top:.5rem;font-size:.82rem;color:var(--dim);line-height:1.4}
 
 /* ---------- khối chung ---------- */
 section{padding:clamp(3rem,7vw,5rem) 0}
-.head{max-width:56ch;margin-bottom:2.5rem}
-.kicker{font-size:.72rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;
-  color:var(--primary);margin:0 0 .8rem}
+.head{max-width:58ch;margin-bottom:2.4rem}
+.kicker{display:inline-flex;align-items:center;gap:.5rem;font-size:.72rem;font-weight:700;
+  letter-spacing:.15em;text-transform:uppercase;color:var(--primary);margin:0 0 .8rem}
 h2{font-size:clamp(1.55rem,3.4vw,2.3rem);line-height:1.18;margin:0 0 .8rem}
 .head p{color:var(--muted);margin:0;font-size:1.05rem}
 
@@ -180,22 +185,101 @@ h2{font-size:clamp(1.55rem,3.4vw,2.3rem);line-height:1.18;margin:0 0 .8rem}
 .step:hover{border-color:var(--line-2);transform:translateY(-3px)}
 .step::before{content:counter(s,decimal-leading-zero);position:absolute;top:1rem;right:1.2rem;
   font-size:2.6rem;font-weight:800;color:rgba(255,255,255,.045);line-height:1}
+.step .ic{width:26px;height:26px;color:var(--amber);margin-bottom:.9rem}
 .step h3{font-size:1.06rem;margin:0 0 .5rem}
 .step p{margin:0;font-size:.93rem;color:var(--muted)}
 
-/* ---------- lưới node ---------- */
-.nodes{display:flex;flex-wrap:wrap;gap:.5rem}
-.node{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1rem;border-radius:10px;
-  border:1px solid var(--line);background:var(--panel);font-size:.86rem;color:var(--muted);
+/* ---------- sơ đồ workflow ---------- */
+.wf{border:1px solid var(--line-2);border-radius:16px;background:
+  radial-gradient(60% 80% at 30% 20%,rgba(255,122,0,.07),transparent 70%),var(--panel);
+  padding:1rem;overflow:hidden}
+.wf-scroll{overflow-x:auto;overscroll-behavior-x:contain}
+.wf svg{width:100%;height:auto}
+.wf-hint{display:none;margin:.6rem 0 0;font-size:.78rem;color:var(--dim)}
+@media (max-width:780px){
+  /* Thà cuộn ngang còn hơn chữ 5px không ai đọc được. */
+  .wf-scroll svg{width:700px;max-width:none}
+  .wf-hint{display:block}
+}
+.wf-link{fill:none;stroke:var(--line-2);stroke-width:2;stroke-dasharray:5 7;
+  animation:dash 1.6s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-24}}
+.wf-box{fill:var(--panel-2);stroke:var(--line-2);stroke-width:1.5}
+.wf-box.act{stroke:var(--amber)}
+.wf-t{fill:var(--text);font-size:15px;font-weight:600;
+  font-family:'Inter',system-ui,sans-serif}
+.wf-e{font-size:19px}
+.wf-port{fill:var(--primary)}
+.wf-g{opacity:0;animation:wfIn .6s var(--ease) forwards}
+@keyframes wfIn{to{opacity:1}}
+.wf-legend{display:flex;flex-wrap:wrap;gap:.5rem 1.4rem;margin-top:1rem;font-size:.82rem;
+  color:var(--dim)}
+.wf-legend b{color:var(--muted);font-weight:600}
+
+/* ---------- nhóm node ---------- */
+.groups{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(min(310px,100%),1fr))}
+.group{padding:1.4rem 1.4rem 1.2rem;border:1px solid var(--line);border-radius:14px;
+  background:var(--panel);transition:border-color .3s var(--ease),transform .3s var(--ease)}
+.group:hover{border-color:var(--line-2);transform:translateY(-3px)}
+.group-h{display:flex;align-items:center;gap:.65rem;margin-bottom:.9rem}
+.group-h .em{font-size:1.25rem;line-height:1}
+.group-h h3{font-size:1rem;margin:0;flex:1}
+.group-h .n{font-size:.72rem;font-weight:700;color:var(--dim);
+  border:1px solid var(--line-2);border-radius:999px;padding:.1rem .5rem}
+.nodes{display:flex;flex-wrap:wrap;gap:.4rem}
+.node{display:inline-flex;align-items:center;gap:.4rem;padding:.35rem .7rem;border-radius:8px;
+  border:1px solid var(--line);background:#100d0c;font-size:.8rem;color:var(--muted);
   transition:color .25s var(--ease),border-color .25s var(--ease),transform .25s var(--ease)}
-.node::before{content:'';width:6px;height:6px;border-radius:2px;background:var(--primary);opacity:.5}
+.node::before{content:'';width:5px;height:5px;border-radius:1px;background:var(--primary);opacity:.5}
 .node:hover{color:var(--text);border-color:var(--line-2);transform:translateY(-2px)}
 .node:hover::before{opacity:1}
-.node-count{display:flex;align-items:baseline;gap:.6rem;margin-bottom:1.4rem}
-.node-count b{font-size:clamp(2.4rem,6vw,3.6rem);line-height:1;font-weight:800;
-  background:linear-gradient(90deg,var(--primary),var(--amber));
-  -webkit-background-clip:text;background-clip:text;color:transparent}
-.node-count span{color:var(--muted);font-size:.95rem}
+
+/* ---------- Image-to-Prompt ---------- */
+.i2p{display:grid;gap:1.5rem;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);
+  align-items:center}
+/* Con lưới mặc định min-width:auto — khối <pre> có bề rộng tối thiểu bằng dòng
+   dài nhất nên kéo cả cột rộng ra, tràn cả trang. Cho phép co lại thì
+   overflow-x:auto của .code mới có tác dụng. */
+.i2p>*{min-width:0}
+.i2p-src{border:1px solid var(--line-2);border-radius:14px;overflow:hidden;background:var(--panel-2);
+  position:relative}
+.i2p-src img{width:100%;aspect-ratio:1;object-fit:cover}
+.i2p-scan{position:absolute;left:0;right:0;height:34%;pointer-events:none;
+  background:linear-gradient(180deg,transparent,rgba(252,211,77,.16),transparent);
+  border-top:1px solid rgba(252,211,77,.5);animation:scan 3.6s ease-in-out infinite}
+@keyframes scan{0%{top:-34%}55%{top:100%}100%{top:100%}}
+.tabs{display:flex;gap:.35rem;margin-bottom:.7rem}
+.tab{font-size:.75rem;font-weight:600;padding:.35rem .8rem;border-radius:7px;
+  border:1px solid var(--line-2);color:var(--dim)}
+.tab.on{background:var(--amber);color:#0c0a09;border-color:var(--amber)}
+.code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.79rem;line-height:1.7;
+  color:var(--muted);background:#100d0c;border:1px solid var(--line);border-radius:10px;
+  padding:.9rem 1rem;overflow-x:auto;margin:0}
+.code .k{color:var(--amber)}
+.code .s{color:#8fd6a0}
+
+/* ---------- thư viện ảnh ---------- */
+.gal{display:grid;gap:.85rem;grid-template-columns:repeat(auto-fill,minmax(min(230px,100%),1fr))}
+.shot{position:relative;overflow:hidden;border-radius:13px;border:1px solid var(--line);
+  background:var(--panel);transition:border-color .3s var(--ease),transform .35s var(--ease)}
+.shot img{width:100%;aspect-ratio:1;object-fit:cover;transition:transform .55s var(--ease)}
+.shot:hover{border-color:var(--line-2);transform:translateY(-4px)}
+.shot:hover img{transform:scale(1.05)}
+.shot figcaption{position:absolute;inset:auto 0 0 0;padding:1.7rem .9rem .8rem;
+  background:linear-gradient(180deg,transparent,rgba(8,6,5,.93));
+  font-size:.85rem;font-weight:600}
+.shot figcaption em{display:block;font-style:normal;font-weight:400;font-size:.76rem;
+  color:var(--muted);margin-top:.15rem}
+
+/* ---------- kho prompt ---------- */
+.packs{display:grid;gap:.7rem;grid-template-columns:repeat(auto-fill,minmax(min(250px,100%),1fr))}
+.pack{display:flex;align-items:center;gap:.85rem;padding:.95rem 1.1rem;border-radius:12px;
+  border:1px solid var(--line);background:var(--panel);
+  transition:border-color .25s var(--ease),transform .25s var(--ease)}
+.pack:hover{border-color:var(--line-2);transform:translateY(-2px)}
+.pack .em{font-size:1.35rem;line-height:1}
+.pack .t{flex:1;font-size:.9rem;font-weight:600;line-height:1.3}
+.pack .c{font-size:1.05rem;font-weight:800;color:var(--amber);font-variant-numeric:tabular-nums}
 
 /* ---------- tính năng ---------- */
 .feats{display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr))}
@@ -207,9 +291,12 @@ h2{font-size:clamp(1.55rem,3.4vw,2.3rem);line-height:1.18;margin:0 0 .8rem}
   transition:opacity .3s var(--ease)}
 .feat:hover{border-color:var(--line-2);transform:translateY(-3px);background:var(--panel-2)}
 .feat:hover::after{opacity:1}
-.feat .n{display:block;font-size:.7rem;font-weight:800;letter-spacing:.13em;color:var(--primary);
-  margin-bottom:.7rem}
-.feat h3{font-size:1.05rem;margin:0 0 .5rem}
+.feat .ic{width:26px;height:26px;color:var(--primary);margin-bottom:.9rem;
+  transition:transform .35s var(--ease)}
+.feat:hover .ic{transform:scale(1.12) rotate(-4deg)}
+.feat .n{position:absolute;top:1.3rem;right:1.4rem;font-size:.7rem;font-weight:800;
+  letter-spacing:.1em;color:rgba(255,255,255,.12)}
+.feat h3{font-size:1.04rem;margin:0 0 .5rem}
 .feat p{margin:0;font-size:.92rem;color:var(--muted)}
 
 /* ---------- giới hạn ---------- */
@@ -240,7 +327,8 @@ details p{margin:0;padding:0 1.3rem 1.15rem;color:var(--muted);font-size:.93rem}
 .cta p{color:var(--muted);max-width:52ch;margin:0 auto 2rem}
 .cta .actions{justify-content:center}
 footer{border-top:1px solid var(--line);padding:2rem 0;color:var(--dim);font-size:.85rem}
-.foot-in{display:flex;flex-wrap:wrap;gap:.75rem;justify-content:space-between;align-items:center}
+.foot-in{display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;align-items:center}
+.foot-brand{display:flex;align-items:center;gap:.6rem;color:var(--muted);font-weight:600}
 footer a{display:inline-block;padding:.5rem .15rem;color:var(--muted);text-decoration:none;
   transition:color .25s var(--ease)}
 footer a:hover{color:var(--primary)}
@@ -265,7 +353,8 @@ footer a:hover{color:var(--primary)}
 }
 
 @media (max-width:900px){
-  .hero-grid{grid-template-columns:1fr}
+  .hero-grid,.i2p{grid-template-columns:1fr}
+  .bar-links{display:none}
 }
 @media (max-width:640px){
   .actions{flex-direction:column;align-items:stretch}
@@ -273,7 +362,7 @@ footer a:hover{color:var(--primary)}
   .limits{padding:1.4rem 1.25rem}
 }
 </style>
-<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "SoftwareApplication", "name": "SEOSONA Flow", "applicationCategory": "BrowserApplication", "operatingSystem": "Chrome", "softwareVersion": "1.1.37", "description": "Chrome extension tự động hoá tạo ảnh và video AI trên Google Flow, ChatGPT, Gemini và Grok. Chạy theo lô, 26 loại node workflow, không cần API key trả phí.", "url": "https://seosona-flow.vercel.app/", "image": "https://seosona-flow.vercel.app/cover.jpg", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "VND"}, "author": {"@type": "Person", "name": "Hà Đình Long", "alternateName": "Long Leo", "url": "https://portfolio-long-leo.vercel.app/"}}, {"@type": "SoftwareSourceCode", "name": "SEOSONA Flow", "codeRepository": "https://github.com/LongLeo287/seosona-flow", "programmingLanguage": ["JavaScript", "Chrome Manifest V3"]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Có phải trả tiền API không?", "acceptedAnswer": {"@type": "Answer", "text": "Không. Extension không gọi API tính phí nào — nó điều khiển phiên đăng nhập sẵn có của bạn trong trình duyệt, nên chi phí đúng bằng gói bạn đang dùng."}}, {"@type": "Question", "name": "Dữ liệu của tôi có bị gửi đi đâu không?", "acceptedAnswer": {"@type": "Answer", "text": "Không. Chế độ cục bộ là mặc định: mọi cấu hình, lịch sử và hạn mức đều lưu trong máy, và tầng gọi mạng ra backend bị chặn ngay trong mã nguồn."}}, {"@type": "Question", "name": "Cài đặt có phức tạp không?", "acceptedAnswer": {"@type": "Answer", "text": "Không có bước build. Tải repo về, vào chrome://extensions, bật Developer mode, Load unpacked rồi chọn thư mục seosona-flow — thư mục con chứa manifest.json, không phải thư mục gốc."}}, {"@type": "Question", "name": "Có cần npm install không?", "acceptedAnswer": {"@type": "Answer", "text": "Không. Thư viện đã đóng gói sẵn trong repo, mã nguồn nạp thẳng vào Chrome."}}, {"@type": "Question", "name": "Giao diện tiếng Việt hay tiếng Anh?", "acceptedAnswer": {"@type": "Answer", "text": "Cả hai, đổi ngay trong panel."}}, {"@type": "Question", "name": "Nếu ChatGPT đổi giao diện thì sao?", "acceptedAnswer": {"@type": "Answer", "text": "Thao tác có thể hỏng — đó là đánh đổi của cách làm không dùng API. Bù lại có hệ thống selector override: sửa bằng cấu hình, không phải chờ bản vá."}}]}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "SoftwareApplication", "name": "SEOSONA Flow", "applicationCategory": "BrowserApplication", "operatingSystem": "Chrome", "softwareVersion": "1.1.37", "description": "Chrome extension tự động hoá tạo ảnh và video AI trên Google Flow, ChatGPT, Gemini và Grok. Chạy theo lô, 26 loại node workflow, 410 prompt dựng sẵn, không cần API key trả phí.", "url": "https://seosona-flow.vercel.app/", "image": "https://seosona-flow.vercel.app/cover.jpg", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "VND"}, "featureList": ["Chạy prompt theo lô", "Workflow 26 loại node", "Ảnh ra prompt", "Tự tải kết quả", "4 nền tảng, một chỗ", "Side panel, không popup", "410 prompt dựng sẵn", "Chạy cục bộ mặc định", "Sửa được khi trang AI đổi giao diện"], "author": {"@type": "Person", "name": "Hà Đình Long", "alternateName": "Long Leo", "url": "https://portfolio-long-leo.vercel.app/"}}, {"@type": "SoftwareSourceCode", "name": "SEOSONA Flow", "codeRepository": "https://github.com/LongLeo287/seosona-flow", "programmingLanguage": ["JavaScript", "Chrome Manifest V3"]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Có phải trả tiền API không?", "acceptedAnswer": {"@type": "Answer", "text": "Không. Extension không gọi API tính phí nào — nó điều khiển phiên đăng nhập sẵn có của bạn trong trình duyệt, nên chi phí đúng bằng gói bạn đang dùng."}}, {"@type": "Question", "name": "Dữ liệu của tôi có bị gửi đi đâu không?", "acceptedAnswer": {"@type": "Answer", "text": "Không. Chế độ cục bộ là mặc định: mọi cấu hình, lịch sử và hạn mức đều lưu trong máy, và tầng gọi mạng ra backend bị chặn ngay trong mã nguồn."}}, {"@type": "Question", "name": "Cài đặt có phức tạp không?", "acceptedAnswer": {"@type": "Answer", "text": "Không có bước build. Tải repo về, vào chrome://extensions, bật Developer mode, Load unpacked rồi chọn thư mục seosona-flow — thư mục con chứa manifest.json, không phải thư mục gốc."}}, {"@type": "Question", "name": "Có cần npm install không?", "acceptedAnswer": {"@type": "Answer", "text": "Không. Thư viện đã đóng gói sẵn trong repo, mã nguồn nạp thẳng vào Chrome."}}, {"@type": "Question", "name": "Giao diện tiếng Việt hay tiếng Anh?", "acceptedAnswer": {"@type": "Answer", "text": "Cả hai, đổi ngay trong panel."}}, {"@type": "Question", "name": "Nếu ChatGPT đổi giao diện thì sao?", "acceptedAnswer": {"@type": "Answer", "text": "Thao tác có thể hỏng — đó là đánh đổi của cách làm không dùng API. Bù lại có hệ thống selector override: sửa bằng cấu hình, không phải chờ bản vá."}}]}]}</script>
 </head>
 <body>
 <div class="progress" aria-hidden="true"></div>
@@ -282,11 +371,14 @@ footer a:hover{color:var(--primary)}
 
 <nav class="bar">
   <div class="bar-in">
-    <a class="back" href="https://portfolio-long-leo.vercel.app/#labs">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-      Portfolio Hà Đình Long
-    </a>
+    <a class="brand" href="#top"><svg class="logo" viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff7a00"/><stop offset="1" stop-color="#fcd34d"/></linearGradient></defs><rect x="1.4" y="1.4" width="29.2" height="29.2" rx="9" fill="none" stroke="url(#lg)" stroke-width="2"/><path d="M18.4 6 9.6 17.6h4.8L12.8 26l9-11.8h-5z" fill="url(#lg)"/></svg> SEOSONA Flow</a>
+    <div class="bar-links">
+      <a href="#cach-dung">Cách dùng</a>
+      <a href="#workflow">Workflow</a>
+      <a href="#thu-vien">Thư viện</a>
+      <a href="#tinh-nang">Tính năng</a>
+      <a href="#hoi-dap">Hỏi đáp</a>
+    </div>
     <a class="bar-cta" href="https://github.com/LongLeo287/seosona-flow" target="_blank" rel="noopener">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg>
       Mã nguồn
@@ -294,7 +386,7 @@ footer a:hover{color:var(--primary)}
   </div>
 </nav>
 
-<header class="hero">
+<header class="hero" id="top">
   <div class="wrap hero-grid">
     <div>
       <p class="eyebrow"><span class="dot"></span> Chrome Extension</p>
@@ -308,10 +400,10 @@ footer a:hover{color:var(--primary)}
         <a class="btn btn-ghost" href="#cach-dung">Xem cách dùng</a>
       </div>
       <div class="hero-facts">
-        <span><b>4</b> nền tảng AI</span>
-        <span><b>26</b> loại node workflow</span>
+        <span><b>26</b> loại node</span>
+        <span><b>410</b> prompt dựng sẵn</span>
+        <span><b>88</b> mẫu có ảnh</span>
         <span><b>0đ</b> phí API</span>
-        <span><b>Không</b> bước build</span>
       </div>
     </div>
 
@@ -342,7 +434,9 @@ footer a:hover{color:var(--primary)}
   </div>
 </header>
 
-<div class="marquee" aria-hidden="true"><div class="marquee-in"><span>Google Flow</span><span>ChatGPT</span><span>Gemini</span><span>Grok</span><span>Veo 3.1</span><span>Nano Banana</span><span>Imagen</span><span>Claude</span><span>Google Flow</span><span>ChatGPT</span><span>Gemini</span><span>Grok</span><span>Veo 3.1</span><span>Nano Banana</span><span>Imagen</span><span>Claude</span></div></div>
+<div class="marquee" aria-hidden="true"><div class="marquee-in"><span>Google Flow</span><span>ChatGPT</span><span>Gemini</span><span>Grok</span><span>Veo 3.1</span><span>Nano Banana</span><span>Imagen</span><span>Sora</span><span>Claude</span><span>Google Flow</span><span>ChatGPT</span><span>Gemini</span><span>Grok</span><span>Veo 3.1</span><span>Nano Banana</span><span>Imagen</span><span>Sora</span><span>Claude</span></div></div>
+
+<div class="stats"><div class="stat"><b data-to="4" data-suffix="">0</b><span>nền tảng AI điều khiển được</span></div><div class="stat"><b data-to="26" data-suffix="">0</b><span>loại node dựng workflow</span></div><div class="stat"><b data-to="410" data-suffix="">0</b><span>prompt và skill đóng gói sẵn</span></div><div class="stat"><b data-to="88" data-suffix="">0</b><span>mẫu có ảnh xem trước</span></div><div class="stat"><b data-to="0" data-suffix="đ">0đ</b><span>phí API, phí gói, phí tài khoản</span></div></div>
 
 <main>
   <section class="wrap" id="cach-dung">
@@ -351,25 +445,82 @@ footer a:hover{color:var(--primary)}
       <h2 class="rise">Không có bước cài đặt phức tạp</h2>
       <p class="rise">Không npm install, không bundler, không tài khoản SEOSONA. Tải repo về, nạp vào Chrome là chạy.</p>
     </div>
-    <div class="steps"><article class="step rise"><h3>Đăng nhập sẵn</h3><p>Mở và đăng nhập những trang bạn định dùng — Google Flow, ChatGPT, Gemini, Grok. Extension không kèm tài khoản nào, nó mượn đúng phiên đăng nhập của bạn.</p></article><article class="step rise"><h3>Dán prompt hàng loạt</h3><p>Bấm icon, side panel mở bên phải. Dán cả danh sách prompt, chọn model, tỉ lệ khung hình, số lượng. Phím tắt Alt+S mở panel, Alt+G chạy ngay.</p></article><article class="step rise"><h3>Bấm chạy rồi làm việc khác</h3><p>Extension tự gõ prompt vào tab provider, chờ kết quả, tải file về theo đúng mẫu tên bạn đặt — 1K, 2K hay 4K. Panel hiện tiến độ từng job.</p></article></div>
+    <div class="steps"><article class="step rise"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h4v18h-4M10 8l4 4-4 4M14 12H3"/></svg><h3>Đăng nhập sẵn</h3><p>Mở và đăng nhập những trang bạn định dùng — Google Flow, ChatGPT, Gemini, Grok. Extension không kèm tài khoản nào, nó mượn đúng phiên đăng nhập của bạn.</p></article><article class="step rise"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4h6v3H9zM7 5H5v16h14V5h-2M8 12h8M8 16h5"/></svg><h3>Dán prompt hàng loạt</h3><p>Bấm icon, side panel mở bên phải. Dán cả danh sách prompt, chọn model, tỉ lệ khung hình, số lượng. Alt+S mở panel, Alt+G chạy ngay.</p></article><article class="step rise"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg><h3>Bấm chạy rồi làm việc khác</h3><p>Extension tự gõ prompt vào tab provider, chờ kết quả, tải file về theo đúng mẫu tên bạn đặt — 1K, 2K hay 4K. Panel hiện tiến độ từng job.</p></article></div>
+  </section>
+
+  <section class="wrap" id="workflow">
+    <div class="head">
+      <p class="kicker rise">Workflow</p>
+      <h2 class="rise">Kéo thả dựng dây chuyền sản xuất</h2>
+      <p class="rise">Nối các bước lại thành một quy trình chạy tự động. Ảnh sinh ra đi qua cổng chất lượng, được gắn chữ, tải về đúng thư mục, rồi báo về Telegram — không cần ngồi canh.</p>
+    </div>
+    <div class="wf rise">
+      <div class="wf-scroll"><svg viewBox="0 0 900 300" role="img" aria-label="Sơ đồ workflow: Prompt và Style Anchor vào node tạo ảnh, ra cổng chất lượng và text overlay, rồi tải về và báo Telegram"><path class="wf-link" d="M180 67 C215 67 215 131 250 131" style="animation-delay:0.00s"/><path class="wf-link" d="M180 195 C215 195 215 131 250 131" style="animation-delay:0.18s"/><path class="wf-link" d="M420 131 C455 131 455 61 490 61" style="animation-delay:0.36s"/><path class="wf-link" d="M420 131 C455 131 455 201 490 201" style="animation-delay:0.54s"/><path class="wf-link" d="M660 61 C690 61 690 131 720 131" style="animation-delay:0.72s"/><path class="wf-link" d="M660 201 C690 201 690 131 720 131" style="animation-delay:0.90s"/><path class="wf-link" d="M795 158 L795 232" style="animation-delay:1.08s"/><g class="wf-g" style="animation-delay:0.15s"><rect class="wf-box" x="30" y="40" width="150" height="54" rx="11"/><text class="wf-e" x="46" y="74.0">🎨</text><text class="wf-t" x="76" y="72.0">Prompt</text><circle class="wf-port" cx="30" cy="67.0" r="3.5"/><circle class="wf-port" cx="180" cy="67.0" r="3.5"/></g><g class="wf-g" style="animation-delay:0.27s"><rect class="wf-box" x="30" y="168" width="150" height="54" rx="11"/><text class="wf-e" x="46" y="202.0">🧬</text><text class="wf-t" x="76" y="200.0">Style Anchor</text><circle class="wf-port" cx="30" cy="195.0" r="3.5"/><circle class="wf-port" cx="180" cy="195.0" r="3.5"/></g><g class="wf-g" style="animation-delay:0.39s"><rect class="wf-box" x="250" y="104" width="170" height="54" rx="11"/><text class="wf-e" x="266" y="138.0">⚡</text><text class="wf-t" x="296" y="136.0">Tạo ảnh/video</text><circle class="wf-port" cx="250" cy="131.0" r="3.5"/><circle class="wf-port" cx="420" cy="131.0" r="3.5"/></g><g class="wf-g" style="animation-delay:0.51s"><rect class="wf-box" x="490" y="34" width="170" height="54" rx="11"/><text class="wf-e" x="506" y="68.0">✅</text><text class="wf-t" x="536" y="66.0">Cổng chất lượng</text><circle class="wf-port" cx="490" cy="61.0" r="3.5"/><circle class="wf-port" cx="660" cy="61.0" r="3.5"/></g><g class="wf-g" style="animation-delay:0.51s"><rect class="wf-box" x="490" y="174" width="170" height="54" rx="11"/><text class="wf-e" x="506" y="208.0">📝</text><text class="wf-t" x="536" y="206.0">Text Overlay</text><circle class="wf-port" cx="490" cy="201.0" r="3.5"/><circle class="wf-port" cx="660" cy="201.0" r="3.5"/></g><g class="wf-g" style="animation-delay:0.63s"><rect class="wf-box" x="720" y="104" width="150" height="54" rx="11"/><text class="wf-e" x="736" y="138.0">📤</text><text class="wf-t" x="766" y="136.0">Download</text><circle class="wf-port" cx="720" cy="131.0" r="3.5"/><circle class="wf-port" cx="870" cy="131.0" r="3.5"/></g><g class="wf-g" style="animation-delay:0.75s"><rect class="wf-box" x="720" y="232" width="150" height="54" rx="11"/><text class="wf-e" x="736" y="266.0">📨</text><text class="wf-t" x="766" y="264.0">Telegram</text><circle class="wf-port" cx="720" cy="259.0" r="3.5"/><circle class="wf-port" cx="870" cy="259.0" r="3.5"/></g></svg></div>
+      <p class="wf-hint">↔ Vuốt ngang để xem hết sơ đồ</p>
+      <div class="wf-legend">
+        <span><b>Nhiều đầu vào</b> — gộp prompt và style anchor vào một node</span>
+        <span><b>Rẽ nhánh</b> — một kết quả đi hai đường xử lý khác nhau</span>
+        <span><b>@node</b> — lấy đầu ra của node trước làm biến cho node sau</span>
+      </div>
+    </div>
   </section>
 
   <section class="wrap">
     <div class="head">
-      <p class="kicker rise">Workflow</p>
-      <h2 class="rise">Kéo thả dựng dây chuyền sản xuất</h2>
-      <p class="rise">Nối các bước lại thành một quy trình chạy tự động: tạo ảnh, ghép, kiểm chất lượng, gắn chữ, tải về, báo Telegram.</p>
+      <p class="kicker rise">26 loại node</p>
+      <h2 class="rise">Đủ mảnh để ghép gần như mọi quy trình</h2>
     </div>
-    <div class="node-count rise"><b>26</b><span>loại node dùng được ngay</span></div>
-    <div class="nodes"><span class="node rise">Tạo ảnh/video</span><span class="node rise">AI Agent</span><span class="node rise">ChatGPT</span><span class="node rise">Grok</span><span class="node rise">Image</span><span class="node rise">Ghép ảnh</span><span class="node rise">Style Anchor</span><span class="node rise">Bảng thực thể</span><span class="node rise">Prompt Sequence</span><span class="node rise">Variant Expand</span><span class="node rise">Random Pick</span><span class="node rise">Loop / Batch</span><span class="node rise">Condition</span><span class="node rise">Switch</span><span class="node rise">Merge</span><span class="node rise">Cổng chất lượng</span><span class="node rise">Text</span><span class="node rise">Text Template</span><span class="node rise">Text Extract</span><span class="node rise">Text Overlay</span><span class="node rise">Text QA</span><span class="node rise">Xuất file text</span><span class="node rise">Download</span><span class="node rise">Telegram</span><span class="node rise">Wait</span><span class="node rise">Ghi chú</span></div>
+    <div class="groups"><article class="group rise"><div class="group-h"><span class="em">🎨</span><h3>Sinh nội dung</h3><span class="n">6</span></div><div class="nodes"><span class="node">Tạo ảnh/video</span><span class="node">AI Agent</span><span class="node">ChatGPT</span><span class="node">Grok</span><span class="node">Image</span><span class="node">Ghép ảnh</span></div></article><article class="group rise"><div class="group-h"><span class="em">🧬</span><h3>Giữ nhất quán</h3><span class="n">4</span></div><div class="nodes"><span class="node">Style Anchor</span><span class="node">Bảng thực thể</span><span class="node">Prompt Sequence</span><span class="node">Variant Expand</span></div></article><article class="group rise"><div class="group-h"><span class="em">🔀</span><h3>Điều khiển luồng</h3><span class="n">6</span></div><div class="nodes"><span class="node">Loop / Batch</span><span class="node">Condition</span><span class="node">Switch</span><span class="node">Merge</span><span class="node">Random Pick</span><span class="node">Cổng chất lượng</span></div></article><article class="group rise"><div class="group-h"><span class="em">📝</span><h3>Xử lý chữ</h3><span class="n">6</span></div><div class="nodes"><span class="node">Text</span><span class="node">Text Template</span><span class="node">Text Extract</span><span class="node">Text Overlay</span><span class="node">Text QA</span><span class="node">Xuất file text</span></div></article><article class="group rise"><div class="group-h"><span class="em">📤</span><h3>Đầu ra</h3><span class="n">4</span></div><div class="nodes"><span class="node">Download</span><span class="node">Telegram</span><span class="node">Wait</span><span class="node">Ghi chú</span></div></article></div>
   </section>
 
   <section class="wrap">
+    <div class="head">
+      <p class="kicker rise">Image-to-Prompt</p>
+      <h2 class="rise">Thấy tấm ảnh đẹp, lấy luôn prompt của nó</h2>
+      <p class="rise">Chuột phải một ảnh bất kỳ trên web, khoanh vùng màn hình, hoặc tải ảnh từ máy. Kết quả xuất ba dạng để dùng ngay.</p>
+    </div>
+    <div class="i2p rise">
+      <div class="i2p-src">
+        <img src="gallery/g04-480.webp" width="480" height="480" loading="lazy" decoding="async"
+             alt="Ảnh nguồn đang được phân tích thành prompt" />
+        <div class="i2p-scan"></div>
+      </div>
+      <div>
+        <div class="tabs"><span class="tab on">JSON</span><span class="tab">English</span><span class="tab">Tiếng Việt</span></div>
+        <pre class="code"><span class="k">"subject"</span>: <span class="s">"chai nước hoa thuỷ tinh, nắp vàng"</span>,
+<span class="k">"lighting"</span>: <span class="s">"studio mềm, hắt sáng từ trái"</span>,
+<span class="k">"background"</span>: <span class="s">"be trung tính, hoa mờ"</span>,
+<span class="k">"camera"</span>:  <span class="s">"85mm, khẩu f/4, chính diện"</span>,
+<span class="k">"grade"</span>:   <span class="s">"ấm, tương phản thấp"</span>,
+<span class="k">"ratio"</span>:   <span class="s">"1:1"</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap" id="thu-vien">
+    <div class="head">
+      <p class="kicker rise">Thư viện mẫu</p>
+      <h2 class="rise">88 mẫu, đây là mười hai tấm</h2>
+      <p class="rise">Ảnh thật do chính extension sinh ra, kèm sẵn trong bản tải về. Mỗi mẫu là một prompt đã chỉnh xong — đổi chủ đề rồi chạy lại là ra bộ của bạn.</p>
+    </div>
+    <div class="gal"><figure class="shot rise"><img src="gallery/g01-480.webp" srcset="gallery/g01-320.webp 320w, gallery/g01-480.webp 480w" sizes="(max-width:640px) 92vw, (max-width:1000px) 44vw, 260px" width="480" height="480" loading="lazy" decoding="async" alt="Bảng thiết kế nhân vật — 6 tư thế từ một thiết kế gốc, giữ nguyên trang phục" /><figcaption>Bảng thiết kế nhân vật<em>6 tư thế từ một thiết kế gốc, giữ nguyên trang phục</em></figcaption></figure><figure class="shot rise"><img src="gallery/g02-480.webp" srcset="gallery/g02-320.webp 320w, gallery/g02-480.webp 480w" sizes="(max-width:640px) 92vw, (max-width:1000px) 44vw, 260px" width="480" height="480" loading="lazy" decoding="async" alt="Phác thảo đến thành phẩm — Bốn bước từ nét chì tới ảnh điện ảnh" /><figcaption>Phác thảo đến thành phẩm<em>Bốn bước từ nét chì tới ảnh điện ảnh</em></figcaption></figure><figure class="shot rise"><img src="gallery/g03-480.webp" srcset="gallery/g03-320.webp 320w, gallery/g03-480.webp 480w" sizes="(max-width:640px) 92vw, (max-width:1000px) 44vw, 260px" width="480" height="480" loading="lazy" decoding="async" alt="Ba phong cách kiến trúc — Cyberpunk, Solarpunk, Art Deco cùng một khung" /><figcaption>Ba phong cách kiến trúc<em>Cyberpunk, Solarpunk, Art Deco cùng một khung</em></figcaption></figure><figure class="shot rise"><img src="gallery/g04-480.webp" srcset="gallery/g04-320.webp 320w, gallery/g04-480.webp 480w" sizes="(max-width:640px) 92vw, (max-width:1000px) 44vw, 260px" width="480" height="480" loading="lazy" decoding="async" alt="Quảng cáo nước hoa — Ảnh sản phẩm kèm bố cục chú thích" /><figcaption>Quảng cáo nước hoa<em>Ảnh sản phẩm kèm bố cục chú thích</em></figcaption></figure><figure class="shot rise"><img src="gallery/g05-480.webp" srcset="gallery/g05-320.webp 320w, gallery/g05-480.webp 480w" sizes="(max-width:640px) 92vw, (max-width:1000px) 44vw, 260px" width="480" height="480" loading="lazy" decoding="async" alt="Bản đồ ý tưởng — Sơ đồ khám phá sáng tạo phát sáng" /><figcaption>Bản đồ ý tưởng<em>Sơ đồ khám phá sáng tạo phát sáng</em></figcaption></figure><figure class="shot rise"><img src="gallery/g06-480.webp" srcset="gallery/g06-320.webp 320w, gallery/g06-480.webp 480w" sizes="(max-width:640px) 92vw, (max-width:1000px) 44vw, 260px" width="480" height="480" loading="lazy" decoding="async" alt="Trang bán hàng — Ảnh sản phẩm và các khối tính năng" /><figcaption>Trang bán hàng<em>Ảnh sản phẩm và các khối tính năng</em></figcaption></figure><figure class="shot rise"><img src="gallery/g07-480.webp" srcset="gallery/g07-320.webp 320w, gallery/g07-480.webp 480w" sizes="(max-width:640px) 92vw, (max-width:1000px) 44vw, 260px" width="480" height="480" loading="lazy" decoding="async" alt="Bộ ảnh món ăn — Chín món, cùng ánh sáng và tông màu" /><figcaption>Bộ ảnh món ăn<em>Chín món, cùng ánh sáng và tông màu</em></figcaption></figure><figure class="shot rise"><img src="gallery/g08-480.webp" srcset="gallery/g08-320.webp 320w, gallery/g08-480.webp 480w" sizes="(max-width:640px) 92vw, (max-width:1000px) 44vw, 260px" width="480" height="480" loading="lazy" decoding="async" alt="Bộ nhận diện thương hiệu — Danh thiếp, bảng màu, phông chữ" /><figcaption>Bộ nhận diện thương hiệu<em>Danh thiếp, bảng màu, phông chữ</em></figcaption></figure><figure class="shot rise"><img src="gallery/g09-480.webp" srcset="gallery/g09-320.webp 320w, gallery/g09-480.webp 480w" sizes="(max-width:640px) 92vw, (max-width:1000px) 44vw, 260px" width="480" height="480" loading="lazy" decoding="async" alt="Giao diện ứng dụng — Ba màn hình điện thoại cùng phong cách" /><figcaption>Giao diện ứng dụng<em>Ba màn hình điện thoại cùng phong cách</em></figcaption></figure><figure class="shot rise"><img src="gallery/g10-480.webp" srcset="gallery/g10-320.webp 320w, gallery/g10-480.webp 480w" sizes="(max-width:640px) 92vw, (max-width:1000px) 44vw, 260px" width="480" height="480" loading="lazy" decoding="async" alt="Ảnh Tết — Hộp quà, câu đối, đèn lồng" /><figcaption>Ảnh Tết<em>Hộp quà, câu đối, đèn lồng</em></figcaption></figure><figure class="shot rise"><img src="gallery/g11-480.webp" srcset="gallery/g11-320.webp 320w, gallery/g11-480.webp 480w" sizes="(max-width:640px) 92vw, (max-width:1000px) 44vw, 260px" width="480" height="480" loading="lazy" decoding="async" alt="Các bước làm bánh — Bốn khoảnh khắc liền mạch một quy trình" /><figcaption>Các bước làm bánh<em>Bốn khoảnh khắc liền mạch một quy trình</em></figcaption></figure><figure class="shot rise"><img src="gallery/g12-480.webp" srcset="gallery/g12-320.webp 320w, gallery/g12-480.webp 480w" sizes="(max-width:640px) 92vw, (max-width:1000px) 44vw, 260px" width="480" height="480" loading="lazy" decoding="async" alt="Lookbook thời trang — Bốn bối cảnh, cùng một người mẫu" /><figcaption>Lookbook thời trang<em>Bốn bối cảnh, cùng một người mẫu</em></figcaption></figure></div>
+  </section>
+
+  <section class="wrap">
+    <div class="head">
+      <p class="kicker rise">Kho prompt</p>
+      <h2 class="rise">410 prompt và skill đóng gói sẵn</h2>
+      <p class="rise">Nằm ngay trong extension, chia bảy nhóm và xếp hạng theo chất lượng. Hoàn toàn ngoại tuyến — không gọi mạng, không tải thêm.</p>
+    </div>
+    <div class="packs"><div class="pack rise"><span class="em">🖼️</span><span class="t">Image/Video Prompting</span><span class="c">290</span></div><div class="pack rise"><span class="em">✍️</span><span class="t">Content Creation</span><span class="c">49</span></div><div class="pack rise"><span class="em">🎬</span><span class="t">Video Prompting</span><span class="c">25</span></div><div class="pack rise"><span class="em">🤖</span><span class="t">Agent Skills / Prompt Ops</span><span class="c">18</span></div><div class="pack rise"><span class="em">📣</span><span class="t">Ad Video</span><span class="c">15</span></div><div class="pack rise"><span class="em">🔍</span><span class="t">SEO / Marketing</span><span class="c">9</span></div><div class="pack rise"><span class="em">📦</span><span class="t">Product Photo</span><span class="c">4</span></div></div>
+  </section>
+
+  <section class="wrap" id="tinh-nang">
     <div class="head">
       <p class="kicker rise">Tính năng</p>
       <h2 class="rise">Những gì nó làm thay bạn</h2>
     </div>
-    <div class="feats"><article class="feat rise"><span class="n">01</span><h3>Batch prompt</h3><p>Nhập một lúc hàng chục prompt, chạy tuần tự hoặc song song trên provider đã chọn. Có humanized delay, giới hạn đồng thời và tự thử lại khi lỗi.</p></article><article class="feat rise"><span class="n">02</span><h3>Workflow 26 loại node</h3><p>Kéo thả dựng chuỗi xử lý: tạo ảnh → ghép → kiểm chất lượng → gắn chữ → tải về → báo Telegram. Nhiều gấp gần ba lần một trình dựng workflow thông thường.</p></article><article class="feat rise"><span class="n">03</span><h3>Image-to-Prompt</h3><p>Chuột phải một ảnh bất kỳ trên web, chọn vùng màn hình, hoặc tải ảnh từ máy. Gemini hoặc ChatGPT phân tích thành prompt, xuất ba dạng JSON / English / Tiếng Việt.</p></article><article class="feat rise"><span class="n">04</span><h3>Tự tải kết quả</h3><p>Ảnh và video tự lưu qua chrome.downloads theo mẫu tên file bạn đặt, phân thư mục khớp với dự án. Không phải ngồi bấm tải từng cái.</p></article><article class="feat rise"><span class="n">05</span><h3>Bốn nền tảng, một chỗ</h3><p>Mỗi trang một adapter riêng. Extension tự tìm tab provider đang đăng nhập, hoặc mở tab mới nếu chưa có. Đổi nền tảng không phải học lại thao tác.</p></article><article class="feat rise"><span class="n">06</span><h3>Side panel, không popup</h3><p>Chạy ở khung bên phải trình duyệt nên tab chính vẫn dùng bình thường. Popup thì bấm ra ngoài là mất, panel thì không.</p></article></div>
+    <div class="feats"><article class="feat rise"><span class="n">01</span><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 3 8l9 5 9-5-9-5ZM3 13l9 5 9-5M3 17.5l9 5 9-5"/></svg><h3>Chạy prompt theo lô</h3><p>Nhập một lúc hàng chục prompt, chạy tuần tự hoặc song song. Có humanized delay, giới hạn đồng thời và tự thử lại khi lỗi.</p></article><article class="feat rise"><span class="n">02</span><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 5h4v4H6zM14 15h4v4h-4zM14 5h4v4h-4zM10 7h4M8 9v6h6M6 15h4v4H6z"/></svg><h3>Workflow 26 loại node</h3><p>Kéo thả dựng chuỗi xử lý: tạo ảnh, ghép, kiểm chất lượng, gắn chữ, tải về, báo Telegram — chạy một mạch không cần ngồi canh.</p></article><article class="feat rise"><span class="n">03</span><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h10v9H3zM6 11l2.5-3 2 2.5 1.5-2 1 2.5M17 8h4M19 6v4M15 17h6m-3-2v4"/></svg><h3>Ảnh ra prompt</h3><p>Chuột phải ảnh bất kỳ trên web, chọn vùng màn hình, hoặc tải ảnh từ máy. Gemini hoặc ChatGPT phân tích thành prompt, xuất ba dạng JSON / English / Tiếng Việt.</p></article><article class="feat rise"><span class="n">04</span><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11m0 0 4-4m-4 4-4-4M4 18v2h16v-2"/></svg><h3>Tự tải kết quả</h3><p>Ảnh và video tự lưu theo mẫu tên file bạn đặt, phân thư mục khớp với dự án. Không phải ngồi bấm tải từng cái.</p></article><article class="feat rise"><span class="n">05</span><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/></svg><h3>4 nền tảng, một chỗ</h3><p>Mỗi trang một adapter riêng. Extension tự tìm tab provider đang đăng nhập, hoặc mở tab mới nếu chưa có.</p></article><article class="feat rise"><span class="n">06</span><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h18v16H3zM15 4v16M17.5 9h2M17.5 12h2M17.5 15h2"/></svg><h3>Side panel, không popup</h3><p>Chạy ở khung bên phải trình duyệt nên tab chính vẫn dùng bình thường. Popup thì bấm ra ngoài là mất, panel thì không.</p></article><article class="feat rise"><span class="n">07</span><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7 12 3l8 4v10l-8 4-8-4zM4 7l8 4 8-4M12 11v10"/></svg><h3>410 prompt dựng sẵn</h3><p>Kho prompt và skill đóng gói ngay trong extension, chia bảy nhóm và xếp hạng. Hoàn toàn ngoại tuyến, không gọi mạng.</p></article><article class="feat rise"><span class="n">08</span><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6zM9 12l2 2 4-4"/></svg><h3>Chạy cục bộ mặc định</h3><p>Cấu hình, lịch sử và hạn mức đều nằm trong máy. Tầng gọi mạng ra backend bị chặn ngay trong mã nguồn, không phải bằng thiết lập.</p></article><article class="feat rise"><span class="n">09</span><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3a5 5 0 0 0-4.6 7L3 17.4 6.6 21l7.4-7.4A5 5 0 0 0 21 9l-3 3-3-3 3-3a5 5 0 0 0-3-3Z"/></svg><h3>Sửa được khi trang AI đổi giao diện</h3><p>Có hệ thống selector override: chỉnh bằng cấu hình chứ không phải chờ bản vá, và bộ chẩn đoán tự báo selector nào hỏng.</p></article></div>
   </section>
 
   <section class="wrap">
@@ -378,10 +529,10 @@ footer a:hover{color:var(--primary)}
       <h2 class="rise">Ba giới hạn bạn nên biết</h2>
       <p class="rise">Cách làm nào cũng có đánh đổi. Đây là những điểm yếu thật của SEOSONA Flow — biết trước thì đỡ mất thời gian.</p>
     </div>
-    <div class="limits rise"><div class="limit"><h3>Bám vào giao diện thật của bốn trang AI</h3><p>Đây không phải API — extension điều khiển DOM. Khi Google hay OpenAI đổi giao diện, thao tác có thể hỏng. Có sẵn hệ thống selector override để sửa mà không cần đụng mã nguồn.</p></div><div class="limit"><h3>Image-to-Prompt chỉ chạy với Gemini và ChatGPT</h3><p>Hai trang này là những nơi duy nhất tải ảnh lên được qua content script. Grok và Claude không dùng cho tính năng đó.</p></div><div class="limit"><h3>Tiêu quota của chính tài khoản bạn</h3><p>Extension không tặng credit. Mỗi prompt trừ vào gói bạn đang trả cho Google, OpenAI hay xAI — đúng như khi bạn tự gõ tay.</p></div></div>
+    <div class="limits rise"><div class="limit"><h3>Bám vào giao diện thật của bốn trang AI</h3><p>Đây không phải API — extension điều khiển DOM. Khi Google hay OpenAI đổi giao diện, thao tác có thể hỏng. Có sẵn selector override để sửa mà không cần đụng mã nguồn.</p></div><div class="limit"><h3>Image-to-Prompt chỉ chạy với Gemini và ChatGPT</h3><p>Hai trang này là những nơi duy nhất tải ảnh lên được qua content script. Grok và Claude không dùng cho tính năng đó.</p></div><div class="limit"><h3>Tiêu quota của chính tài khoản bạn</h3><p>Extension không tặng credit. Mỗi prompt trừ vào gói bạn đang trả cho Google, OpenAI hay xAI — đúng như khi bạn tự gõ tay.</p></div></div>
   </section>
 
-  <section class="wrap">
+  <section class="wrap" id="hoi-dap">
     <div class="head">
       <p class="kicker rise">Hỏi đáp</p>
       <h2 class="rise">Câu hỏi thường gặp</h2>
@@ -394,13 +545,14 @@ footer a:hover{color:var(--primary)}
     <p class="rise">Không có bản trả phí, không có giới hạn gói, không có tài khoản nào để đăng ký. Toàn bộ nằm trên GitHub.</p>
     <div class="actions rise">
       <a class="btn btn-primary" href="https://github.com/LongLeo287/seosona-flow" target="_blank" rel="noopener">Xem trên GitHub ↗</a>
-      <a class="btn btn-ghost" href="https://portfolio-long-leo.vercel.app/#labs">Các dự án khác</a>
+      <a class="btn btn-ghost" href="https://portfolio-long-leo.vercel.app/#labs">Các dự án khác của Long Leo</a>
     </div>
   </section>
 </main>
 
 <footer>
   <div class="wrap foot-in">
+    <span class="foot-brand"><svg class="logo" viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff7a00"/><stop offset="1" stop-color="#fcd34d"/></linearGradient></defs><rect x="1.4" y="1.4" width="29.2" height="29.2" rx="9" fill="none" stroke="url(#lg)" stroke-width="2"/><path d="M18.4 6 9.6 17.6h4.8L12.8 26l9-11.8h-5z" fill="url(#lg)"/></svg> SEOSONA Flow</span>
     <span>© 2026 Hà Đình Long — Long Leo</span>
     <span><a href="https://portfolio-long-leo.vercel.app/">Portfolio</a> · <a href="https://github.com/LongLeo287/seosona-flow" target="_blank" rel="noopener">GitHub</a></span>
   </div>
@@ -414,7 +566,26 @@ document.querySelectorAll('.rise').forEach(function(el,i){
   el.style.transitionDelay=(Math.min(i%6,5)*55)+'ms'; io.observe(el);
 });
 
-// Vệt sáng theo con trỏ: một vòng rAF dùng chung, chỉ ghi biến CSS.
+// Số liệu đếm lên khi cuộn tới. Chạy theo thời gian thật chứ không theo số
+// khung hình, nên máy yếu vẫn dừng đúng lúc.
+var cio=new IntersectionObserver(function(es){
+  es.forEach(function(e){
+    if(!e.isIntersecting) return;
+    cio.unobserve(e.target);
+    var el=e.target, to=+el.dataset.to, suf=el.dataset.suffix||'', t0=0, dur=1100;
+    if(!to){ el.textContent='0'+suf; return; }
+    requestAnimationFrame(function step(t){
+      if(!t0) t0=t;
+      var p=Math.min((t-t0)/dur,1), e2=1-Math.pow(1-p,3);
+      el.textContent=Math.round(to*e2)+suf;
+      if(p<1) requestAnimationFrame(step);
+    });
+  });
+},{threshold:.5});
+document.querySelectorAll('[data-to]').forEach(function(el){ cio.observe(el); });
+
+// Vệt sáng theo con trỏ: một vòng rAF dùng chung, chỉ ghi biến CSS rồi để
+// trình duyệt tự vẽ — không đụng vào layout.
 var pend=null,fr=0;
 if(matchMedia('(pointer:fine)').matches){
   document.querySelectorAll('.feat').forEach(function(c){
