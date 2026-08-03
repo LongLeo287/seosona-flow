@@ -81,9 +81,13 @@
     <div class="drop" id="drop">
       <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4m0 0l-4 4m4-4l4 4"/><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
       <div><b>Kéo thả</b> hoặc bấm để chọn ảnh / video</div>
-      <div class="hint">PNG · JPG · WEBP · MP4 · WEBM — xử lý & tải ngay</div>
+      <div class="hint">PNG · JPG · WEBP · MP4 · WEBM — chọn được NHIỀU file, xử lý lần lượt</div>
     </div>
-    <input type="file" id="file" accept="image/*,video/*" hidden>
+    <input type="file" id="file" accept="image/*,video/*" multiple hidden>
+
+    <!-- Hàng chờ: xử lý lần lượt, mỗi dòng có trạng thái và nút tải riêng. Trước đây mỗi
+         lần chỉ một file — làm loạt 20 ảnh phải kéo 20 lần. -->
+    <div id="queue" style="display:none;margin-top:14px"></div>
 
     <div class="ws" id="ws">
       <div class="vidmsg" id="videoMsg"></div>

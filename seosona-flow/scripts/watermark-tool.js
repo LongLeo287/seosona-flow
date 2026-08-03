@@ -387,15 +387,21 @@
       S.videoEl = v; v.muted = true; v.playsInline = true; v.preload = 'auto'; v.controls = true;
       v.className = 'stagevid'; v.style.maxHeight = '64vh'; v.style.maxWidth = '100%';
       v.src = URL.createObjectURL(f);
-      v.onloadeddata = function () { stage.innerHTML = ''; stage.appendChild(v); setStatus('busy', 'Đang xử lý video…'); processVideo(); };
-      v.onerror = function () { setStatus('err', 'Không đọc được video'); };
+      v.onloadeddata = function () {
+        stage.innerHTML = ''; stage.appendChild(v); setStatus('busy', 'Đang xử lý video…');
+        processVideo().then(qFinish).catch(function (e) { setStatus('err', 'Lỗi: ' + ((e && e.message) || e)); qFinish(); });
+      };
+      v.onerror = function () { setStatus('err', 'Không đọc được video'); qFinish(); };
       return;
     }
     S.isVideo = false;
     if (!/^image\//.test(f.type)) { setStatus('err', 'Chỉ hỗ trợ ảnh hoặc video'); return; }
     // Manual: khoanh vùng trước, KHÔNG auto-xử lý. Nguồn khác: xử lý ngay theo preset.
+    // Chế độ khoanh tay: KHÔNG tự chạy file kế — người dùng còn phải kéo chọn vùng đã.
     if (S.source === 'manual') { S.manualBox = null; buildSelector(f).catch(function (e) { setStatus('err', 'Lỗi: ' + ((e && e.message) || e)); }); return; }
-    processImage(f).catch(function (e) { setStatus('err', 'Lỗi: ' + ((e && e.message) || e)); });
+    // qFinish: ghi kết quả vào hàng chờ rồi chạy file kế. Gọi ở CẢ hai nhánh thành công và
+    // lỗi — bỏ nhánh lỗi là hàng chờ đứng im ở file hỏng, mấy file sau không bao giờ chạy.
+    processImage(f).then(qFinish).catch(function (e) { setStatus('err', 'Lỗi: ' + ((e && e.message) || e)); qFinish(); });
   }
 
   // ── Actions ──────────────────────────────────────────────────────────────
@@ -433,8 +439,74 @@
 
   // ── Drag & drop ──────────────────────────────────────────────────────────
   drop.addEventListener('click', function () { fileInput.click(); });
-  fileInput.addEventListener('change', function () { onFile(fileInput.files && fileInput.files[0]); });
+  // ── Hàng chờ nhiều file ───────────────────────────────────────────────────
+  // Bọc quanh onFile sẵn có chứ KHÔNG viết lại: engine và phần hiển thị chi tiết giữ nguyên,
+  // chỉ thêm lớp xếp hàng. Xử lý TUẦN TỰ — video ngốn RAM, chạy song song là treo tab.
+  var Q = { items: [], at: -1, busy: false };
+  var qEl = $('queue');
+
+  function qFmt(n) { return n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.round(n / 1024) + ' KB'; }
+  function qRender() {
+    if (!qEl) return;
+    qEl.style.display = Q.items.length > 1 ? 'block' : 'none';
+    qEl.innerHTML = Q.items.map(function (it, i) {
+      var badge = it.state === 'done'
+        ? '<span class="pill ok" style="font-size:11px;padding:3px 9px">● Đã xoá</span>'
+        : it.state === 'keep'
+          ? '<span class="pill none" style="font-size:11px;padding:3px 9px">● Giữ bản gốc</span>'
+          : it.state === 'err'
+            ? '<span class="pill err" style="font-size:11px;padding:3px 9px">● Lỗi</span>'
+            : i === Q.at ? '<span class="pill busy" style="font-size:11px;padding:3px 9px">● Đang xử lý</span>'
+              : '<span class="pill none" style="font-size:11px;padding:3px 9px">● Chờ</span>';
+      var meta = qFmt(it.file.size) + (it.outSize ? ' (×' + (it.outSize / it.file.size).toFixed(1) + ')' : '')
+        + (it.frames ? ' · ' + it.frames + ' khung' : '') + (it.note ? ' · ' + it.note : '');
+      return '<div style="display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px">'
+        + '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + it.file.name + '</div>'
+        + '<div style="font-size:11.5px;color:var(--mut);margin-top:3px;font-family:ui-monospace,monospace">' + meta + '</div></div>'
+        + badge
+        + (it.blob ? '<button class="btn" data-q="' + i + '" style="padding:6px 12px;font-size:12.5px">Tải về</button>' : '')
+        + '</div>';
+    }).join('');
+  }
+  qEl && qEl.addEventListener('click', function (e) {
+    var i = e.target && e.target.dataset && e.target.dataset.q;
+    if (i == null) return;
+    var it = Q.items[+i]; if (!it || !it.blob) return;
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(it.blob);
+    a.download = (it.file.name || 'file').replace(/\.[^.]+$/, '') + '_nowatermark.' + it.ext;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 8000);
+  });
+
+  /** Ghi kết quả của file đang xử lý rồi chạy tiếp file sau. */
+  function qFinish() {
+    var it = Q.items[Q.at];
+    if (it) {
+      it.blob = S.blob; it.ext = S.ext;
+      it.outSize = S.blob && S.blob.size;
+      it.frames = S.stats && S.stats.frames;
+      it.state = !S.blob ? 'err' : (S.blob === it.file ? 'keep' : 'done');
+      if (S.stats && S.stats.mark) it.note = 'dấu ' + S.stats.mark;
+    }
+    Q.busy = false; qRender(); qNext();
+  }
+  function qNext() {
+    if (Q.busy) return;
+    var i = Q.items.findIndex(function (x) { return !x.state && x.state !== 'err'; });
+    if (i < 0) return;
+    Q.at = i; Q.busy = true; qRender();
+    onFile(Q.items[i].file);
+  }
+  function qAdd(list) {
+    var arr = Array.prototype.slice.call(list || []);
+    if (!arr.length) return;
+    arr.forEach(function (f) { Q.items.push({ file: f, state: null, blob: null }); });
+    qRender(); qNext();
+  }
+
+  fileInput.addEventListener('change', function () { qAdd(fileInput.files); });
   ['dragenter', 'dragover'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add('drag'); }); });
   ['dragleave', 'drop'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove('drag'); }); });
-  drop.addEventListener('drop', function (e) { onFile(e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]); });
+  drop.addEventListener('drop', function (e) { qAdd(e.dataTransfer && e.dataTransfer.files); });
 })();
