@@ -1,0 +1,484 @@
+/* SEOSONA Flow — node catalog nhúng (browser). schema.js đọc self.WF_NODE_CATALOG khi require() không có. */
+(function(root){ root.WF_NODE_CATALOG = {
+ "generate": {
+  "name": "Tạo ảnh/video",
+  "color": "generate",
+  "inputs": 1,
+  "outputs": 1,
+  "portType": "image",
+  "ports_in": [
+   {
+    "name": "image_ref",
+    "type": "image",
+    "required": false,
+    "multiple": true,
+    "visibleWhen": null,
+    "acceptFromNodeTypes": null
+   },
+   {
+    "name": "text",
+    "type": "text",
+    "required": false,
+    "multiple": true,
+    "visibleWhen": null,
+    "acceptFromNodeTypes": null
+   },
+   {
+    "name": "frame_1",
+    "type": "frame",
+    "required": false,
+    "multiple": false,
+    "visibleWhen": "isVideoFrames",
+    "acceptFromNodeTypes": null
+   },
+   {
+    "name": "frame_2",
+    "type": "frame",
+    "required": false,
+    "multiple": false,
+    "visibleWhen": "isVideoFrames",
+    "acceptFromNodeTypes": null
+   },
+   {
+    "name": "video_ref",
+    "type": "video",
+    "required": false,
+    "multiple": false,
+    "visibleWhen": "isVideoIngredient",
+    "acceptFromNodeTypes": [
+     "generate"
+    ]
+   }
+  ],
+  "ports_out": [
+   {
+    "name": "media",
+    "type": "image",
+    "dynamicType": "media_type",
+    "visibleWhen": null
+   },
+   {
+    "name": "frame",
+    "type": "image",
+    "dynamicType": null,
+    "visibleWhen": "isVideo"
+   }
+  ],
+  "default_data_keys": null
+ },
+ "download": {
+  "name": "Download",
+  "color": "download",
+  "inputs": 1,
+  "outputs": 0,
+  "portType": "any",
+  "ports_in": [
+   {
+    "name": "media_in",
+    "type": "any",
+    "required": true,
+    "multiple": true,
+    "visibleWhen": null,
+    "acceptFromNodeTypes": null
+   }
+  ],
+  "ports_out": [],
+  "default_data_keys": null
+ },
+ "delay": {
+  "name": "Wait",
+  "color": "delay",
+  "inputs": 1,
+  "outputs": 1,
+  "portType": "any",
+  "ports_in": [
+   {
+    "name": "any_in",
+    "type": "any",
+    "required": false,
+    "multiple": false,
+    "visibleWhen": null,
+    "acceptFromNodeTypes": null
+   }
+  ],
+  "ports_out": [
+   {
+    "name": "any_out",
+    "type": "any",
+    "dynamicType": null,
+    "visibleWhen": null
+   }
+  ],
+  "default_data_keys": null
+ },
+ "image": {
+  "name": "Image",
+  "color": "image",
+  "inputs": 0,
+  "outputs": 1,
+  "portType": "image",
+  "ports_in": [],
+  "ports_out": [
+   {
+    "name": "media",
+    "type": "image",
+    "dynamicType": null,
+    "visibleWhen": null
+   }
+  ],
+  "default_data_keys": null
+ },
+ "text": {
+  "name": "Text",
+  "color": "text",
+  "inputs": 0,
+  "outputs": 1,
+  "portType": "text",
+  "ports_in": [],
+  "ports_out": [
+   {
+    "name": "text",
+    "type": "text",
+    "dynamicType": null,
+    "visibleWhen": null
+   }
+  ],
+  "default_data_keys": null
+ },
+ "text_template": {
+  "name": "Text Template",
+  "color": "text",
+  "inputs": 1,
+  "outputs": 1,
+  "portType": "text",
+  "ports_in": [
+   {
+    "name": "text",
+    "type": "text",
+    "required": false,
+    "multiple": true,
+    "visibleWhen": null,
+    "acceptFromNodeTypes": null
+   }
+  ],
+  "ports_out": [
+   {
+    "name": "text",
+    "type": "text",
+    "dynamicType": null,
+    "visibleWhen": null
+   }
+  ],
+  "default_data_keys": null
+ },
+ "text_extract": {
+  "name": "Text Extract",
+  "color": "text",
+  "inputs": 1,
+  "outputs": 1,
+  "portType": "text",
+  "ports_in": [
+   {
+    "name": "text",
+    "type": "text",
+    "required": true,
+    "multiple": false,
+    "visibleWhen": null,
+    "acceptFromNodeTypes": null
+   }
+  ],
+  "ports_out": [
+   {
+    "name": "text",
+    "type": "text",
+    "dynamicType": null,
+    "visibleWhen": null
+   }
+  ],
+  "default_data_keys": null
+ },
+ "random_pick": {
+  "name": "Random Pick",
+  "color": "text",
+  "inputs": 1,
+  "outputs": 1,
+  "portType": "text",
+  "ports_in": [
+   {
+    "name": "text",
+    "type": "text",
+    "required": false,
+    "multiple": true,
+    "visibleWhen": null,
+    "acceptFromNodeTypes": null
+   }
+  ],
+  "ports_out": [
+   {
+    "name": "text",
+    "type": "text",
+    "dynamicType": null,
+    "visibleWhen": null
+   }
+  ],
+  "default_data_keys": null
+ },
+ "prompt_sequence": {
+  "name": "Prompt Sequence",
+  "color": "text",
+  "inputs": 1,
+  "outputs": 1,
+  "portType": "text",
+  "ports_in": [
+   {
+    "name": "text",
+    "type": "text",
+    "required": false,
+    "multiple": true,
+    "visibleWhen": null,
+    "acceptFromNodeTypes": null
+   }
+  ],
+  "ports_out": [
+   {
+    "name": "text",
+    "type": "text",
+    "dynamicType": null,
+    "visibleWhen": null
+   }
+  ],
+  "default_data_keys": null
+ },
+ "variant_expand": {
+  "name": "Variant Expand",
+  "color": "text",
+  "inputs": 1,
+  "outputs": 1,
+  "portType": "text",
+  "ports_in": [
+   {
+    "name": "text",
+    "type": "text",
+    "required": false,
+    "multiple": true,
+    "visibleWhen": null,
+    "acceptFromNodeTypes": null
+   }
+  ],
+  "ports_out": [
+   {
+    "name": "text",
+    "type": "text",
+    "dynamicType": null,
+    "visibleWhen": null
+   }
+  ],
+  "default_data_keys": null
+ },
+ "telegram": {
+  "name": "Telegram",
+  "color": "telegram",
+  "inputs": 1,
+  "outputs": 1,
+  "portType": "any",
+  "ports_in": [
+   {
+    "name": "media_in",
+    "type": "any",
+    "required": true,
+    "multiple": true,
+    "visibleWhen": null,
+    "acceptFromNodeTypes": null
+   }
+  ],
+  "ports_out": [
+   {
+    "name": "pass",
+    "type": "any",
+    "dynamicType": null,
+    "visibleWhen": null
+   }
+  ],
+  "default_data_keys": null
+ },
+ "chatgpt": {
+  "name": "ChatGPT",
+  "color": "chatgpt",
+  "inputs": 1,
+  "outputs": 1,
+  "portType": "image",
+  "ports_in": [
+   {
+    "name": "image_ref",
+    "type": "image",
+    "required": false,
+    "multiple": true,
+    "visibleWhen": null,
+    "acceptFromNodeTypes": null
+   },
+   {
+    "name": "text",
+    "type": "text",
+    "required": false,
+    "multiple": true,
+    "visibleWhen": null,
+    "acceptFromNodeTypes": null
+   }
+  ],
+  "ports_out": [
+   {
+    "name": "media",
+    "type": "image",
+    "dynamicType": null,
+    "visibleWhen": null
+   }
+  ],
+  "default_data_keys": null
+ },
+ "grok": {
+  "name": "Grok",
+  "color": "grok",
+  "inputs": 1,
+  "outputs": 1,
+  "portType": "image",
+  "ports_in": [
+   {
+    "name": "image_ref",
+    "type": "image",
+    "required": false,
+    "multiple": true,
+    "visibleWhen": null,
+    "acceptFromNodeTypes": null
+   },
+   {
+    "name": "text",
+    "type": "text",
+    "required": false,
+    "multiple": true,
+    "visibleWhen": null,
+    "acceptFromNodeTypes": null
+   }
+  ],
+  "ports_out": [
+   {
+    "name": "media",
+    "type": "image",
+    "dynamicType": "grok_mode",
+    "visibleWhen": null
+   },
+   {
+    "name": "frame",
+    "type": "image",
+    "dynamicType": null,
+    "visibleWhen": "isGrokVideo"
+   }
+  ],
+  "default_data_keys": null
+ },
+ "prompt": {
+  "name": "AI Agent",
+  "color": "prompt",
+  "inputs": 1,
+  "outputs": 1,
+  "portType": "text",
+  "ports_in": [
+   {
+    "name": "text",
+    "type": "text",
+    "required": false,
+    "multiple": true,
+    "visibleWhen": null,
+    "acceptFromNodeTypes": null
+   },
+   {
+    "name": "image_ref",
+    "type": "image",
+    "required": false,
+    "multiple": true,
+    "visibleWhen": "enhance",
+    "acceptFromNodeTypes": null
+   }
+  ],
+  "ports_out": [
+   {
+    "name": "text",
+    "type": "text",
+    "dynamicType": null,
+    "visibleWhen": null
+   }
+  ],
+  "default_data_keys": null
+ },
+ "note": {
+  "name": "Ghi chú",
+  "color": "note",
+  "inputs": 0,
+  "outputs": 0,
+  "portType": "none",
+  "ports_in": [],
+  "ports_out": [],
+  "default_data_keys": null
+ },
+ "transform": {
+  "name": "Transform",
+  "color": "transform",
+  "inputs": 1,
+  "outputs": 1,
+  "portType": "image",
+  "ports_in": [],
+  "ports_out": [],
+  "default_data_keys": null
+ },
+ "condition": {
+  "name": "Condition",
+  "color": "condition",
+  "inputs": 1,
+  "outputs": 2,
+  "portType": "any",
+  "ports_in": [
+   {
+    "name": "in",
+    "type": "any",
+    "required": false,
+    "multiple": true,
+    "visibleWhen": null,
+    "acceptFromNodeTypes": null
+   }
+  ],
+  "ports_out": [
+   {
+    "name": "true",
+    "type": "any",
+    "dynamicType": null,
+    "visibleWhen": null
+   },
+   {
+    "name": "false",
+    "type": "any",
+    "dynamicType": null,
+    "visibleWhen": null
+   }
+  ],
+  "default_data_keys": null
+ },
+ "merge": {
+  "name": "Merge",
+  "color": "merge",
+  "inputs": 2,
+  "outputs": 1,
+  "portType": "any",
+  "ports_in": [],
+  "ports_out": [],
+  "default_data_keys": null
+ },
+ "output": {
+  "name": "Output",
+  "color": "output",
+  "inputs": 1,
+  "outputs": 0,
+  "portType": "any",
+  "ports_in": [],
+  "ports_out": [],
+  "default_data_keys": null
+ }
+}; })(typeof self!=="undefined"?self:this);

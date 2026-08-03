@@ -1,0 +1,34 @@
+{
+  "$schema": "~/.seosona/1_CONFIG/schemas/seosona.project.schema.json",
+  "schema": "seosona.project.v1",
+  "name": "seosona-workflow",
+  "displayName": "SEOSONA Workflow",
+  "domain": "software-project",
+  "stack": [
+    "browser-extension",
+    "javascript"
+  ],
+  "osRoot": "~/.seosona",
+  "memoryNamespace": "seosona-workflow",
+  "autonomy": {
+    "defaultLevel": "project_edit",
+    "requiresExplicitApproval": [
+      "os_core_patch",
+      "git_publish",
+      "deploy"
+    ]
+  },
+  "commands": {
+    "doctor": "npm --prefix seosona-flow run seosona:doctor"
+  },
+  "workflows": [
+    "project-doctor",
+    "portable-rule-sync",
+    "project-memory-logging"
+  ],
+  "ruleFiles": [
+    "AGENTS.md",
+    ".clauderules",
+    ".cursorrules"
+  ]
+}

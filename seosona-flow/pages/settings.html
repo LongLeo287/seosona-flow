@@ -1,0 +1,2036 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title data-i18n="settings.title">Settings</title>
+  <link rel="stylesheet" href="../styles/settings.css" />
+  <link rel="stylesheet" href="../src/shared/custom-dialog.css" />
+</head>
+<body>
+  <div class="settings-app">
+    <header class="settings-header">
+      <div class="settings-brand">
+        <div class="settings-logo seosonaflow-header-logo">
+          <img src="../icons/icon-32.png" alt="SEOSONA Flow" width="20" height="20">
+        </div>
+        <div>
+          <h1 data-i18n="settings.title">Settings</h1>
+          <div class="settings-subtitle-row">
+            <span class="settings-subtitle" id="settingsSubtitle">SEOSONA Flow</span>
+            <button type="button" id="aboutUpdateBtn" class="s-profile-change-pass" title="Check for updates / Open chrome://extensions/" aria-label="Update">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <button class="settings-close-btn" id="settingsCloseBtn" data-i18n-title="common.close" title="Close">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </header>
+
+    <!-- Tab Navigation -->
+    <div class="settings-tabs">
+      <button class="settings-tab active" data-tab="settings">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        <span data-i18n="settings.tabSettings">Settings</span>
+      </button>
+      <button class="settings-tab" data-tab="ai">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+          <circle cx="8.5" cy="16" r="1.1" fill="currentColor" stroke="none"></circle>
+          <circle cx="15.5" cy="16" r="1.1" fill="currentColor" stroke="none"></circle>
+          <path d="M12 7V4M9 4h6"></path>
+        </svg>
+        <span data-i18n="settings.tabAi">AI Agent / Bot</span>
+        <svg class="settings-tab-crown" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5ZM19 19C19 19.6 18.6 20 18 20H6C5.4 20 5 19.6 5 19V18H19V19Z"></path></svg>
+      </button>
+      <button class="settings-tab" data-tab="storage">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 7V4a2 2 0 0 1 2-2h8.5L20 7.5V20a2 2 0 0 1-2 2H4"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <path d="M2 15h10"></path>
+          <path d="M9 18l3-3-3-3"></path>
+        </svg>
+        <span data-i18n="settings.tabStorage">Storage</span>
+      </button>
+      <button class="settings-tab" data-tab="info">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+        <span data-i18n="settings.tabAbout">About</span>
+      </button>
+    </div>
+
+    <!-- Tab: Settings -->
+    <div class="settings-body tab-content active" id="settingsContainer" data-tab-content="settings">
+      <!-- Sub-menu: General / AI Platform / Advanced (style giống sub-tab AI Agent) -->
+      <div class="set-subtabs">
+        <button class="set-subtab active" data-setgroup="general">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span data-i18n="settings.subGeneral">General</span>
+        </button>
+        <button class="set-subtab" data-setgroup="ai">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="8.5" cy="16" r="1.1" fill="currentColor" stroke="none"></circle><circle cx="15.5" cy="16" r="1.1" fill="currentColor" stroke="none"></circle><path d="M12 7V4M9 4h6"></path></svg>
+          <span data-i18n="settings.subAiPlatform">AI Platform</span>
+        </button>
+        <button class="set-subtab" data-setgroup="advanced">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          <span data-i18n="settings.subAdvanced">Advanced</span>
+        </button>
+      </div>
+      <!-- ════════════════════════════════════════════════════════════ -->
+      <!-- Provider mặc định (single field — global, dùng cho 3 provider) -->
+      <!-- ════════════════════════════════════════════════════════════ -->
+      <section class="s-section">
+        <div class="s-section-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
+            <path d="M2 12h20"></path>
+          </svg>
+          <span data-i18n="settings.providerDefault">Default provider</span>
+        </div>
+        <div class="s-field">
+          <label data-i18n="settings.defaultProvider">Default provider for new items</label>
+          <div class="s-select-group">
+            <select id="defaultProvider">
+              <option value="flow" data-i18n="gen.providerFlow">Google Flow</option>
+              <option value="chatgpt" data-i18n="gen.providerChatGPT">ChatGPT</option>
+              <option value="grok" data-i18n="gen.providerGrok">Grok</option>
+            </select>
+            <svg class="s-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </div>
+          <p class="s-field-hint" data-i18n="settings.defaultProviderHint" style="font-size:11px;color:var(--muted-foreground);margin-top:4px;">Provider preselected when opening GenTab / TaskModal</p>
+        </div>
+      </section>
+
+      <!-- ════════════════════════════════════════════════════════════ -->
+      <!-- Google Flow Settings -->
+      <!-- ════════════════════════════════════════════════════════════ -->
+      <section class="s-section">
+        <div class="s-section-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path>
+          </svg>
+          <span data-i18n="gen.providerFlow">Google Flow</span>
+        </div>
+        <div class="s-grid">
+          <div class="s-field">
+            <label data-i18n="settings.defaultType">Default type</label>
+            <div class="s-select-group">
+              <select id="defaultGenType">
+                <option value="Image" data-i18n="settings.image">Image</option>
+                <option value="Video" data-i18n="settings.video">Video</option>
+              </select>
+              <svg class="s-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+          </div>
+          <div class="s-field">
+            <label data-i18n="settings.defaultImageRatio">Default image ratio</label>
+            <div class="s-select-group">
+              <select id="defaultImageRatio">
+                <option value="16:9">▬ 16:9</option>
+                <option value="4:3">▭ 4:3</option>
+                <option value="1:1">□ 1:1</option>
+                <option value="3:4">▯ 3:4</option>
+                <option value="9:16">▮ 9:16</option>
+              </select>
+              <svg class="s-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+          </div>
+          <div class="s-field">
+            <label data-i18n="settings.defaultVideoRatio">Default video ratio</label>
+            <div class="s-select-group">
+              <select id="defaultVideoRatio">
+                <option value="16:9">▬ 16:9</option>
+                <option value="9:16">▮ 9:16</option>
+              </select>
+              <svg class="s-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+          </div>
+        </div>
+        <div class="s-grid">
+          <div class="s-field">
+            <label data-i18n="settings.defaultImageModel">Default image model</label>
+            <div class="s-select-group">
+              <select id="defaultImageModel">
+                <option value="Nano Banana Pro">Nano Banana Pro</option>
+                <option value="Nano Banana 2">Nano Banana 2</option>
+              </select>
+              <svg class="s-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+          </div>
+          <div class="s-field">
+            <label data-i18n="settings.defaultVideoModel">Default video model</label>
+            <div class="s-select-group">
+              <select id="defaultVideoModel">
+                <!-- Populated by settings-page.js from ModelRegistry -->
+              </select>
+              <svg class="s-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+          </div>
+          <div class="s-field" id="defaultVideoDurationRow">
+            <label data-i18n="settings.defaultVideoDuration">Default video duration</label>
+            <div class="s-select-group">
+              <select id="defaultVideoDuration">
+                <!-- Populated by settings-page.js from PCM video_durations -->
+              </select>
+              <svg class="s-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+          </div>
+          <!-- Flow Voice Selector — đặt cạnh Default video duration -->
+          <div class="s-field" id="flowVoicesRow">
+            <label data-i18n="settings.voicesTitle">Flow Voices</label>
+            <p class="s-field-hint" data-i18n="settings.voicesHint" style="font-size:11px;color:var(--muted-foreground);margin:4px 0 8px 0;">Scan voices available in Flow (including your custom voices). Run once.</p>
+            <button class="s-btn s-btn-primary s-btn-sm" id="resyncFlowVoicesBtn" type="button">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;vertical-align:middle;">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <polyline points="1 20 1 14 7 14"></polyline>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+              </svg>
+              <span data-i18n="settings.resyncVoices">Resync Voices</span>
+              <span id="resyncVoicesAdminBadge" style="display:none;margin-left:6px;padding:1px 6px;border-radius:8px;background:rgba(245,158,11,0.15);color:#92400e;font-size:10px;">
+                + Upload to server
+              </span>
+            </button>
+            <div id="voicesSyncStatus" class="s-field-hint" style="margin-top:8px;font-size:11px;color:var(--muted-foreground);"></div>
+            <div id="voicesSyncAdminHint" class="s-field-hint" style="display:none;margin-top:6px;font-size:11px;color:#92400e;background:rgba(245,158,11,0.08);padding:6px 8px;border-radius:6px;">
+              <span data-i18n="settings.voicesAdminHint">You are admin — scrape result will be uploaded to server as promotion candidates for the base catalog.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════════════════════════════════════════════════════════════ -->
+      <!-- ChatGPT Provider Settings (riêng biệt với Provider mặc định) -->
+      <!-- ════════════════════════════════════════════════════════════ -->
+      <section class="s-section" id="settingsChatGPTSection">
+        <div class="s-section-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+          <span data-i18n="gen.providerChatGPT">ChatGPT</span>
+        </div>
+        <div class="s-field">
+          <label data-i18n="settings.chatgptDefaultRatio">Default ChatGPT ratio</label>
+          <div class="s-select-group">
+            <select id="chatgptDefaultRatio">
+              <option value="story">▮ Story (9:16)</option>
+              <option value="portrait">▯ Portrait (3:4)</option>
+              <option value="square">□ Square (1:1)</option>
+              <option value="landscape">▭ Landscape (4:3)</option>
+              <option value="widescreen">▬ Widescreen (16:9)</option>
+            </select>
+            <svg class="s-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </div>
+        </div>
+        <div class="s-field">
+          <label data-i18n="settings.chatgptDefaultModel">Default ChatGPT model</label>
+          <div class="s-select-group">
+            <select id="chatgptDefaultModel">
+              <option value="Instant">Instant</option>
+              <option value="Thinking">Thinking</option>
+            </select>
+            <svg class="s-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </div>
+        </div>
+        <div class="s-checkbox-row">
+          <input type="checkbox" id="chatgptAutoClose" />
+          <label for="chatgptAutoClose" data-i18n="settings.chatgptAutoClose">Auto-close ChatGPT tab after generation</label>
+        </div>
+        <div class="s-checkbox-row">
+          <input type="checkbox" id="chatgptDeleteAfterGen" />
+          <label for="chatgptDeleteAfterGen" data-i18n="settings.chatgptDeleteAfterGen">Delete message after successful generation</label>
+        </div>
+        <details class="s-details" style="margin-top:8px;">
+          <summary data-i18n="settings.chatgptAdvanced" style="font-size:12px;color:var(--muted-foreground);cursor:pointer;">Advanced</summary>
+          <div class="s-field" style="margin-top:8px;">
+            <label data-i18n="settings.chatgptFallbackPrefix">Fallback prompt prefix (when image mode fails)</label>
+            <textarea id="chatgptFallbackPrefix" rows="2" style="width:100%;font-family:inherit;font-size:12px;padding:6px;background:var(--input-background);color:var(--foreground);border:1px solid var(--border);border-radius:4px;">Generate an image of: </textarea>
+          </div>
+        </details>
+      </section>
+
+      <!-- G-8.4: Grok Integration -->
+      <section class="s-section" id="settingsGrokSection">
+        <div class="s-section-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 3l1.9 5.8H20l-5 3.7 1.9 5.8L12 14.7 7.1 18.3 9 12.5 4 8.8h6.1L12 3z"></path>
+          </svg>
+          <span data-i18n="grok.providerName">Grok</span>
+        </div>
+        <div class="s-grid">
+          <div class="s-field">
+            <label data-i18n="settings.grokDefaultMode">Default mode</label>
+            <div class="s-select-group">
+              <select id="grokDefaultMode">
+                <option value="image" data-i18n="grok.modeImage">Image</option>
+                <option value="video" data-i18n="grok.modeVideo">Video</option>
+              </select>
+              <svg class="s-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+          </div>
+          <div class="s-field">
+            <label data-i18n="settings.grokDefaultRatio">Default ratio</label>
+            <div class="s-select-group">
+              <select id="grokDefaultRatio">
+                <option value="story" data-i18n="grok.ratioStory">▮ 9:16 (Portrait)</option>
+                <option value="portrait" data-i18n="grok.ratioPortrait">▯ 2:3</option>
+                <option value="square" data-i18n="grok.ratioSquare">□ 1:1</option>
+                <option value="landscape" data-i18n="grok.ratioLandscape">▭ 3:2</option>
+                <option value="widescreen" data-i18n="grok.ratioWidescreen">▬ 16:9 (Landscape)</option>
+              </select>
+              <svg class="s-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+          </div>
+        </div>
+        <div class="s-grid grok-video-only" id="grokVideoFieldsRow">
+          <div class="s-field" id="grokDurationRow">
+            <label data-i18n="settings.grokDefaultDuration">Video duration</label>
+            <div class="s-select-group">
+              <select id="grokDefaultDuration">
+                <option value="6s" data-i18n="grok.videoDuration6s">6 seconds</option>
+                <option value="10s" data-i18n="grok.videoDuration10s">10 seconds</option>
+              </select>
+              <svg class="s-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+          </div>
+          <div class="s-field" id="grokResolutionRow">
+            <label data-i18n="settings.grokDefaultResolution">Video resolution</label>
+            <div class="s-select-group">
+              <select id="grokDefaultResolution">
+                <option value="480p" data-i18n="grok.videoResolution480p">480p</option>
+                <option value="720p" data-i18n="grok.videoResolution720p">720p</option>
+              </select>
+              <svg class="s-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+          </div>
+        </div>
+        <!-- Image quality (Grok update 2026-04) — chỉ hiện khi mode=image -->
+        <div class="s-grid grok-image-only" id="grokImageFieldsRow">
+          <div class="s-field" id="grokImageQualityRow">
+            <label data-i18n="settings.grokDefaultImageQuality">Image quality</label>
+            <div class="s-select-group">
+              <select id="grokDefaultImageQuality">
+                <option value="speed" data-i18n="grok.imageQualitySpeed">Speed</option>
+                <option value="quality" data-i18n="grok.imageQualityQuality">Quality</option>
+              </select>
+              <svg class="s-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+          </div>
+        </div>
+        <div class="s-checkbox-row">
+          <input type="checkbox" id="grokAutoClose" />
+          <label for="grokAutoClose" data-i18n="grok.autoClose">Auto-close Grok tab after generation</label>
+        </div>
+      </section>
+
+      <!-- Auto Download -->
+      <section class="s-section">
+        <div class="s-section-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span data-i18n="settings.autoDownload">Auto download</span>
+        </div>
+
+        <!-- Download Guide Box -->
+        <div class="s-dl-guide">
+          <div class="s-dl-guide-header">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+            <span data-i18n="settings.setupBeforeUse">Setup before use</span>
+          </div>
+          <p class="s-dl-guide-text" data-i18n="settings.downloadGuideText">Disable <strong>"Ask where to save each file before downloading"</strong> in Chrome settings so files download automatically without asking for a location.</p>
+          <button class="s-btn s-btn-secondary s-btn-sm" id="openChromeDownloadSettings">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+            <span data-i18n="settings.openChromeDownloadSettings">Open Chrome Download Settings</span>
+          </button>
+        </div>
+
+        <div class="s-checkbox-row">
+          <input type="checkbox" id="autoDownloadToggle" />
+          <label for="autoDownloadToggle" data-i18n="settings.autoDownloadAfterCreate">Auto download images/videos after creation</label>
+        </div>
+        <div class="s-checkbox-row">
+          <input type="checkbox" id="autoWmVideoToggle" />
+          <label for="autoWmVideoToggle" data-i18n="settings.autoRemoveVideoWatermark">Tự động xoá watermark video Flow khi tải về (encode lại, chậm hơn)</label>
+        </div>
+        <div class="s-checkbox-row">
+          <input type="checkbox" id="scrubMetaToggle" />
+          <label for="scrubMetaToggle" data-i18n="settings.scrubMetadata">Dọn metadata riêng tư khi tải về (GPS, thiết bị, tên, prompt)</label>
+        </div>
+        <div class="s-checkbox-row">
+          <input type="checkbox" id="autoRetryToggle" />
+          <label for="autoRetryToggle" data-i18n="settings.autoRetryOnFail">Tự động thử lại khi tạo lỗi (workflow)</label>
+        </div>
+        <div class="s-field">
+          <label data-i18n="settings.folderName">Folder name</label>
+          <input type="text" id="downloadFolder" value="seosonaflow_output" placeholder="seosonaflow_output" />
+        </div>
+        <div class="s-field">
+          <label data-i18n="settings.projectName">Project name</label>
+          <input type="text" id="fileNameProject" data-i18n-placeholder="E.g.: CuteCats" placeholder="VD: CuteCats" />
+        </div>
+        <div class="s-field">
+          <label data-i18n="settings.fileNameTemplate">File name template</label>
+          <input type="text" id="fileNameTemplate" value="[Date]_[Project]_[Prompt]_[Index]" placeholder="[Date]_[Project]_[Prompt]_[Index]" />
+          <span class="s-hint" data-i18n="settings.fileNameTemplateHint">Supported variables: [Date], [Time], [Project], [Prompt], [Index]</span>
+        </div>
+        <div class="s-field">
+          <label data-i18n="settings.imageResolution">Image resolution</label>
+          <div class="s-select-group">
+            <select id="downloadResolution">
+              <option value="1k">1K</option>
+              <option value="2k">2K (Pro)</option>
+              <option value="4k">4K (Ultra)</option>
+            </select>
+            <svg class="s-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </div>
+        </div>
+        <div class="s-field">
+          <label data-i18n="settings.videoResolution">Video resolution</label>
+          <div class="s-select-group">
+            <select id="videoDownloadResolution">
+              <option value="720p">720p</option>
+              <option value="1080p">1080p</option>
+              <option value="4k">4K (Ultra)</option>
+            </select>
+            <svg class="s-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </div>
+        </div>
+      </section>
+
+      <!-- UI Settings -->
+      <section class="s-section">
+        <div class="s-section-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+          <span data-i18n="settings.ui">Interface</span>
+        </div>
+        <div class="s-grid">
+          <div class="s-field">
+            <label data-i18n="settings.theme">Theme</label>
+            <div class="s-select-group">
+              <select id="themeSelect">
+                <option value="dark" data-i18n="settings.themeDark">Dark (Default)</option>
+                <option value="light" data-i18n="settings.themeLight">Light</option>
+                <option value="system" data-i18n="settings.themeSystem">Follow system</option>
+              </select>
+              <svg class="s-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+          </div>
+          <div class="s-field">
+            <label data-i18n="settings.language">Language</label>
+            <div class="s-select-group">
+              <select id="languageSelect">
+                <option value="vi">Tiếng Việt</option>
+                <option value="en">English</option>
+              </select>
+              <svg class="s-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Notifications -->
+      <section class="s-section">
+        <div class="s-section-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+          <span data-i18n="settings.notifications">Notifications</span>
+        </div>
+        <div class="s-checkbox-row">
+          <input type="checkbox" id="notifyOnComplete" checked />
+          <label for="notifyOnComplete" data-i18n="settings.notifyOnComplete">Notify on completion (prompt, task, workflow)</label>
+        </div>
+        <div class="s-checkbox-row">
+          <input type="checkbox" id="notifySound" />
+          <label for="notifySound" data-i18n="settings.notifySound">Play notification sound</label>
+        </div>
+        <div class="s-checkbox-row" id="notifyTelegramRow" style="display: none;">
+          <input type="checkbox" id="notifyTelegram" />
+          <label for="notifyTelegram" data-i18n="settings.notifyTelegram">Notify via Telegram on completion</label>
+          <small class="s-hint" id="notifyTelegramHint" style="display: none; margin-left: 24px; color: #888;">Requires linking Telegram in Settings</small>
+        </div>
+      </section>
+
+      <!-- Data Management (chỉ hiện cho anonymous users) -->
+      <section class="s-section" id="dataManagementSection">
+        <div class="s-section-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+          </svg>
+          <span data-i18n="settings.dataManagement">Data Management</span>
+        </div>
+        <p class="s-help-text" style="margin-bottom: 8px;" data-i18n="settings.dataManagementDesc">Backup and restore local settings. Log in to sync automatically.</p>
+        <div class="s-row">
+          <button class="s-btn s-btn-secondary" id="exportDataBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span data-i18n="settings.exportSettings">Export Settings</span>
+          </button>
+          <button class="s-btn s-btn-secondary" id="importDataBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            <span data-i18n="settings.importSettings">Import Settings</span>
+          </button>
+          <input type="file" id="importFileInput" accept=".json" style="display: none;" />
+        </div>
+
+        <!-- Full backup (2026-07-09): sao lưu/khôi phục TOÀN BỘ dữ liệu local (workflows, prompts,
+             tasks, history, projects, cài đặt + cấu trúc album). Không có server → đây là cách duy
+             nhất để backup trước khi gỡ/đổi máy. -->
+        <p class="s-help-text" style="margin:12px 0 6px;" data-i18n="settings.fullBackupDesc">Sao lưu toàn bộ dữ liệu local (workflows, prompts, tasks, lịch sử, cấu trúc album) ra 1 file JSON — dùng để backup hoặc chuyển máy. (Ảnh gốc trong album không kèm theo do dung lượng lớn.)</p>
+        <div class="s-row">
+          <button class="s-btn s-btn-secondary" id="fullBackupBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-8H4v8"></path><path d="M4 3h16v6H4z"></path><path d="M12 13v4"></path></svg>
+            <span data-i18n="settings.fullBackup">Sao lưu toàn bộ</span>
+          </button>
+          <button class="s-btn s-btn-secondary" id="fullRestoreBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path></svg>
+            <span data-i18n="settings.fullRestore">Khôi phục</span>
+          </button>
+          <input type="file" id="fullRestoreInput" accept=".json" style="display: none;" />
+        </div>
+
+        <!-- Storage usage meter (2026-07-09): hiện dung lượng đang dùng + hạn ngạch trình duyệt. -->
+        <div id="storageMeterWrap" style="margin:14px 0 6px;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;">
+            <span class="s-help-text" style="margin:0;" data-i18n="settings.storageUsage">Dung lượng đang dùng</span>
+            <span id="storageMeterText" class="s-help-text" style="margin:0;font-variant-numeric:tabular-nums;">…</span>
+          </div>
+          <div style="height:8px;border-radius:999px;background:var(--muted,rgba(255,255,255,0.08));overflow:hidden;">
+            <div id="storageMeterBar" style="height:100%;width:0%;border-radius:999px;background:var(--primary,#3d6ff5);transition:width .3s ease;"></div>
+          </div>
+          <div id="storageMeterBreakdown" class="s-help-text" style="margin:6px 0 0;font-size:11px;opacity:.75;"></div>
+        </div>
+        <button class="s-btn s-btn-secondary" id="freeSpaceBtn" style="margin-bottom:8px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg>
+          <span data-i18n="settings.freeUpSpace">Giải phóng dung lượng</span>
+        </button>
+
+        <button class="s-btn s-btn-secondary" id="clearCacheBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+          <span data-i18n="settings.clearCache">Clear cache</span>
+        </button>
+      </section>
+      <!-- Execution + Anti-ban + Automation (gộp vào tab Settings → sub-group 'advanced') -->
+      <!-- General Settings -->
+      <section class="s-section">
+        <div class="s-section-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          <span data-i18n="settings.generalSettings">Execution</span>
+        </div>
+        <div class="s-grid">
+          <div class="s-field">
+            <div class="s-label-with-info">
+              <label data-i18n="settings.inputTimeout">Input timeout</label>
+              <span class="s-info-icon" data-i18n-title="settings.inputTimeoutTitle" data-tooltip="Operation speed on Flow. Increase if errors occur" tabindex="0">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              </span>
+            </div>
+            <div class="s-input-group">
+              <input type="number" id="inputTimeout" value="1200" min="100" max="60000" step="100" />
+              <span class="s-suffix">ms (100-60000)</span>
+            </div>
+          </div>
+          <!-- Phase 2c: delayBetweenPrompts moved to server (system-settings/execution) -->
+          <div class="s-field">
+            <label data-i18n="settings.blobMaxAgeDays" data-i18n-title="settings.blobMaxAgeDaysTitle">Album image blob storage</label>
+            <div class="s-select-group">
+              <select id="blobMaxAgeDays">
+                <option value="1" data-i18n="settings.day1">1 day</option>
+                <option value="3" data-i18n="settings.days3">3 days</option>
+                <option value="7" selected data-i18n="settings.days7">7 days</option>
+                <option value="14" data-i18n="settings.days14">14 days</option>
+                <option value="30" data-i18n="settings.days30">30 days</option>
+              </select>
+              <svg class="s-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pipeline Queue -->
+      <section class="s-section">
+        <div class="s-section-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="8" y1="6" x2="21" y2="6"></line>
+            <line x1="8" y1="12" x2="21" y2="12"></line>
+            <line x1="8" y1="18" x2="21" y2="18"></line>
+            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+          </svg>
+          <span data-i18n="settings.pipelineQueue">Pipeline Queue</span>
+        </div>
+        <p class="s-section-desc" data-i18n="settings.pipelineQueueDesc">Run multiple tasks simultaneously</p>
+        <div class="s-toggle-row">
+          <label class="s-toggle">
+            <input type="checkbox" id="queueEnabled" />
+            <span class="s-toggle-track"><span class="s-toggle-thumb"></span></span>
+            <span data-i18n="settings.enablePipelineQueue">Enable Pipeline Queue</span>
+          </label>
+        </div>
+        <!-- Phase 2c: Queue params (batchSize, maxMonitor, restMin/Max) moved to server -->
+        <!-- autoReloadEnabled/Threshold REMOVED 2026-07-26 — promoted to system_settings (Chunk Mode admin-only) -->
+      </section>
+
+      <!-- Phase 2c: Workflow Executor section moved to server (system-settings/execution) -->
+
+      <!-- Chống Ban -->
+      <section class="s-section">
+        <div class="s-section-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+          <span data-i18n="settings.antiBan">Anti-Ban</span>
+        </div>
+        <div class="s-grid">
+          <div class="s-field">
+            <label data-i18n="settings.randomDelay">Random delay (seconds)</label>
+            <div class="s-input-group" style="gap: 4px;">
+              <input type="number" id="randomDelayMin" value="3" min="0" max="60" step="1" style="width: 50px;" />
+              <span class="s-suffix">&mdash;</span>
+              <input type="number" id="randomDelayMax" value="10" min="1" max="120" step="1" style="width: 50px;" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Automation Mode -->
+      <section class="s-section">
+        <div class="s-section-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+          </svg>
+          <span data-i18n="settings.automationMode">Automation Mode</span>
+        </div>
+        <div class="s-toggle-row">
+          <label class="s-toggle">
+            <input type="checkbox" id="humanizedMode" />
+            <span class="s-toggle-track"><span class="s-toggle-thumb"></span></span>
+            <span data-i18n="settings.humanizedMode">Humanized mode</span>
+          </label>
+          <span class="s-hint" data-i18n="settings.humanizedModeHint">Type characters naturally with random delays between actions</span>
+        </div>
+        <div class="s-field" style="margin-top: 10px;">
+          <label data-i18n="settings.typingSpeed">Typing speed</label>
+          <div class="s-range-group">
+            <input type="range" id="humanizedSpeed" min="0.2" max="2" step="0.1" value="0.5" />
+            <span id="humanizedSpeedLabel">0.5x</span>
+          </div>
+          <span class="s-hint" data-i18n="settings.typingSpeedHint">0.5x = slow (more natural), 2.0x = fast</span>
+        </div>
+      </section>
+
+      <!-- Phase 2c: FAR (Flow Auto Recovery) section moved to server (system-settings/execution) -->
+
+      <!-- Siết bảo mật (opt-in). Registry hiện phủ 100% action nên bật được mà không
+           chặn nhầm chức năng; vẫn để TẮT mặc định vì đây là đổi hành vi runtime —
+           người dùng tự bật và tắt lại ngay được nếu có gì đó không chạy. -->
+      <section class="s-section" id="securityHardeningSection">
+        <div class="s-section-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+          <span data-i18n="settings.securityHardening">Siết bảo mật</span>
+        </div>
+        <p class="s-help-text" style="margin-bottom:8px;" data-i18n="settings.securityHardeningDesc">Mặc định tiện ích chỉ GHI NHẬN các lệnh nội bộ lạ. Bật mục dưới để CHẶN luôn chúng (mặc-định-từ-chối). An toàn hơn, nhưng nếu có chức năng nào đột nhiên không chạy thì tắt lại là hết.</p>
+        <div class="s-checkbox-row">
+          <input type="checkbox" id="securityEnforceToggle" />
+          <label for="securityEnforceToggle" data-i18n="settings.securityEnforce">Chặn lệnh nội bộ không nằm trong danh sách cho phép</label>
+        </div>
+        <p class="s-help-text" id="securityEnforceState" style="margin:6px 0 0;font-size:11px;opacity:.75;"></p>
+      </section>
+    </div>
+
+    <!-- Tab: Telegram Bot -->
+    <!-- Tab: AI / Bot — gộp MCP + Telegram, MCP ưu tiên (sub-tab active mặc định) -->
+    <div class="settings-body tab-content" id="aiContainer" data-tab-content="ai">
+      <div class="ai-subtabs">
+        <button class="ai-subtab active" data-subtab="mcp">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+            <circle cx="8.5" cy="16" r="1.1" fill="currentColor" stroke="none"></circle>
+            <circle cx="15.5" cy="16" r="1.1" fill="currentColor" stroke="none"></circle>
+            <path d="M12 7V4M9 4h6"></path>
+          </svg>
+          <span data-i18n="settings.subtabMcp">AI / MCP</span>
+        </button>
+        <button class="ai-subtab" data-subtab="telegram">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+          </svg>
+          <span data-i18n="settings.subtabTelegram">Telegram</span>
+        </button>
+      </div>
+    <div class="ai-subtab-pane" id="telegramContainer" data-subtab-content="telegram">
+      <!-- Promo Banner -->
+      <div class="telegram-promo-banner" id="telegramPromoBanner">
+        <div class="telegram-promo-icon">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+          </svg>
+        </div>
+        <div class="telegram-promo-content">
+          <h3 class="telegram-promo-title" data-i18n="settings.telegramPromoTitle">Telegram Bot</h3>
+          <p class="telegram-promo-desc" data-i18n="settings.telegramLinkDesc">Link your Telegram account to control the extension remotely via bot.</p>
+          <ul class="telegram-promo-features">
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> <span data-i18n="settings.telegramFeature1">Generate images/videos via Telegram</span></li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> <span data-i18n="settings.telegramFeature2">Run workflows remotely</span></li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> <span data-i18n="settings.telegramFeature3">Get notifications when completed</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Telegram Section -->
+      <section class="s-section" id="telegramSection">
+        <div class="s-section-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+          </svg>
+          <span data-i18n="settings.linkAccount">Link Account</span>
+          <span class="s-section-badge" id="telegramStatusBadge" data-i18n="settings.notLinked">Not linked</span>
+        </div>
+
+        <!-- Trạng thái chưa liên kết -->
+        <div id="telegramNotLinked">
+          <!-- Bot Options Container -->
+          <div class="telegram-bot-options" id="telegramBotOptions">
+            <!-- Option 1: Bot chung (default) -->
+            <div class="telegram-bot-option telegram-bot-option--selected" id="telegramOptionShared" data-bot-type="shared">
+              <div class="telegram-bot-option-radio">
+                <svg class="telegram-bot-option-check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <div class="telegram-bot-option-icon telegram-bot-option-icon--shared">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+                </svg>
+              </div>
+              <div class="telegram-bot-option-content">
+                <div class="telegram-bot-option-title" data-i18n="settings.telegramBotShared">Shared bot</div>
+                <a id="telegramSharedBotLink" href="#" target="_blank" class="telegram-bot-option-link" onclick="event.stopPropagation();">--</a>
+              </div>
+            </div>
+
+            <!-- Option 2: Bot riêng (Pro) -->
+            <div class="telegram-bot-option" id="telegramOptionCustom" data-bot-type="custom">
+              <div class="telegram-bot-option-radio">
+                <svg class="telegram-bot-option-check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <div class="telegram-bot-option-icon telegram-bot-option-icon--custom">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+              </div>
+              <div class="telegram-bot-option-content">
+                <div class="telegram-bot-option-title">
+                  <span data-i18n="settings.telegramBotCustom">Custom bot</span>
+                  <span class="s-pro-badge">Premium</span>
+                </div>
+                <span class="telegram-bot-option-desc" data-i18n="settings.telegramBotCustomDesc">Use your own Telegram bot</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Custom Bot Setup (hidden by default) -->
+          <div id="telegramCustomBotSetup" class="hidden" style="margin-top: 12px; margin-bottom: 12px;">
+            <div class="telegram-custom-bot-card">
+              <div class="s-field" style="margin-bottom: 8px;">
+                <label>Bot Token</label>
+                <div class="s-input-group">
+                  <input type="text" id="telegramCustomBotToken" placeholder="123456789:ABCdefGHIjklMNOpqrsTUVwxyz" />
+                </div>
+              </div>
+              <div class="telegram-bot-instructions">
+                <p class="s-hint" style="margin-bottom: 6px;"><strong>How to create your own bot:</strong></p>
+                <ol class="s-hint" style="margin: 0; padding-left: 18px; line-height: 1.6;">
+                  <li>Open Telegram, find <strong>@BotFather</strong></li>
+                  <li>Send the command <code>/newbot</code></li>
+                  <li>Name the bot (e.g. "SEOSONA Flow Bot")</li>
+                  <li>Set a username (e.g. "my_seosonaflow_bot")</li>
+                  <li>Copy the token and paste it into the field above</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+
+          <button class="s-btn s-btn-primary s-btn-sm" id="telegramLinkBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+            </svg>
+            <span data-i18n="settings.linkTelegram">Link Telegram</span>
+          </button>
+        </div>
+
+        <!-- OTP code hiển thị -->
+        <div id="telegramOtpDisplay" class="hidden">
+          <div class="telegram-otp-card">
+            <p class="s-info-note" style="margin-bottom: 8px;">Send this OTP code to the bot <strong id="telegramBotName">@seosonaflow_bot</strong>:</p>
+            <div class="telegram-otp-box">
+              <span id="telegramOtpCode" class="telegram-otp-code">------</span>
+              <button class="s-btn s-btn-secondary s-btn-sm" id="telegramOtpCopyBtn" title="Copy">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+              </button>
+              <a id="telegramBotLink" href="https://t.me/seosonaflow_bot" target="_blank" class="s-btn s-btn-primary s-btn-sm" style="margin-left: 4px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+                Open Bot
+              </a>
+            </div>
+            <div class="telegram-otp-timer">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span id="telegramOtpCountdown">5:00 left</span>
+            </div>
+            <p class="s-hint" style="margin-top: 8px;">Send: <code>/link <span id="telegramOtpCodeSmall">------</span></code></p>
+          </div>
+          <button class="s-btn s-btn-secondary s-btn-sm" id="telegramOtpCancelBtn" style="margin-top: 8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+            Hủy
+          </button>
+        </div>
+
+        <!-- Trạng thái đã liên kết -->
+        <div id="telegramLinked" class="hidden">
+          <div class="telegram-linked-card">
+            <div class="telegram-linked-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+            </div>
+            <div class="telegram-linked-info">
+              <div class="telegram-linked-row">
+                <span class="telegram-linked-label">Telegram:</span>
+                <span class="telegram-linked-value" id="telegramUsername">--</span>
+              </div>
+              <div class="telegram-linked-row">
+                <span class="telegram-linked-label">Bot:</span>
+                <span class="telegram-linked-value" id="telegramLinkedBot">@seosonaflow_bot</span>
+              </div>
+              <div class="telegram-linked-row" id="telegramBotTypeRow">
+                <span class="telegram-linked-label" data-i18n="settings.telegramBotType">Type</span>:
+                <span class="telegram-linked-value" id="telegramBotType" data-i18n="settings.telegramBotShared">Shared bot</span>
+              </div>
+            </div>
+          </div>
+          <!-- Notification toggle khi đã link -->
+          <div class="s-toggle-row" style="margin-top: 12px;">
+            <label class="s-toggle">
+              <input type="checkbox" id="notifyTelegramInTab" />
+              <span class="s-toggle-track">
+                <span class="s-toggle-thumb"></span>
+              </span>
+              <span data-i18n="settings.notifyTelegram">Notify via Telegram on completion</span>
+            </label>
+          </div>
+
+          <!-- Telegram Settings Section (chỉ hiện khi đã link) -->
+          <div id="telegramSettingsSection" style="margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border);">
+
+            <!-- Provider Settings -->
+            <div class="s-section-header" style="margin-bottom: 12px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
+                <path d="M2 12h20"></path>
+              </svg>
+              <span data-i18n="settings.telegramProviderSettings">Provider Settings</span>
+            </div>
+
+            <!-- Default Provider -->
+            <div class="s-field" style="margin-bottom: 12px;">
+              <label data-i18n="settings.telegramDefaultProvider">Default Provider</label>
+              <div class="s-select-group">
+                <select id="telegramDefaultProvider">
+                  <option value="flow" data-i18n="gen.providerFlow">Google Flow</option>
+                  <option value="chatgpt" data-i18n="gen.providerChatGPT">ChatGPT</option>
+                  <option value="grok" data-i18n="gen.providerGrok">Grok</option>
+                </select>
+                <svg class="s-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
+              <span class="s-hint" data-i18n="settings.telegramDefaultProviderHint">Used when sending /image or /video</span>
+            </div>
+
+            <!-- Provider-specific settings (collapsible) -->
+            <div class="telegram-provider-settings">
+
+              <!-- Flow Settings -->
+              <details class="telegram-provider-group" open>
+                <summary>
+                  <span class="telegram-provider-icon flow">F</span>
+                  <span data-i18n="gen.providerFlow">Google Flow</span>
+                </summary>
+                <div class="telegram-provider-content">
+                  <div class="s-grid">
+                    <div class="s-field">
+                      <label data-i18n="settings.telegramFlowRatio">Aspect Ratio</label>
+                      <div class="s-select-group">
+                        <select id="telegramFlowRatio">
+                          <option value="16:9">▬ 16:9</option>
+                          <option value="9:16">▮ 9:16</option>
+                          <option value="1:1">□ 1:1</option>
+                          <option value="4:3">▭ 4:3</option>
+                          <option value="3:4">▯ 3:4</option>
+                        </select>
+                        <svg class="s-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                      </div>
+                    </div>
+                    <div class="s-field">
+                      <label data-i18n="settings.telegramFlowModel">Model</label>
+                      <div class="s-select-group">
+                        <select id="telegramFlowModel">
+                          <option value="Nano Banana Pro">🍌 Nano Banana Pro</option>
+                          <option value="Nano Banana 2">🍌 Nano Banana 2</option>
+                        </select>
+                        <svg class="s-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+              <!-- ChatGPT Settings -->
+              <details class="telegram-provider-group">
+                <summary>
+                  <span class="telegram-provider-icon chatgpt">C</span>
+                  <span data-i18n="gen.providerChatGPT">ChatGPT</span>
+                </summary>
+                <div class="telegram-provider-content">
+                  <div class="s-field">
+                    <label data-i18n="settings.telegramChatgptRatio">Aspect Ratio</label>
+                    <div class="s-select-group">
+                      <select id="telegramChatgptRatio">
+                        <option value="square">□ 1:1 (Square)</option>
+                        <option value="landscape">▭ 4:3 (Landscape)</option>
+                        <option value="widescreen">▬ 16:9 (Widescreen)</option>
+                        <option value="portrait">▯ 3:4 (Portrait)</option>
+                        <option value="story">▮ 9:16 (Story)</option>
+                      </select>
+                      <svg class="s-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+              <!-- Grok Settings -->
+              <details class="telegram-provider-group">
+                <summary>
+                  <span class="telegram-provider-icon grok">G</span>
+                  <span data-i18n="gen.providerGrok">Grok</span>
+                </summary>
+                <div class="telegram-provider-content">
+                  <div class="s-grid">
+                    <div class="s-field">
+                      <label data-i18n="settings.telegramGrokMode">Mode</label>
+                      <div class="s-select-group">
+                        <select id="telegramGrokMode">
+                          <option value="image" data-i18n="grok.modeImage">Image</option>
+                          <option value="video" data-i18n="grok.modeVideo">Video</option>
+                        </select>
+                        <svg class="s-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                      </div>
+                    </div>
+                    <div class="s-field">
+                      <label data-i18n="settings.telegramGrokRatio">Aspect Ratio</label>
+                      <div class="s-select-group">
+                        <select id="telegramGrokRatio">
+                          <option value="widescreen">▬ 16:9 (Landscape)</option>
+                          <option value="landscape">▭ 3:2 (Landscape)</option>
+                          <option value="square">□ 1:1</option>
+                          <option value="portrait">▯ 2:3 (Portrait)</option>
+                          <option value="story">▮ 9:16 (Portrait)</option>
+                        </select>
+                        <svg class="s-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Video-only settings -->
+                  <div class="s-grid telegram-grok-video-only" id="telegramGrokVideoFields">
+                    <div class="s-field">
+                      <label data-i18n="settings.telegramGrokDuration">Video Duration</label>
+                      <div class="s-select-group">
+                        <select id="telegramGrokDuration">
+                          <option value="6s" data-i18n="grok.videoDuration6s">6 seconds</option>
+                          <option value="10s" data-i18n="grok.videoDuration10s">10 seconds</option>
+                        </select>
+                        <svg class="s-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                      </div>
+                    </div>
+                    <div class="s-field">
+                      <label data-i18n="settings.telegramGrokResolution">Resolution</label>
+                      <div class="s-select-group">
+                        <select id="telegramGrokResolution">
+                          <option value="480p">480p</option>
+                          <option value="720p">720p</option>
+                        </select>
+                        <svg class="s-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Image-only settings -->
+                  <div class="s-field telegram-grok-image-only" id="telegramGrokImageFields">
+                    <label data-i18n="settings.telegramGrokImageQuality">Image Quality</label>
+                    <div class="s-select-group">
+                      <select id="telegramGrokImageQuality">
+                        <option value="speed" data-i18n="grok.imageQualitySpeed">Speed</option>
+                        <option value="quality" data-i18n="grok.imageQualityQuality">Quality</option>
+                      </select>
+                      <svg class="s-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                  </div>
+                </div>
+              </details>
+
+            </div>
+
+            <!-- Download Settings -->
+            <div class="s-section-header" style="margin-top: 16px; margin-bottom: 12px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              <span data-i18n="settings.telegramDownloadSettings">Download Settings</span>
+            </div>
+            <!-- Auto download toggle -->
+            <div class="s-toggle-row" style="margin-bottom: 12px;">
+              <label class="s-toggle">
+                <input type="checkbox" id="telegramAutoDownload" checked />
+                <span class="s-toggle-track">
+                  <span class="s-toggle-thumb"></span>
+                </span>
+                <span data-i18n="settings.telegramAutoDownload">Auto-download when running from Telegram</span>
+              </label>
+            </div>
+            <!-- Download folder input -->
+            <div class="s-field" style="margin-bottom: 12px;">
+              <label for="telegramDownloadFolder" data-i18n="settings.telegramDownloadFolder">Download folder</label>
+              <div class="s-input-group">
+                <input type="text" id="telegramDownloadFolder" value="seosonaflow_bot" maxlength="50" />
+              </div>
+              <span class="s-hint" data-i18n="settings.telegramDownloadFolderHint">Subfolder name inside the main download folder</span>
+            </div>
+            <!-- Image resolution -->
+            <div class="s-field" style="margin-bottom: 12px;">
+              <label data-i18n="settings.telegramImageResolution">Image resolution</label>
+              <div class="s-select-group">
+                <select id="telegramDownloadResolution">
+                  <option value="1k">1K</option>
+                  <option value="2k">2K</option>
+                  <option value="4k">4K</option>
+                </select>
+                <svg class="s-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
+            </div>
+            <!-- Video resolution -->
+            <div class="s-field" style="margin-bottom: 0;">
+              <label data-i18n="settings.telegramVideoResolution">Video resolution</label>
+              <div class="s-select-group">
+                <select id="telegramVideoDownloadResolution">
+                  <option value="720p">720p</option>
+                  <option value="1080p">1080p</option>
+                  <option value="4k">4K</option>
+                </select>
+                <svg class="s-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
+            </div>
+          </div>
+
+          <button class="s-btn s-btn-secondary s-btn-sm" id="telegramUnlinkBtn" style="margin-top: 10px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18.84 12.25l1.72-1.71a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+              <path d="M5.16 11.75l-1.72 1.71a5 5 0 0 0 7.07 7.07l1.72-1.71"></path>
+              <line x1="2" y1="2" x2="22" y2="22"></line>
+            </svg>
+            <span data-i18n="settings.unlinkTelegram">Unlink</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Telegram Quota -->
+      <section class="s-section" id="telegramQuotaSection">
+        <div class="s-section-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 20V10"></path>
+            <path d="M18 20V4"></path>
+            <path d="M6 20v-4"></path>
+          </svg>
+          <span data-i18n="settings.telegramQuota">Usage Quota</span>
+        </div>
+        <div class="telegram-quota-grid" id="telegramQuotaGrid">
+          <div class="telegram-quota-item">
+            <div class="telegram-quota-label" data-i18n="settings.telegramQuotaHour">Commands / hour</div>
+            <div class="telegram-quota-value">
+              <span id="telegramQuotaHourUsed">0</span>
+              <span class="telegram-quota-sep">/</span>
+              <span id="telegramQuotaHourLimit">10</span>
+            </div>
+          </div>
+          <div class="telegram-quota-item">
+            <div class="telegram-quota-label" data-i18n="settings.telegramQuotaDay">Commands / day</div>
+            <div class="telegram-quota-value">
+              <span id="telegramQuotaDayUsed">0</span>
+              <span class="telegram-quota-sep">/</span>
+              <span id="telegramQuotaDayLimit">50</span>
+            </div>
+          </div>
+        </div>
+        <div class="telegram-quota-upgrade" id="telegramQuotaUpgrade">
+          <svg class="telegram-quota-upgrade-crown" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5ZM19 19C19 19.6 18.6 20 18 20H6C5.4 20 5 19.6 5 19V18H19V19Z"></path>
+          </svg>
+          <span data-i18n="settings.telegramQuotaUpgrade">Upgrade to Premium for unlimited usage</span>
+        </div>
+      </section>
+    </div>
+
+    <!-- MCP sub-pane — ưu tiên, active mặc định -->
+    <div class="ai-subtab-pane active" id="mcpContainer" data-subtab-content="mcp">
+      <div class="telegram-promo-banner">
+        <div class="telegram-promo-icon">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="8.5" cy="16" r="1.1" fill="currentColor" stroke="none"></circle><circle cx="15.5" cy="16" r="1.1" fill="currentColor" stroke="none"></circle><path d="M12 7V4M9 4h6"></path></svg>
+        </div>
+        <div class="telegram-promo-content">
+          <h3 class="telegram-promo-title" data-i18n="settings.mcpPromoTitle">Connect AI Agent (MCP)</h3>
+          <p class="telegram-promo-desc" data-i18n="settings.mcpPromoDesc">Create a token so AI agents (Claude, Cursor...) connect via MCP to auto-generate images/videos &amp; build workflows.</p>
+          <ul class="telegram-promo-features">
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> <span data-i18n="settings.mcpFeature1">AI auto-generates images/videos via your account</span></li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> <span data-i18n="settings.mcpFeature2">AI auto-builds &amp; runs workflows</span></li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> <span data-i18n="settings.mcpFeature3">Secure token, revoke anytime</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <section class="s-section" id="mcpSection">
+        <div class="s-section-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+          <span data-i18n="settings.mcpTokensTitle">MCP Tokens</span>
+          <span class="s-section-badge" id="mcpStatusBadge" data-i18n="settings.notLinked">Not linked</span>
+        </div>
+
+        <!-- Khi plan không hỗ trợ → UI nâng cấp Premium (crown) -->
+        <div id="mcpLocked" class="hidden">
+          <div class="mcp-upgrade-card">
+            <div class="mcp-upgrade-crown">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5ZM19 19C19 19.6 18.6 20 18 20H6C5.4 20 5 19.6 5 19V18H19V19Z"></path></svg>
+            </div>
+            <h3 class="mcp-upgrade-title" data-i18n="settings.mcpLockedTitle">AI Agent connection requires Premium</h3>
+            <p class="mcp-upgrade-desc" data-i18n="settings.mcpLocked">AI Agent (MCP) — letting AI auto-generate images/videos &amp; build workflows via your account — requires a supported plan. Upgrade to unlock.</p>
+            <button class="s-btn s-btn-primary" id="mcpUpgradeBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5ZM19 19C19 19.6 18.6 20 18 20H6C5.4 20 5 19.6 5 19V18H19V19Z"></path></svg>
+              <span data-i18n="settings.mcpUpgradeBtn">Upgrade to Premium</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Quản lý token -->
+        <div id="mcpManage">
+          <p class="s-hint" style="margin-bottom: 10px;" data-i18n="settings.mcpTokensHint">Create a token and paste it into your MCP client config (Authorization: Bearer). Do NOT share the token.</p>
+
+          <div class="s-field" style="margin-bottom: 8px;">
+            <input type="text" id="mcpTokenLabel" maxlength="50" placeholder="Friendly name (e.g. Claude desktop)" data-i18n-placeholder="settings.mcpTokenLabelPlaceholder" />
+          </div>
+          <button class="s-btn s-btn-primary s-btn-sm" id="mcpCreateTokenBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span data-i18n="settings.mcpCreateToken">Create new token</span>
+          </button>
+
+          <!-- Token vừa tạo (hiện 1 lần) -->
+          <div id="mcpNewTokenDisplay" class="hidden" style="margin-top: 12px;">
+            <div class="telegram-otp-card">
+              <p class="s-info-note" style="margin-bottom: 8px;" data-i18n="settings.mcpCopyOnce">⚠️ Copy now — token shown only once:</p>
+              <div class="telegram-otp-box">
+                <span id="mcpNewTokenValue" class="telegram-otp-code" style="font-size: 12px; word-break: break-all;">--</span>
+                <button class="s-btn s-btn-secondary s-btn-sm" id="mcpTokenCopyBtn" title="Copy">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Danh sách token -->
+          <div id="mcpTokenList" style="margin-top: 14px;"></div>
+
+          <!-- Connect guide + ref usage — CHỈ hiện khi có quyền (mcpManage) + đã tạo ≥1 token (toggle trong settings-page.js) -->
+          <div id="mcpConnectGuide" class="hidden" style="margin-top: 18px;">
+            <!-- Kết nối Claude -->
+            <div class="s-section-header" style="margin-bottom: 10px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2"><path d="M9 2v6"></path><path d="M15 2v6"></path><path d="M6 8h12v3a6 6 0 0 1-12 0z"></path><path d="M12 17v5"></path></svg>
+              <span data-i18n="settings.mcpConnectTitle">Connect to Claude</span>
+            </div>
+            <p class="s-hint" style="margin-bottom: 8px;" id="mcpConnectDesc" data-i18n="settings.mcpConnectDesc">Paste this into your MCP client config (Claude Desktop: claude_desktop_config.json), then replace &lt;token&gt; with the token above:</p>
+            <div class="telegram-otp-card" style="margin-bottom: 16px;">
+              <div class="telegram-otp-box" style="align-items: flex-start;">
+                <code id="mcpConnectConfig" style="font-size: 11px; white-space: pre-wrap; word-break: break-all; line-height: 1.5; flex: 1; text-align: left;">{
+  "mcpServers": {
+    "seosonaflow": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "http://localhost:8080/mcp", "--header", "Authorization:Bearer &lt;token&gt;"]
+    }
+  }
+}</code>
+                <button class="s-btn s-btn-secondary s-btn-sm" id="mcpConfigCopyBtn" title="Copy">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Hướng dẫn dùng ảnh tham chiếu: local vs URL (icon có màu) -->
+            <div class="s-section-header" style="margin-bottom: 10px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+              <span data-i18n="settings.mcpRefGuideTitle">Using reference images</span>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px;">
+              <span style="flex-shrink: 0; width: 30px; height: 30px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; background: rgba(59,130,246,.14); color: #3b82f6;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+              </span>
+              <div><strong data-i18n="settings.mcpRefLocalTitle">Local image (on your computer)</strong><div class="s-hint" data-i18n="settings.mcpRefLocalDesc">Use Claude Code (CLI) — it can read local files. The Desktop app cannot send local files.</div></div>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: flex-start; margin-bottom: 4px;">
+              <span style="flex-shrink: 0; width: 30px; height: 30px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; background: rgba(25, 208, 123,.14); color: #19d07b;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+              </span>
+              <div><strong data-i18n="settings.mcpRefUrlTitle">Image via public URL</strong><div class="s-hint" data-i18n="settings.mcpRefUrlDesc">Works on both Claude Desktop &amp; CLI. The URL must open directly in a browser (no login/cookie required).</div></div>
+            </div>
+          </div>
+
+          <!-- MCP Download Settings — lưu local kết quả gen qua MCP (mirror Telegram) -->
+          <div class="s-section-header" style="margin-top: 20px; margin-bottom: 12px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span data-i18n="settings.mcpDownloadSettings">Save MCP-generated files</span>
+          </div>
+          <!-- Auto download toggle (mặc định TẮT) -->
+          <div class="s-toggle-row" style="margin-bottom: 12px;">
+            <label class="s-toggle">
+              <input type="checkbox" id="mcpAutoDownload" />
+              <span class="s-toggle-track">
+                <span class="s-toggle-thumb"></span>
+              </span>
+              <span data-i18n="settings.mcpAutoDownload">Auto-download to disk when AI generates via MCP</span>
+            </label>
+          </div>
+          <!-- Download folder -->
+          <div class="s-field" style="margin-bottom: 12px;">
+            <label for="mcpDownloadFolder" data-i18n="settings.mcpDownloadFolder">Download folder</label>
+            <div class="s-input-group">
+              <input type="text" id="mcpDownloadFolder" value="seosonaflow_mcp" maxlength="50" />
+            </div>
+            <span class="s-hint" data-i18n="settings.mcpDownloadFolderHint">Subfolder name inside your main downloads folder</span>
+          </div>
+          <!-- Image resolution -->
+          <div class="s-field" style="margin-bottom: 12px;">
+            <label data-i18n="settings.mcpImageResolution">Image resolution</label>
+            <div class="s-select-group">
+              <select id="mcpDownloadResolution">
+                <option value="1k">1K</option>
+                <option value="2k">2K</option>
+                <option value="4k">4K</option>
+              </select>
+              <svg class="s-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+          </div>
+          <!-- Video resolution -->
+          <div class="s-field" style="margin-bottom: 0;">
+            <label data-i18n="settings.mcpVideoResolution">Video resolution</label>
+            <div class="s-select-group">
+              <select id="mcpVideoDownloadResolution">
+                <option value="720p">720p</option>
+                <option value="1080p">1080p</option>
+                <option value="4k">4K</option>
+              </select>
+              <svg class="s-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    </div>
+
+    <!-- Tab: Storage -->
+    <div class="settings-body tab-content" id="storageContainer" data-tab-content="storage">
+      <!-- Daily Stats -->
+      <section class="s-section">
+        <div class="s-section-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+          <span data-i18n="settings.dailyStats">Today's Stats</span>
+          <span class="s-section-badge" id="dailyStatsDate">--</span>
+        </div>
+        <div class="s-daily-stats" id="dailyStatsGrid">
+          <div class="s-stat-card">
+            <div class="s-stat-value s-stat-primary" id="statPromptSubmit">0</div>
+            <div class="s-stat-label" data-i18n="settings.promptsSent">Prompts sent</div>
+          </div>
+          <div class="s-stat-card">
+            <div class="s-stat-value s-stat-danger" id="statPromptFail">0</div>
+            <div class="s-stat-label" data-i18n="settings.promptsFailed">Prompts failed</div>
+          </div>
+          <div class="s-stat-card">
+            <div class="s-stat-value s-stat-success" id="statTaskRun">0</div>
+            <div class="s-stat-label" data-i18n="settings.tasksRun">Tasks run</div>
+          </div>
+          <div class="s-stat-card">
+            <div class="s-stat-value s-stat-purple" id="statWorkflowRun">0</div>
+            <div class="s-stat-label" data-i18n="settings.workflowsRun">Workflows run</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Total Usage Overview -->
+      <section class="s-section">
+        <div class="s-section-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+          </svg>
+          <span data-i18n="settings.overview">Overview</span>
+        </div>
+        <div class="storage-overview" id="storageOverview">
+          <div class="storage-total-bar">
+            <div class="storage-total-fill" id="storageTotalFill" style="width: 0%"></div>
+          </div>
+          <div class="storage-total-label">
+            <span id="storageTotalUsed">--</span>
+            <span class="storage-total-sep">&mdash;</span>
+            <span class="storage-total-max" id="storageTotalDesc" data-i18n="settings.extensionData">Extension data</span>
+          </div>
+          <!-- Pending uploads indicator -->
+          <div class="storage-pending-row hidden" id="storagePendingRow">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <span id="storagePendingText" data-i18n="settings.pendingUploads">{count} file(s) pending upload</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Privacy Banner -->
+      <section class="s-section">
+        <div class="s-privacy-banner">
+          <div class="s-privacy-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              <path d="M9 12l2 2 4-4"></path>
+            </svg>
+          </div>
+          <div class="s-privacy-content">
+            <div class="s-privacy-title" data-i18n="settings.privacyTitle">Your data is protected</div>
+            <div class="s-privacy-desc" data-i18n="settings.privacyDesc">Images and personal data are stored safely on your device</div>
+          </div>
+        </div>
+        <div class="s-privacy-features">
+          <div class="s-privacy-feature">
+            <div class="s-privacy-feature-icon s-pf-green">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
+            <div class="s-privacy-feature-text">
+              <div class="s-privacy-feature-title" data-i18n="settings.privacyLocal">Local storage</div>
+              <div class="s-privacy-feature-desc" data-i18n="settings.privacyLocalDesc">Not uploaded to server</div>
+            </div>
+          </div>
+          <div class="s-privacy-feature">
+            <div class="s-privacy-feature-icon s-pf-blue">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+              </svg>
+            </div>
+            <div class="s-privacy-feature-text">
+              <div class="s-privacy-feature-title" data-i18n="settings.privacyDevice">Only on this device</div>
+              <div class="s-privacy-feature-desc" data-i18n="settings.privacyDeviceDesc">Only you can access</div>
+            </div>
+          </div>
+          <div class="s-privacy-feature">
+            <div class="s-privacy-feature-icon s-pf-purple">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+              </svg>
+            </div>
+            <div class="s-privacy-feature-text">
+              <div class="s-privacy-feature-title" data-i18n="settings.privacyControl">Full control</div>
+              <div class="s-privacy-feature-desc" data-i18n="settings.privacyControlDesc">Delete anytime</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- IndexedDB -->
+      <section class="s-section">
+        <div class="s-section-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+          </svg>
+          <span>IndexedDB</span>
+          <span class="s-section-badge" id="indexedDBTotal">--</span>
+        </div>
+        <div class="storage-cards" id="indexedDBCards">
+          <!-- Populated by JS -->
+        </div>
+      </section>
+
+      <!-- Chrome Storage Local (collapsible) -->
+      <section class="s-section s-section-collapsible">
+        <div class="s-section-header s-section-toggle" id="chromeStorageToggle">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            <path d="M2 17l10 5 10-5"></path>
+            <path d="M2 12l10 5 10-5"></path>
+          </svg>
+          <span data-i18n="settings.chromeStorage">Chrome Storage</span>
+          <span class="s-section-badge" id="chromeStorageTotal">--</span>
+          <svg class="s-section-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </div>
+        <div class="storage-cards s-section-content hidden" id="chromeStorageCards">
+          <!-- Populated by JS -->
+        </div>
+      </section>
+
+      <!-- Sao lưu & Khôi phục (Backup Tier 1) — export/import toàn bộ data user ra 1 file JSON -->
+      <section class="s-section">
+        <div class="s-section-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span data-i18n="settings.backupTitle">Sao lưu &amp; Khôi phục</span>
+        </div>
+        <p class="s-help-text" data-i18n="settings.backupHelp" style="margin:2px 0 12px;">
+          Xuất toàn bộ dữ liệu (prompt, workflow, template, cài đặt…) ra 1 file để mang sang máy khác. Máy mới cài extension rồi Nhập lại là dùng tiếp.
+        </p>
+        <label class="s-checkbox-row" style="display:flex;align-items:center;gap:8px;margin-bottom:8px;cursor:pointer;">
+          <input type="checkbox" id="backupIncludeSecrets">
+          <span class="s-help-text" style="margin:0;" data-i18n="settings.backupIncludeSecrets">Kèm cả token đăng nhập / MCP (nhạy cảm — thường KHÔNG cần)</span>
+        </label>
+        <label class="s-checkbox-row" style="display:flex;align-items:center;gap:8px;margin-bottom:12px;cursor:pointer;">
+          <input type="checkbox" id="backupReplaceMode">
+          <span class="s-help-text" style="margin:0;" data-i18n="settings.backupReplaceMode">Khi Nhập: THAY THẾ toàn bộ data hiện tại (mặc định tắt = hợp nhất, an toàn)</span>
+        </label>
+        <div class="s-storage-actions">
+          <button class="s-btn s-btn-primary" id="backupExportBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span data-i18n="settings.backupExport">Xuất backup</span>
+          </button>
+          <button class="s-btn s-btn-secondary" id="backupImportBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            <span data-i18n="settings.backupImport">Nhập backup</span>
+          </button>
+          <input type="file" id="backupImportFile" accept="application/json,.json" style="display:none;">
+        </div>
+      </section>
+
+      <!-- Actions -->
+      <section class="s-section">
+        <div class="s-storage-actions">
+          <button class="s-btn s-btn-secondary s-btn-icon" id="storageRefreshBtn" title="Refresh stats">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          </button>
+          <button class="s-btn s-btn-secondary" id="storageCleanupBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            <span data-i18n="settings.cleanup">Cleanup</span>
+          </button>
+          <button class="s-btn s-btn-danger" id="storageClearAllBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+            <span data-i18n="settings.clearAll">Clear all local data</span>
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <!-- Tab: Info -->
+    <div class="settings-body tab-content" id="infoContainer" data-tab-content="info">
+
+      <!-- About Header -->
+      <section class="s-section s-about-header">
+        <div class="s-about-brand">
+          <img src="../icons/icon-128.png" alt="SEOSONA Flow" class="s-about-logo seosonaflow-header-logo-img">
+          <div class="s-about-info">
+            <h2 class="s-about-title">SEOSONA Flow</h2>
+            <div class="s-about-version" id="aboutVersion">v1.0.0</div>
+          </div>
+        </div>
+        <p class="s-about-tagline" data-i18n="settings.aboutTagline">Automate AI image and video creation on Google Flow, ChatGPT, Grok</p>
+      </section>
+
+      <!-- Supported Providers -->
+      <section class="s-section">
+        <div class="s-section-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            <path d="M2 17l10 5 10-5"></path>
+            <path d="M2 12l10 5 10-5"></path>
+          </svg>
+          <span>Providers</span>
+        </div>
+
+        <div class="s-info-providers-grid">
+          <!-- Google Flow -->
+          <div class="s-info-provider-card">
+            <div class="s-info-provider-header">
+              <div class="s-info-provider-icon s-provider-flow">
+                <svg width="18" height="18" viewBox="0 0 24 24"><path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="#fff"/></svg>
+              </div>
+              <div class="s-info-provider-title">
+                <span class="s-info-provider-name">Google Flow</span>
+                <span class="s-info-provider-url">labs.google/fx</span>
+              </div>
+            </div>
+            <div class="s-info-provider-features">
+              <div class="s-info-provider-row">
+                <span class="s-info-label">Image</span>
+                <span class="s-info-value">Nano Banana Pro, Nano Banana 2</span>
+              </div>
+              <div class="s-info-provider-row">
+                <span class="s-info-label">Video</span>
+                <span class="s-info-value">Veo 3.1 Fast, Lite, Quality</span>
+              </div>
+              <div class="s-info-provider-row">
+                <span class="s-info-label">Ratios</span>
+                <span class="s-info-value">16:9, 4:3, 1:1, 3:4, 9:16</span>
+              </div>
+              <div class="s-info-provider-row">
+                <span class="s-info-label">Ref images</span>
+                <span class="s-info-value">10 (image), 3 (video)</span>
+              </div>
+            </div>
+            <div class="s-info-provider-tags">
+              <span class="s-info-tag-sm s-tag-green">Image</span>
+              <span class="s-info-tag-sm s-tag-purple">Video</span>
+              <span class="s-info-tag-sm s-tag-blue">Ref Images</span>
+              <span class="s-info-tag-sm s-tag-amber">Frames</span>
+            </div>
+          </div>
+
+          <!-- ChatGPT -->
+          <div class="s-info-provider-card">
+            <div class="s-info-provider-header">
+              <div class="s-info-provider-icon s-provider-chatgpt">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944zm-9.6607-4.1254a4.4708 4.4708 0 0 1-.5346-3.0137l.142.0852 4.783 2.7582a.7712.7712 0 0 0 .7806 0l5.8428-3.3685v2.3324a.0804.0804 0 0 1-.0332.0615L9.74 19.9502a4.4992 4.4992 0 0 1-6.1408-1.6464zM2.3408 7.8956a4.485 4.485 0 0 1 2.3655-1.9728V11.6a.7664.7664 0 0 0 .3879.6765l5.8144 3.3543-2.0201 1.1685a.0757.0757 0 0 1-.071 0l-4.8303-2.7865A4.504 4.504 0 0 1 2.3408 7.8956zm16.0993 3.8558L12.6 8.3829l2.02-1.1638a.0757.0757 0 0 1 .071 0l4.8303 2.7913a4.4944 4.4944 0 0 1-.6765 8.1042v-5.6772a.79.79 0 0 0-.407-.667zm2.0107-3.0231l-.142-.0852-4.7735-2.7818a.7759.7759 0 0 0-.7854 0L9.409 9.2297V6.8974a.0662.0662 0 0 1 .0284-.0615l4.8303-2.7866a4.4992 4.4992 0 0 1 6.6802 4.66zM8.3065 12.863l-2.02-1.1638a.0804.0804 0 0 1-.038-.0567V6.0742a4.4992 4.4992 0 0 1 7.3757-3.4537l-.142.0805L8.704 5.459a.7948.7948 0 0 0-.3927.6813zm1.0976-2.3654l2.602-1.4998 2.6069 1.4998v2.9994l-2.5974 1.4997-2.6067-1.4997Z"/></svg>
+              </div>
+              <div class="s-info-provider-title">
+                <span class="s-info-provider-name">ChatGPT</span>
+                <span class="s-info-provider-url">chatgpt.com</span>
+              </div>
+            </div>
+            <div class="s-info-provider-features">
+              <div class="s-info-provider-row">
+                <span class="s-info-label">Image</span>
+                <span class="s-info-value">GPT Image 2</span>
+              </div>
+              <div class="s-info-provider-row">
+                <span class="s-info-label">Video</span>
+                <span class="s-info-value s-info-muted">—</span>
+              </div>
+              <div class="s-info-provider-row">
+                <span class="s-info-label">Ratios</span>
+                <span class="s-info-value">16:9, 4:3, 1:1, 3:4, 9:16</span>
+              </div>
+              <div class="s-info-provider-row">
+                <span class="s-info-label">Ref images</span>
+                <span class="s-info-value">4</span>
+              </div>
+            </div>
+            <div class="s-info-provider-tags">
+              <span class="s-info-tag-sm s-tag-green">Image</span>
+              <span class="s-info-tag-sm s-tag-blue">Ref Images</span>
+            </div>
+          </div>
+
+          <!-- Grok -->
+          <div class="s-info-provider-card">
+            <div class="s-info-provider-header">
+              <div class="s-info-provider-icon s-provider-grok">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd"><path d="M9.27 15.29l7.978-5.897c.391-.29.95-.177 1.137.272.98 2.369.542 5.215-1.41 7.169-1.951 1.954-4.667 2.382-7.149 1.406l-2.711 1.257c3.889 2.661 8.611 2.003 11.562-.953 2.341-2.344 3.066-5.539 2.388-8.42l.006.007c-.983-4.232.242-5.924 2.75-9.383.06-.082.12-.164.179-.248l-3.301 3.305v-.01L9.267 15.292M7.623 16.723c-2.792-2.67-2.31-6.801.071-9.184 1.761-1.763 4.647-2.483 7.166-1.425l2.705-1.25a7.808 7.808 0 00-1.829-1A8.975 8.975 0 005.984 5.83c-2.533 2.536-3.33 6.436-1.962 9.764 1.022 2.487-.653 4.246-2.34 6.022-.599.63-1.199 1.259-1.682 1.925l7.62-6.815"/></svg>
+              </div>
+              <div class="s-info-provider-title">
+                <span class="s-info-provider-name">Grok</span>
+                <span class="s-info-provider-url">grok.com</span>
+              </div>
+            </div>
+            <div class="s-info-provider-features">
+              <div class="s-info-provider-row">
+                <span class="s-info-label">Image</span>
+                <span class="s-info-value">Aurora (Flux)</span>
+              </div>
+              <div class="s-info-provider-row">
+                <span class="s-info-label">Video</span>
+                <span class="s-info-value s-info-muted">—</span>
+              </div>
+              <div class="s-info-provider-row">
+                <span class="s-info-label">Ratios</span>
+                <span class="s-info-value">16:9, 3:2, 1:1, 2:3, 9:16</span>
+              </div>
+              <div class="s-info-provider-row">
+                <span class="s-info-label">Ref images</span>
+                <span class="s-info-value s-info-muted">—</span>
+              </div>
+            </div>
+            <div class="s-info-provider-tags">
+              <span class="s-info-tag-sm s-tag-green">Image</span>
+              <span class="s-info-tag-sm s-tag-purple">Video</span>
+            </div>
+          </div>
+
+          <!-- Gemini -->
+          <div class="s-info-provider-card s-info-provider-coming">
+            <div class="s-info-provider-header">
+              <div class="s-info-provider-icon s-provider-gemini">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.372 0 0 5.373 0 12s5.372 12 12 12 12-5.373 12-12S18.628 0 12 0zm0 2.823a9.177 9.177 0 1 1 0 18.354 9.177 9.177 0 0 1 0-18.354zm-.354 3.53a5.823 5.823 0 0 0-5.823 5.824 5.823 5.823 0 0 0 5.823 5.823 5.823 5.823 0 0 0 5.824-5.823 5.823 5.823 0 0 0-5.824-5.824z"/></svg>
+              </div>
+              <div class="s-info-provider-title">
+                <span class="s-info-provider-name">Gemini</span>
+                <span class="s-info-provider-url">gemini.google.com</span>
+              </div>
+            </div>
+            <div class="s-info-provider-features">
+              <div class="s-info-provider-row">
+                <span class="s-info-label">Image</span>
+                <span class="s-info-value">Imagen 3</span>
+              </div>
+              <div class="s-info-provider-row">
+                <span class="s-info-label">Video</span>
+                <span class="s-info-value s-info-muted">—</span>
+              </div>
+              <div class="s-info-provider-row">
+                <span class="s-info-label">Ratios</span>
+                <span class="s-info-value">1:1</span>
+              </div>
+              <div class="s-info-provider-row">
+                <span class="s-info-label">Ref images</span>
+                <span class="s-info-value s-info-muted">—</span>
+              </div>
+            </div>
+            <div class="s-info-provider-tags">
+              <span class="s-info-tag-sm s-tag-gray">Coming Soon</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Data Storage Map -->
+      <section class="s-section">
+        <div class="s-section-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+          </svg>
+          <span data-i18n="settings.infoStorageMap">Data Storage Locations</span>
+        </div>
+
+        <div class="s-info-storage-map">
+          <!-- Chrome Storage -->
+          <div class="s-info-storage-group">
+            <div class="s-info-storage-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                <path d="M2 17l10 5 10-5"></path>
+                <path d="M2 12l10 5 10-5"></path>
+              </svg>
+            </div>
+            <div class="s-info-storage-detail">
+              <div class="s-info-storage-title">Chrome Storage</div>
+              <div class="s-info-storage-desc" data-i18n="settings.infoChromeStorageDesc">Main extension storage, persists across reloads</div>
+              <div class="s-info-storage-items">
+                <span class="s-info-tag">Tasks</span>
+                <span class="s-info-tag">Workflows</span>
+                <span class="s-info-tag">Settings</span>
+                <span class="s-info-tag">Auth / Token</span>
+                <span class="s-info-tag">History</span>
+                <span class="s-info-tag">Snippets</span>
+                <span class="s-info-tag">Presets</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- IndexedDB -->
+          <div class="s-info-storage-group">
+            <div class="s-info-storage-icon s-info-icon-amber">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                <line x1="6" y1="18" x2="6.01" y2="18"></line>
+              </svg>
+            </div>
+            <div class="s-info-storage-detail">
+              <div class="s-info-storage-title">IndexedDB</div>
+              <div class="s-info-storage-desc" data-i18n="settings.infoIndexedDBDesc">Album image blobs, pending uploads</div>
+              <div class="s-info-storage-items">
+                <span class="s-info-tag">Album images (blob)</span>
+                <span class="s-info-tag">Pending uploads</span>
+                <span class="s-info-tag">Upload cache</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Google Flow (Session) -->
+          <div class="s-info-storage-group">
+            <div class="s-info-storage-icon s-info-icon-blue">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M2 12h20"></path>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              </svg>
+            </div>
+            <div class="s-info-storage-detail">
+              <div class="s-info-storage-title">Google Flow</div>
+              <div class="s-info-storage-desc" data-i18n="settings.infoFlowDesc">Images/videos on Flow page, tied to Google account</div>
+              <div class="s-info-storage-items">
+                <span class="s-info-tag">Tiles (session)</span>
+                <span class="s-info-tag">CDN URLs (account)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Album Image Types -->
+      <section class="s-section">
+        <div class="s-section-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+            <polyline points="21 15 16 10 5 21"></polyline>
+          </svg>
+          <span data-i18n="settings.infoAlbumTypes">Album Image Types</span>
+        </div>
+
+        <!-- Flow Image -->
+        <div class="s-info-album-card">
+          <div class="s-info-album-header">
+            <div class="s-info-album-dot s-info-dot-blue"></div>
+            <span class="s-info-album-type" data-i18n="settings.infoAlbumFlow">Flow Image</span>
+          </div>
+          <div class="s-info-album-desc" data-i18n="settings.infoAlbumFlowDesc">Selected from tiles on Google Flow page</div>
+          <div class="s-info-album-meta">
+            <span class="s-info-tag-sm">file_id</span>
+            <span class="s-info-tag-sm">file_name</span>
+            <span class="s-info-tag-sm">CDN URL</span>
+          </div>
+        </div>
+
+        <!-- Upload Image -->
+        <div class="s-info-album-card">
+          <div class="s-info-album-header">
+            <div class="s-info-album-dot s-info-dot-green"></div>
+            <span class="s-info-album-type" data-i18n="settings.infoAlbumUpload">Local Upload</span>
+          </div>
+          <div class="s-info-album-desc" data-i18n="settings.infoAlbumUploadDesc">Uploaded from your computer</div>
+          <div class="s-info-album-meta">
+            <span class="s-info-tag-sm">blob (IndexedDB)</span>
+            <span class="s-info-tag-sm s-info-tag-warn" id="infoBlobDaysUpload">3 days</span>
+          </div>
+        </div>
+
+        <!-- Capture Image -->
+        <div class="s-info-album-card">
+          <div class="s-info-album-header">
+            <div class="s-info-album-dot s-info-dot-purple"></div>
+            <span class="s-info-album-type" data-i18n="settings.infoAlbumCapture">Screen Capture</span>
+          </div>
+          <div class="s-info-album-desc" data-i18n="settings.infoAlbumCaptureDesc">Screen capture from Flow page</div>
+          <div class="s-info-album-meta">
+            <span class="s-info-tag-sm">blob (IndexedDB)</span>
+            <span class="s-info-tag-sm s-info-tag-warn" id="infoBlobDaysCapture">3 days</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Album Data Lifecycle -->
+      <section class="s-section">
+        <div class="s-section-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+          <span data-i18n="settings.infoAlbumLifecycle">Album Data Lifecycle</span>
+        </div>
+
+        <table class="s-info-table">
+          <thead>
+            <tr>
+              <th data-i18n="settings.infoAction">Action</th>
+              <th>
+                <span class="s-info-dot-inline s-info-dot-blue"></span>
+                Flow
+              </th>
+              <th>
+                <span class="s-info-dot-inline s-info-dot-green"></span>
+                Upload
+              </th>
+              <th>
+                <span class="s-info-dot-inline s-info-dot-purple"></span>
+                Capture
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-i18n="settings.infoReloadExt">Reload extension</td>
+              <td class="s-info-ok">OK</td>
+              <td class="s-info-ok">OK</td>
+              <td class="s-info-ok">OK</td>
+            </tr>
+            <tr>
+              <td data-i18n="settings.infoChangeProject">Change Flow project</td>
+              <td class="s-info-ok">OK</td>
+              <td class="s-info-ok">OK</td>
+              <td class="s-info-ok">OK</td>
+            </tr>
+            <tr>
+              <td data-i18n="settings.infoChangeAccount">Change Flow account</td>
+              <td class="s-info-lost">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </td>
+              <td class="s-info-ok">OK</td>
+              <td class="s-info-ok">OK</td>
+            </tr>
+            <tr>
+              <td data-i18n="settings.infoAfterNDays" id="infoAfterNDays">After {days} days</td>
+              <td class="s-info-ok">OK</td>
+              <td class="s-info-lost">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </td>
+              <td class="s-info-lost">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </td>
+            </tr>
+            <tr>
+              <td data-i18n="settings.infoClearData">Clear browser data</td>
+              <td class="s-info-lost">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </td>
+              <td class="s-info-lost">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </td>
+              <td class="s-info-lost">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </td>
+            </tr>
+            <tr>
+              <td data-i18n="settings.infoUninstall">Uninstall extension</td>
+              <td class="s-info-lost">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </td>
+              <td class="s-info-lost">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </td>
+              <td class="s-info-lost">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="s-info-legend">
+          <span class="s-info-legend-item"><span class="s-info-ok">OK</span> = <span data-i18n="settings.infoStillUsable">still usable</span></span>
+          <span class="s-info-legend-item"><span class="s-info-lost"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span> = <span data-i18n="settings.infoDataLost">data lost</span></span>
+        </div>
+      </section>
+
+      <!-- Smart Features -->
+      <section class="s-section">
+        <div class="s-section-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+          </svg>
+          <span data-i18n="settings.infoSmartFeatures">Smart Features</span>
+        </div>
+
+        <!-- Cross-project ref images -->
+        <div class="s-info-feature-card">
+          <div class="s-info-feature-icon s-info-ficon-blue">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M16 3h5v5"></path><path d="M8 3H3v5"></path>
+              <path d="M12 22v-8.3a4 4 0 0 0-1.172-2.872L3 3"></path>
+              <path d="m15 9 6-6"></path>
+            </svg>
+          </div>
+          <div class="s-info-feature-body">
+            <div class="s-info-feature-title" data-i18n="settings.infoCrossProject">Cross-project ref images</div>
+            <div class="s-info-feature-desc" data-i18n="settings.infoCrossProjectDesc">Ref images from albums or other projects are automatically re-uploaded to the current project when used. No manual download and upload needed.</div>
+          </div>
+        </div>
+
+        <!-- Auto recovery -->
+        <div class="s-info-feature-card">
+          <div class="s-info-feature-icon s-info-ficon-green">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21.5 2v6h-6"></path>
+              <path d="M21.34 15.57a10 10 0 1 1-.57-8.38"></path>
+            </svg>
+          </div>
+          <div class="s-info-feature-body">
+            <div class="s-info-feature-title" data-i18n="settings.infoAutoRecovery">Auto-recover ref images after reload</div>
+            <div class="s-info-feature-desc" data-i18n="settings.infoAutoRecoveryDesc">When you reload the Flow page, missing ref images are automatically found by file_name (UUID) or re-uploaded from cache. The system checks 5 layers before reporting an image as lost.</div>
+          </div>
+        </div>
+
+        <!-- Reupload pipeline -->
+        <div class="s-info-feature-card">
+          <div class="s-info-feature-icon s-info-ficon-purple">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2v4"></path><path d="m16.2 7.8 2.9-2.9"></path>
+              <path d="M18 12h4"></path><path d="m16.2 16.2 2.9 2.9"></path>
+              <path d="M12 18v4"></path><path d="m4.9 19.1 2.9-2.9"></path>
+              <path d="M2 12h4"></path><path d="m4.9 4.9 2.9 2.9"></path>
+            </svg>
+          </div>
+          <div class="s-info-feature-body">
+            <div class="s-info-feature-title" data-i18n="settings.infoReuploadCache">Smart image cache</div>
+            <div class="s-info-feature-desc" data-i18n="settings.infoReuploadCacheDesc">Ref images are cached for 24h after a successful upload. If the original image is deleted from Flow, the system re-uploads it from cache automatically.</div>
+          </div>
+        </div>
+
+        <!-- Album blob persistent -->
+        <div class="s-info-feature-card">
+          <div class="s-info-feature-icon s-info-ficon-amber">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+          </div>
+          <div class="s-info-feature-body">
+            <div class="s-info-feature-title" data-i18n="settings.infoAlbumPersist">Album stores originals locally</div>
+            <div class="s-info-feature-desc" data-i18n="settings.infoAlbumPersistDesc">Album images store the original blob on your device, independent of Google Flow. Even if you delete images on Flow or switch projects, album images remain usable.</div>
+          </div>
+        </div>
+
+        <!-- Cross-project collision detection -->
+        <div class="s-info-feature-card s-info-feature-card-last">
+          <div class="s-info-feature-icon s-info-ficon-red">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              <path d="M12 8v4"></path>
+              <path d="M12 16h.01"></path>
+            </svg>
+          </div>
+          <div class="s-info-feature-body">
+            <div class="s-info-feature-title" data-i18n="settings.infoCrossProjectSafety">Cross-project collision protection</div>
+            <div class="s-info-feature-desc" data-i18n="settings.infoCrossProjectSafetyDesc">When switching projects, the system detects ref images from the old project (orange/red border warning) and re-uploads the correct image instead of using the wrong one at the same position.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Notes -->
+      <section class="s-section">
+        <div class="s-info-note-box">
+          <div class="s-info-note-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </div>
+          <div class="s-info-note-content">
+            <p data-i18n="settings.infoNote1" id="infoNote1Text">Upload/capture images store blobs in IndexedDB, auto-deleted after {days} days.</p>
+            <p data-i18n="settings.infoNote2">Flow images use Google CDN URLs, only accessible with the account that created them.</p>
+            <p data-i18n="settings.infoNote3">Sign in to SEOSONA Flow to sync tasks, workflows, and settings to the server.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer class="settings-footer">
+      <button class="s-btn s-btn-primary s-btn-lg" id="saveAllSettingsBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        <span data-i18n="settings.saveAllSettings">Save all settings</span>
+      </button>
+      <div id="settingsSaveStatus" class="s-status hidden"></div>
+    </footer>
+  </div>
+
+  <!-- I18n -->
+  <!-- Owned suppression: phải nạp TRƯỚC mọi module (catch im lặng gọi SEOSONA_swallow). -->
+  <script src="../src/core/ErrorCatalog.js"></script>
+  <script src="../src/core/ApiClient.js"></script>
+  <script src="../src/i18n/vi.js"></script>
+  <script src="../src/i18n/en.js"></script>
+  <script src="../src/core/RuntimeMode.js"></script>
+  <script src="../src/core/I18n.js"></script>
+  <script src="../src/core/ApiBaseConfig.js"></script>
+  <script src="../src/core/SystemConfig.js"></script>
+  <!-- Group B managers — populate model + ratio selects từ backend (Initiative 1 + 4) -->
+  <script src="../src/core/RequestSigner.js"></script>
+  <script src="../src/core/ProviderConfigManager.js"></script>
+  <script src="../src/core/ModelRegistry.js"></script>
+  <script src="../src/core/VoiceRegistry.js"></script>
+  <!-- Flow Voice Selector — MessageBridge cần cho Resync, VoiceSelectModal cho UI modal -->
+  <!-- AuthManager cần cho admin check (window.authManager?.user?.role === 'admin') khi POST sync server -->
+    <script src="../src/core/MessageBridge.js"></script>
+  <script src="../src/shared/VoiceSelectModal.js"></script>
+  <script src="../src/core/VoicePicker.js"></script>
+  <script src="../src/core/ValidationRules.js"></script>
+  <!-- Bug 37 fix (2026-05-19): Settings popup phải connect SSE để nhận admin config update realtime
+       (download_resolutions, ratios, models). Trước fix popup chỉ refresh khi reload page. -->
+  <script src="../src/core/SseBroadcastManager.js"></script>
+  <script src="../src/core/SseClient.js"></script>
+  <script src="../src/shared/CustomDialog.js"></script>
+  <!-- ImageStore: cho storage meter (count/getTotalBlobSize) + free-up (cleanupOldBlobs). Tự-đủ (IndexedDB). -->
+  <script src="../src/core/ImageStore.js"></script>
+  <!-- Backup & Portability (Tier 1): export/import toàn bộ chrome.storage.local ra file JSON. -->
+  <script src="../src/storage/BackupService.js"></script>
+  <script src="../scripts/settings-page.js"></script>
+</body>
+</html>

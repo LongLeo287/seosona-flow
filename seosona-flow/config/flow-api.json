@@ -1,0 +1,35 @@
+{
+  "$schema": "seosona://flow-api-spec",
+  "specVersion": "0.1.0",
+  "status": "draft-empty",
+  "capturedAt": null,
+  "note": "Spec LOCAL cho Flow API (PLAN-flow-api-adapter.md). Rỗng = tính năng nằm im. Điền từ HAR ở Phase 0.",
+
+  "origins": {
+    "trpc": "https://labs.google",
+    "api": "https://aisandbox-pa.googleapis.com"
+  },
+
+  "phase": {
+    "readOnly": true,
+    "allowedOrigins": ["trpc"],
+    "why": "Phase 1 chỉ probe endpoint ĐỌC trên origin 'trpc' — same-origin với content script, KHÔNG cần quyền mới. Origin 'api' cần host_permissions + Bearer + captcha ⇒ chặn cứng ở phase này."
+  },
+
+  "endpoints": {},
+
+  "redactHeaders": [
+    "authorization",
+    "cookie",
+    "set-cookie",
+    "x-goog-api-key",
+    "x-client-data",
+    "proxy-authorization"
+  ],
+
+  "limits": {
+    "timeoutMs": 15000,
+    "maxResponseBytes": 2000000,
+    "maxBodyBytes": 262144
+  }
+}

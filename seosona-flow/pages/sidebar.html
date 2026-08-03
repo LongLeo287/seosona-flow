@@ -1,0 +1,1926 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEOSONA Flow</title>
+  <!-- CSS -->
+  <link rel="stylesheet" href="../styles/sidebar.css">
+  <link rel="stylesheet" href="../styles/custom-select.css">
+  <link rel="stylesheet" href="../lib/drawflow.min.css">
+  <link rel="stylesheet" href="../src/shared/custom-dialog.css">
+  <link rel="stylesheet" href="../src/shared/image-picker.css">
+  <link rel="stylesheet" href="../src/multi-task/multi-task.css">
+  <link rel="stylesheet" href="../src/workflow/workflow.css">
+  <link rel="stylesheet" href="../src/templates/templates-tab.css">
+  <link rel="stylesheet" href="../src/history/history-tab.css">
+  <link rel="stylesheet" href="../src/snippets/snippets.css">
+  <link rel="stylesheet" href="../src/albums/albums.css">
+  <link rel="stylesheet" href="../src/chat/prompt-assistant.css">
+</head>
+<body>
+<!-- Loading Overlay -->
+<div id="seosonaflow-loading-overlay" class="seosonaflow-loading-overlay">
+  <div class="seosonaflow-loading-content">
+    <div class="seosonaflow-loading-spinner"></div>
+    <p class="seosonaflow-loading-text" id="seosonaflow-loading-text">Loading...</p>
+  </div>
+</div>
+
+<!-- Connecting Overlay - shows while waiting for Flow page connection -->
+<div id="seosonaflow-connecting-overlay" class="seosonaflow-connecting-overlay hidden">
+  <div class="seosonaflow-connecting-content">
+    <div class="seosonaflow-connecting-spinner"></div>
+    <p class="seosonaflow-connecting-text">Connecting to Flow...</p>
+  </div>
+</div>
+
+<!-- Mini-i18n cho loading + connecting overlay (hiển thị TRƯỚC khi I18n class load).
+     File riêng (không inline) vì Chrome MV3 CSP `script-src 'self'` block inline scripts.
+     Default render = English; sau callback chrome.storage update theo locale user. -->
+<!-- Owned suppression: phải nạp TRƯỚC mọi module (catch im lặng gọi SEOSONA_swallow). -->
+<script src="../src/core/ErrorCatalog.js"></script>
+<script src="../scripts/loading-i18n.js"></script>
+
+
+
+<div id="flow-auto-sidebar-root">
+  <div class="flow-app">
+      <!-- Header -->
+      <header class="seosonaflow-header">
+        <div class="seosonaflow-header-brand">
+          <div class="seosonaflow-header-logo">
+            <img src="../icons/icon-32.png" alt="SEOSONA Flow" class="seosonaflow-header-logo-img">
+          </div>
+          <span class="seosonaflow-header-title">SEOSONA Flow</span>
+        </div>
+        <div class="seosonaflow-header-actions">
+          <!-- Capture Button -->
+          <button class="seosonaflow-header-btn seosonaflow-header-capture" id="headerCaptureBtn" data-i18n-tooltip="header.capture" data-tooltip-pos="bottom">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+          </button>
+          <!-- Watermark Remover Tool Button -->
+          <button class="seosonaflow-header-btn" id="headerWatermarkBtn" title="Xoá watermark" data-tooltip-pos="bottom">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2c0-1.5-2-4-2-4s-2 2.5-2 4a2 2 0 0 0 2 2z"/><path d="M3 3l7.5 7.5"/><path d="M14 14l-8.5 8.5a2.1 2.1 0 0 1-3-3L11 11"/><path d="M9 5l6 6"/></svg>
+          </button>
+          <button class="seosonaflow-header-btn" id="headerTextOverlayBtn" title="Overlay chữ lên ảnh" data-tooltip-pos="bottom">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 15h6M7 11h10"/></svg>
+          </button>
+          <button class="seosonaflow-header-btn" id="headerSelectorDoctorBtn" title="Chẩn đoán selector (khi web đổi giao diện)" data-tooltip-pos="bottom">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.9 4.9l2.9 2.9M16.2 16.2l2.9 2.9M2 12h4M18 12h4M4.9 19.1l2.9-2.9M16.2 7.8l2.9-2.9"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+          <button class="seosonaflow-header-btn" id="headerStyleAnchorBtn" title="Style Anchor (nhất quán)" data-tooltip-pos="bottom">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 7v10l8 5 8-5V7z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+          <!-- Language Button -->
+          <button class="seosonaflow-header-btn lang-toggle-btn" id="languageBtn" data-i18n-tooltip="header.language" data-tooltip-pos="bottom" style="padding: 0 8px;">
+            <img id="langFlagIcon" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='600' viewBox='0 0 900 600'%3E%3Crect width='900' height='600' fill='%23da251d'/%3E%3Cpolygon points='450,114 551,424 287,232 613,232 349,424' fill='%23ffff00'/%3E%3C/svg%3E" style="width: 20px; height: 14px; border-radius: 2px; object-fit: cover;" alt="VN">
+          </button>
+          <!-- Settings Dropdown -->
+          <div class="seosonaflow-settings-dropdown" id="settingsDropdown">
+            <button class="seosonaflow-header-btn" id="settingsDropdownBtn" data-i18n-tooltip="header.settings" data-tooltip-pos="bottom">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            </button>
+            <div class="seosonaflow-settings-menu" id="settingsMenu">
+              <!-- Settings -->
+              <button class="seosonaflow-settings-menu-item" id="openSettingsBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                <span data-i18n="settings.title">Cài đặt chung</span>
+              </button>
+              <!-- Usage Stats -->
+              <button class="seosonaflow-settings-menu-item" id="openUsageStatsBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                <span data-i18n="usageStats.title">Thông tin Gói & Sử dụng</span>
+              </button>
+              <!-- Theme Toggle -->
+              <button class="seosonaflow-settings-menu-item" id="themeToggleBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                <span data-i18n="settings.theme">Giao diện</span>
+              </button>
+              <!-- Extension Link (hidden by default) -->
+              <button class="seosonaflow-settings-menu-item hidden" id="extensionLinkBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                <span data-i18n="settings.extensionLink">Trang Extension</span>
+              </button>
+              <!-- Replay onboarding tour -->
+              <button class="seosonaflow-settings-menu-item" id="replayOnboardingBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="16" x2="12" y2="12"/>
+                  <line x1="12" y1="8" x2="12.01" y2="8"/>
+                </svg>
+                <span data-i18n="header.replayTour">Xem lại hướng dẫn</span>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </header>
+
+
+      <!-- U-4.6: Project indicator -->
+      <div id="project-indicator" class="project-indicator" style="display: none;">
+        <div class="project-indicator-row">
+          <button id="project-indicator-btn" class="project-indicator-btn" data-i18n-title="project.selectProject" title="Chọn project khác">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z"/></svg>
+            <span id="project-indicator-name" class="project-indicator-name">—</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+          <button id="project-create-btn" class="project-create-btn" data-i18n-title="project.createNew" title="Tạo dự án mới">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          </button>
+        </div>
+        <div id="project-indicator-dropdown" class="project-indicator-dropdown" style="display: none;"></div>
+      </div>
+
+
+
+
+      <!-- Upgrade Modal -->
+      
+
+
+      <!-- Multi-tab Warning Banner -->
+      <div class="seosonaflow-multitab-banner hidden" id="multiTabBanner">
+        <div class="seosonaflow-multitab-content">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          <span class="seosonaflow-multitab-text" data-i18n="msg.multiTabWarning" data-i18n-params='{"count": "2"}'>Phát hiện <strong id="multiTabCount">2</strong> tab Flow. Extension chỉ hoạt động chính xác với 1 tab.</span>
+          <button class="seosonaflow-multitab-action" id="multiTabCloseBtn" data-i18n="msg.closeOtherTabs">Đóng tab khác</button>
+          <button class="seosonaflow-multitab-dismiss" id="multiTabDismissBtn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+      </div>
+
+
+
+      <!-- Tabs Header - Text + icon compact bar -->
+      <nav class="seosonaflow-tabs">
+        <button class="seosonaflow-tab tab-btn active" data-tab="tab-gen" data-i18n-title="tab.gen">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M11.8525 4.21651L11.7221 3.2387C11.6906 3.00226 11.4889 2.82568 11.2504 2.82568C11.0118 2.82568 10.8102 3.00226 10.7786 3.23869L10.6483 4.21651C10.2658 7.0847 8.00939 9.34115 5.14119 9.72358L4.16338 9.85396C3.92694 9.88549 3.75037 10.0872 3.75037 10.3257C3.75037 10.5642 3.92694 10.7659 4.16338 10.7974L5.14119 10.9278C8.00938 11.3102 10.2658 13.5667 10.6483 16.4349L10.7786 17.4127C10.8102 17.6491 11.0118 17.8257 11.2504 17.8257C11.4889 17.8257 11.6906 17.6491 11.7221 17.4127L11.8525 16.4349C12.2349 13.5667 14.4913 11.3102 17.3595 10.9278L18.3374 10.7974C18.5738 10.7659 18.7504 10.5642 18.7504 10.3257C18.7504 10.0872 18.5738 9.88549 18.3374 9.85396L17.3595 9.72358C14.4913 9.34115 12.2349 7.0847 11.8525 4.21651Z"></path>
+            <path d="M4.6519 14.7568L4.82063 14.2084C4.84491 14.1295 4.91781 14.0757 5.00037 14.0757C5.08292 14.0757 5.15582 14.1295 5.1801 14.2084L5.34883 14.7568C5.56525 15.4602 6.11587 16.0108 6.81925 16.2272L7.36762 16.3959C7.44652 16.4202 7.50037 16.4931 7.50037 16.5757C7.50037 16.6582 7.44652 16.7311 7.36762 16.7554L6.81926 16.9241C6.11587 17.1406 5.56525 17.6912 5.34883 18.3946L5.1801 18.9429C5.15582 19.0218 5.08292 19.0757 5.00037 19.0757C4.91781 19.0757 4.84491 19.0218 4.82063 18.9429L4.65191 18.3946C4.43548 17.6912 3.88486 17.1406 3.18147 16.9241L2.63311 16.7554C2.55421 16.7311 2.50037 16.6582 2.50037 16.5757C2.50037 16.4931 2.55421 16.4202 2.63311 16.3959L3.18148 16.2272C3.88486 16.0108 4.43548 15.4602 4.6519 14.7568Z"></path>
+          </svg>
+          <span data-i18n="tab.gen">Gen</span>
+        </button>
+        <button class="seosonaflow-tab tab-btn" data-tab="tab-spaces" data-i18n-title="tab.workflowTip">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g fill="currentColor"><path fill-rule="evenodd" d="M12.123 15.292c-.587-1.927 1.198-3.775 3.158-3.155l5.955 1.848.003.001c2.33.733 2.35 4.024.04 4.801v.001l-1.63.55h-.004a.5.5 0 0 0-.325.322l-.003.01-.55 1.63c-.782 2.339-4.067 2.273-4.792-.052l-1.85-5.95zm2.555-1.248a.52.52 0 0 0-.642.665l1.849 5.943.034.087a.516.516 0 0 0 .952-.075l.001-.003.55-1.63c.237-.718.78-1.27 1.454-1.539l.138-.05 1.626-.55h.002c.487-.163.467-.85-.002-.997l-5.956-1.85z" clip-rule="evenodd"></path><path d="M15 1c2.599 0 4.678.514 6.082 1.918S23 6.401 23 9v3a1 1 0 1 1-2 0V9c0-2.401-.486-3.822-1.332-4.668S17.401 3 15 3H9c-2.401 0-3.822.486-4.668 1.332S3 6.599 3 9v6c0 2.401.486 3.822 1.332 4.668S6.599 21 9 21h3a1 1 0 1 1 0 2H9c-2.599 0-4.678-.514-6.082-1.918S1 17.599 1 15V9c0-2.599.514-4.678 1.918-6.082S6.401 1 9 1z"></path></g></svg>
+          <span data-i18n="tab.workflow">Spaces</span>
+        </button>
+        <button class="seosonaflow-tab tab-btn" data-tab="tab-prompts" id="tabTemplatesBtn" data-i18n-title="tab.promptsTip">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M9.767 4.045a3.767 3.767 0 0 1 4.63-2.67v.001l4.438 1.189a3.765 3.765 0 0 1 2.669 4.627l-2.29 8.558.002.001a3.767 3.767 0 0 1-4.632 2.672l-.264-.071v1.508a2.87 2.87 0 0 1-2.718 2.87 1 1 0 0 1-.162.02h-5.5a3.784 3.784 0 0 1-3.78-3.78V10.1a3.785 3.785 0 0 1 3.78-3.78h3.215zM5.94 7.82a2.285 2.285 0 0 0-2.28 2.28v8.87a2.284 2.284 0 0 0 2.28 2.28h5.386a1 1 0 0 1 .114-.01c.766 0 1.38-.615 1.38-1.38V10.1a2.285 2.285 0 0 0-2.28-2.28zm8.064-4.997a2.267 2.267 0 0 0-2.788 1.609l-.001.002-.508 1.89A3.785 3.785 0 0 1 14.32 10.1v6.7l.653.173.004.002a2.267 2.267 0 0 0 2.789-1.61l2.29-8.561v-.002a2.267 2.267 0 0 0-1.608-2.789h-.002l-4.44-1.19z"></path></svg>
+          <span data-i18n="tab.prompts">Prompts</span>
+        </button>
+        <button class="seosonaflow-tab tab-btn" data-tab="tab-tasks" data-i18n-title="tab.tasksTip">
+          <svg width="17" height="17" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M13.5 6.188h-9c-1.813 0-2.812.999-2.812 2.812v5.25c0 1.814.999 2.813 2.812 2.813h9c1.813 0 2.813-1 2.813-2.813V9c0-1.814-1-2.812-2.813-2.812m1.688 8.062c0 1.183-.505 1.688-1.688 1.688h-9c-1.183 0-1.687-.505-1.687-1.688V9c0-1.183.504-1.687 1.687-1.687h9c1.183 0 1.688.504 1.688 1.687zM3.938 4.5c0-.31.251-.562.562-.562h9a.563.563 0 0 1 0 1.124h-9a.563.563 0 0 1-.562-.562m1.5-2.25c0-.31.252-.562.562-.562h6a.563.563 0 0 1 0 1.125H6a.563.563 0 0 1-.562-.563m5.792 8.336L8.869 9.141a1.27 1.27 0 0 0-1.93 1.08v2.809c0 .464.24.877.647 1.104a1.27 1.27 0 0 0 1.283-.025l2.36-1.444a1.21 1.21 0 0 0 .584-1.04 1.21 1.21 0 0 0-.583-1.039m-.588 1.118L8.28 13.15a.14.14 0 0 1-.146.003.14.14 0 0 1-.072-.123v-2.81c0-.067.04-.104.072-.123a.14.14 0 0 1 .072-.02q.033 0 .074.023l2.361 1.446h.001q.045.028.045.078a.09.09 0 0 1-.046.08"></path></svg>
+          <span data-i18n="tab.tasks">Tasks</span>
+        </button>
+        
+        <div class="seosonaflow-more-dropdown" id="utilitiesDropdownWrapper" style="position: relative; margin-left: auto;">
+          <button class="seosonaflow-tab tab-btn seosonaflow-tab--icon-only" id="utilitiesDropdownBtn" aria-label="More Tools" title="More Tools">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path fill="currentColor" d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+            </svg>
+          </button>
+          
+          <div class="user-dropdown hidden" id="utilitiesDropdownMenu" style="top: 100%; right: 0; min-width: 150px; margin-top: 8px; z-index: 9999;">
+            <button class="seosonaflow-tab tab-btn user-dropdown-item" data-tab="tab-photos" style="justify-content: flex-start; gap: 8px; border: none;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g fill="currentColor"><path d="M9 5.62a2.38 2.38 0 1 1 0 4.76 2.38 2.38 0 0 1 0-4.76"></path><path fill-rule="evenodd" d="M16.19 2C19.83 2 22 4.17 22 7.81v8.38c0 3.64-2.17 5.81-5.81 5.81H7.81c-2.39 0-4.157-.94-5.078-2.623l-.172-.347a5 5 0 0 1-.171-.422l-.022-.062C2.126 17.855 2 17.069 2 16.19V7.81C2 4.17 4.17 2 7.81 2zM7.81 3.5C4.99 3.5 3.5 4.99 3.5 7.81v8.38c0 .76.13 1.41.35 1.97l3.74-2.51c.8-.54 1.93-.48 2.64.14l.34.28c.78.67 2.04.67 2.82 0l4.16-3.57c.78-.67 2.04-.67 2.82 0l.13.11v-4.8c0-2.82-1.49-4.31-4.31-4.31z" clip-rule="evenodd"></path></g></svg>
+              <span>Photos</span>
+            </button>
+            <button class="seosonaflow-tab tab-btn user-dropdown-item" data-tab="tab-tools" style="justify-content: flex-start; gap: 8px; border: none;">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" fill-rule="evenodd" d="M5.933 2.754c1.29-2.339 4.661-2.339 5.951 0l2.19 3.97.002.001.718 1.308Q15.144 8 15.5 8a7.5 7.5 0 1 1-7.483 7.996H4.4c-2.577 0-4.224-2.762-2.976-5.03l4.51-8.21zm10.473 8.211c.504.916.535 1.913.225 2.776l-.025.064A3.37 3.37 0 0 1 13.43 16h-3.406a5.5 5.5 0 1 0 5.86-5.986zM10.134 3.72c-.53-.96-1.92-.96-2.45 0l-4.508 8.208a1.396 1.396 0 0 0 1.223 2.068h9.03a1.395 1.395 0 0 0 1.307-1.887l-.083-.177-1.28-2.33-.003-.007-1.047-1.906z" clip-rule="evenodd"></path></svg>
+              <span>Tools</span>
+            </button>
+            <button class="seosonaflow-tab tab-btn user-dropdown-item" data-tab="tab-history" style="justify-content: flex-start; gap: 8px; border: none;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g fill="currentColor"><path d="M9.624 2.34a10.5 10.5 0 0 1 7.195.518A10.46 10.46 0 0 1 21.982 7.9a10.5 10.5 0 0 1 .697 7.172c-.62 2.402-2.08 4.5-4.1 5.935a10.48 10.48 0 0 1-6.963 1.891 10.52 10.52 0 0 1-6.533-3.039 1 1 0 0 1 1.414-1.414 8.52 8.52 0 0 0 5.288 2.46 8.48 8.48 0 0 0 5.636-1.528 8.52 8.52 0 0 0 3.321-4.805 8.5 8.5 0 0 0-.564-5.807v-.002A8.46 8.46 0 0 0 16 4.684a8.5 8.5 0 0 0-5.825-.422A8.53 8.53 0 0 0 5.45 7.699h-.001a8.6 8.6 0 0 0-1.377 3.66l.51-.61a1 1 0 0 1 1.535 1.282l-2.18 2.61a1 1 0 0 1-1.536-.001l-2.17-2.61a1 1 0 0 1 1.537-1.28l.318.383a10.6 10.6 0 0 1 1.703-4.548v-.002A10.53 10.53 0 0 1 9.625 2.34"></path><path d="M12 8.401a1 1 0 0 1 1 1v3.55l2.535 1.606a1 1 0 0 1-1.07 1.689l-3-1.9a1 1 0 0 1-.465-.845V9.4a1 1 0 0 1 1-1"></path></g></svg>
+              <span>History</span>
+            </button>
+            <button class="seosonaflow-tab tab-btn user-dropdown-item" data-tab="tab-logs" style="justify-content: flex-start; gap: 8px; border: none;">
+              <svg width="17" height="17" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8.469 15.896c2.206-1.921 5.694-1.953 7.897-.032.32.28.275.772-.055 1.04-.316.254-.773.207-1.088-.048-1.599-1.289-4.017-1.257-5.615.035-.314.254-.77.3-1.085.046-.33-.268-.375-.762-.054-1.042m.447-9.645c.828 0 1.5.784 1.5 1.75s-.672 1.75-1.5 1.75-1.5-.784-1.5-1.75.672-1.75 1.5-1.75"></path><path d="M13.873 1.998q.679 0 1.29.235.63.21 1.168.609l3.116 2.412q.727.562 1.124 1.404a3.8 3.8 0 0 1 .422 1.757v9.578q0 1.664-1.17 2.834-1.172 1.17-2.835 1.171H7.012q-1.664 0-2.834-1.17-1.171-1.173-1.171-2.835V6.003q0-1.664 1.17-2.834 1.172-1.17 2.835-1.171zm-6.861 1.5a2.38 2.38 0 0 0-1.78.75 2.4 2.4 0 0 0-.726 1.756v11.99q-.001 1.031.725 1.78.728.726 1.78.726h9.977q1.054.002 1.78-.726.726-.75.726-1.78V9.751h-3.49a2.72 2.72 0 0 1-2.763-2.74V3.498zM14.74 7.01q0 .515.375.89.375.351.889.351h3.49a2.5 2.5 0 0 0-.305-1.007 2.3 2.3 0 0 0-.655-.796L15.42 4.036a4 4 0 0 0-.327-.21 2.4 2.4 0 0 0-.352-.165z"></path></svg>
+              <span>Logs</span>
+            </button>
+          </div>
+        </div>
+        
+
+      </nav>
+
+      <div class="tabs-content">
+        <!-- ======================= -->
+        <!-- TAB 1: GEN -->
+        <!-- ======================= -->
+        <div id="tab-gen" class="tab-pane active">
+          <!-- All-providers-locked overlay (reuse module-blocked-overlay styles) -->
+          <div id="genAllLockedOverlay" class="module-blocked-overlay hidden">
+            <div class="module-blocked-content">
+              <div class="module-blocked-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+              </div>
+              <h3 class="module-blocked-title" data-i18n="gen.allProvidersLocked">Tất cả provider bị khóa</h3>
+              <p class="module-blocked-desc" data-i18n="gen.allProvidersLockedDesc">Gói hiện tại không bao gồm quyền truy cập provider nào. Nâng cấp để tạo nội dung.</p>
+              <div class="module-blocked-actions">
+                <button type="button" class="module-blocked-btn" id="genAllLockedLoginBtn" data-i18n="auth.login">Đăng nhập</button>
+                <button type="button" class="module-blocked-btn module-blocked-btn-upgrade" id="genAllLockedUpgradeBtn" data-i18n="common.upgrade">Nâng cấp</button>
+              </div>
+            </div>
+          </div>
+          <div class="tab-gen-scroll">
+          <!-- Prompt Input Area -->
+          <section class="section">
+            <div class="section-header">
+              <div style="display:flex;align-items:center;gap:6px;">
+                <label for="promptsArea" style="margin:0;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                    <path d="M12 3a3 3 0 0 0 -3 3v12a3 3 0 0 0 3 3"></path><path d="M6 3a3 3 0 0 1 3 3v12a3 3 0 0 1 -3 3"></path><path d="M13 7h7a1 1 0 0 1 1 1v8a1 1 0 0 1 -1 1h-7"></path><path d="M5 7h-1a1 1 0 0 0 -1 1v8a1 1 0 0 0 1 1h1"></path><path d="M17 12h.01"></path><path d="M13 12h.01"></path>
+                  </svg>
+                  <span data-i18n="gen.prompt">Prompt</span>
+                </label>
+                <div class="prompt-count" style="margin-left:2px;">
+                  <span id="promptCount">0 prompt(s)</span>
+                </div>
+              </div>
+              <label class="toolbar-toggle" for="multiPromptCheck">
+                <input type="checkbox" id="multiPromptCheck" />
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                <span class="toggle-label" data-i18n="gen.multiPrompt">Multi-Prompt</span>
+              </label>
+            </div>
+            <div class="prompt-editor-wrapper">
+              <textarea
+                id="promptsArea"
+                data-i18n-placeholder="gen.promptPlaceholder"
+                placeholder="Nhập prompt tại đây...&#10;&#10;sitting in a cafe&#10;walking on the beach&#10;flying in space"
+              ></textarea>
+              <div class="prompt-editor-toolbar">
+                <button class="prompt-toolbar-icon-btn" id="promptSearchBtn" data-i18n-title="gen.promptSearch" title="Tìm prompt">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Scan"><g fill="currentColor"><path d="M2 14.25c.41 0 .75.34.75.75v2.5c0 2.07 1.68 3.75 3.75 3.75H9c.41 0 .75.34.75.75s-.34.75-.75.75H6.5c-2.89 0-5.25-2.35-5.25-5.25V15c0-.41.34-.75.75-.75m20 1c.41 0 .75.34.75.75v1.5c0 2.9-2.36 5.25-5.25 5.25H16c-.41 0-.75-.34-.75-.75s.34-.75.75-.75h1.5c2.07 0 3.75-1.68 3.75-3.75V16c0-.41.34-.75.75-.75"></path><path fill-rule="evenodd" d="M14 5.75c2.42 0 3.75 1.33 3.75 3.75v1.75H19c.41 0 .75.34.75.75s-.34.75-.75.75h-1.25v1.75c0 2.42-1.33 3.75-3.75 3.75h-4c-2.42 0-3.75-1.33-3.75-3.75v-1.75H5c-.41 0-.75-.34-.75-.75s.34-.75.75-.75h1.25V9.5c0-2.42 1.33-3.75 3.75-3.75zm-6.25 7v1.75c0 1.58.67 2.25 2.25 2.25h4c1.58 0 2.25-.67 2.25-2.25v-1.75zM10 7.25c-1.58 0-2.25.67-2.25 2.25v1.75h8.5V9.5c0-1.58-.67-2.25-2.25-2.25z" clip-rule="evenodd"></path><path d="M9 1.25c.41 0 .75.34.75.75s-.34.75-.75.75H6.5c-2.07 0-3.75 1.68-3.75 3.75V9c0 .41-.34.75-.75.75s-.75-.34-.75-.75V6.5c0-2.9 2.36-5.25 5.25-5.25zm8.5 0c2.89 0 5.25 2.35 5.25 5.25V9c0 .41-.34.75-.75.75s-.75-.34-.75-.75V6.5c0-2.07-1.68-3.75-3.75-3.75H15c-.41 0-.75-.34-.75-.75s.34-.75.75-.75z"></path></g></svg>
+                </button>
+                <button class="btn btn-secondary btn-xs" id="chatAIBtn" data-i18n-title="gen.promptAssistantTitle" title="Trợ lý viết prompt — tạo loạt prompt từ một ý tưởng">
+                  <svg width="12" height="12" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Prompt Assistant"><path d="M3.47158 3.7689C4.43604 4.12493 5.19375 4.88096 5.55044 5.84302C5.64791 6.10611 5.89926 6.28072 6.18038 6.28072C6.46138 6.28072 6.71273 6.10611 6.81033 5.84328C7.16715 4.88096 7.92499 4.12493 8.88932 3.7689C9.15287 3.67152 9.32787 3.42073 9.32787 3.14036C9.32787 2.85999 9.15287 2.6092 8.88932 2.51182C7.92499 2.15579 7.16728 1.39976 6.81033 0.437441C6.71273 0.17461 6.46138 0 6.18038 0C5.89926 0 5.64804 0.17461 5.55044 0.437703C5.19362 1.39976 4.43591 2.15579 3.47158 2.51182C3.20803 2.6092 3.03303 2.85999 3.03303 3.14036C3.03303 3.42073 3.20803 3.67152 3.47158 3.7689ZM6.18038 2.07621C6.4783 2.48407 6.83814 2.84324 7.24704 3.14036C6.83801 3.43748 6.4783 3.79639 6.18038 4.20451C5.8826 3.79639 5.52289 3.43748 5.11386 3.14036C5.52276 2.84324 5.8826 2.48407 6.18038 2.07621ZM14.9858 15.163C14.4549 14.967 14.0377 14.5507 13.8412 14.0209C13.7436 13.7578 13.4923 13.5832 13.2113 13.5832C12.9302 13.5832 12.6788 13.7578 12.5813 14.0209C12.385 14.5507 11.9678 14.967 11.4368 15.163C11.1731 15.2604 10.9981 15.5112 10.9981 15.7916C10.9981 16.072 11.1731 16.3228 11.4368 16.4201C11.9678 16.6162 12.385 17.0324 12.5813 17.5623C12.6788 17.8254 12.9302 18 13.2113 18C13.4923 18 13.7436 17.8254 13.8412 17.5623C14.0377 17.0324 14.4549 16.6162 14.9858 16.4201C15.2495 16.3228 15.4245 16.072 15.4245 15.7916C15.4245 15.5112 15.2495 15.2604 14.9858 15.163ZM13.2113 16.0521C13.1293 15.9604 13.0422 15.8735 12.9502 15.7916C13.0422 15.7097 13.1293 15.6227 13.2113 15.5311C13.2934 15.6227 13.3805 15.7097 13.4723 15.7916C13.3805 15.8735 13.2934 15.9604 13.2113 16.0521ZM13.6885 9.89753L15.3237 8.25012C15.8941 7.67524 15.8918 6.74224 15.3186 6.17025L13.5778 4.43331C13.2988 4.15477 12.9277 4.00137 12.5329 4.00137C12.1382 4.00137 11.7671 4.15477 11.4882 4.43331L9.83338 6.08445C9.83292 6.08491 9.83233 6.08523 9.83187 6.08569C9.83145 6.08608 9.83122 6.08661 9.83076 6.08707L2.44678 13.4546C2.32071 13.5803 2.25 13.7507 2.25 13.9285V16.8463C2.25 17.2165 2.55067 17.5165 2.92166 17.5165H5.846C6.02519 17.5165 6.19704 17.445 6.32324 17.3178L13.6885 9.89753ZM12.4381 5.38097C12.5033 5.31578 12.5631 5.31631 12.6279 5.38097L14.3687 7.1179C14.4208 7.17 14.4209 7.25482 14.3691 7.30717L13.2069 8.47813L11.2613 6.55513L12.4381 5.38097ZM5.56592 16.1762H3.59332V14.206L10.3113 7.50299L12.2616 9.4305L5.56592 16.1762Z" fill="currentColor"></path></svg>
+                  <span>Prompt Assistant</span>
+                </button>
+                <button class="btn btn-secondary btn-xs" id="importTxtBtn" data-i18n-title="gen.importTxtTitle" title="Import prompts từ file .txt">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="12" y1="18" x2="12" y2="12"></line>
+                    <polyline points="9 15 12 12 15 15"></polyline>
+                  </svg>
+                  <span data-i18n="gen.importTxt">Import .txt</span>
+                </button>
+                <input type="file" id="importTxtFile" accept=".txt,.csv" class="hidden" />
+                <button class="btn btn-secondary btn-xs" id="promptMergeBtn" data-i18n-title="pmerge.btnTitle" title="Tạo prompt hàng loạt từ bảng (CSV) — ghép cột vào template">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                    <path d="M3 9h18M3 15h18M9 3v18M15 3v18"></path>
+                  </svg>
+                  <span data-i18n="pmerge.btn">Merge bảng</span>
+                </button>
+                <button class="prompt-header-save-btn" id="promptSaveBtn" data-i18n-title="gen.promptSave" title="Lưu prompt hiện tại">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M21 11.0975V16.0909C21 19.1875 21 20.7358 20.2659 21.4123C19.9158 21.735 19.4739 21.9377 19.0031 21.9915C18.016 22.1045 16.8633 21.0849 14.5578 19.0458C13.5388 18.1445 13.0292 17.6938 12.4397 17.5751C12.1494 17.5166 11.8506 17.5166 11.5603 17.5751C10.9708 17.6938 10.4612 18.1445 9.44216 19.0458C7.13673 21.0849 5.98402 22.1045 4.99692 21.9915C4.52615 21.9377 4.08421 21.735 3.73411 21.4123C3 20.7358 3 19.1875 3 16.0909V11.0975C3 6.80891 3 4.6646 4.31802 3.3323C5.63604 2 7.75736 2 12 2C16.2426 2 18.364 2 19.682 3.3323C21 4.6646 21 6.80891 21 11.0975ZM8.25 6C8.25 5.58579 8.58579 5.25 9 5.25H15C15.4142 5.25 15.75 5.58579 15.75 6C15.75 6.41421 15.4142 6.75 15 6.75H9C8.58579 6.75 8.25 6.41421 8.25 6Z" fill="currentColor"/>
+                  </svg>
+                </button>
+              </div>
+              <div class="multi-prompt-hint hidden" id="multiPromptHint">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <span data-i18n="gen.multiPromptHint">Mỗi prompt cách nhau bằng 1 dòng trống</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- CG-5.1: Provider Selector (Flow / ChatGPT) — Tab pill style -->
+          <section class="section">
+            <div class="provider-tabs" id="genProviderTabs" role="tablist">
+              <button type="button" class="provider-tab provider-tab--active" data-provider="flow" role="tab" aria-selected="true">
+                <svg class="provider-tab-icon" width="14" height="14" viewBox="0 0 24 24"><path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="#3186FF"/><path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="url(#ptab-flow-0)"/><path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="url(#ptab-flow-1)"/><path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="url(#ptab-flow-2)"/><defs><linearGradient gradientUnits="userSpaceOnUse" id="ptab-flow-0" x1="7" x2="11" y1="15.5" y2="12"><stop stop-color="#08B962"/><stop offset="1" stop-color="#08B962" stop-opacity="0"/></linearGradient><linearGradient gradientUnits="userSpaceOnUse" id="ptab-flow-1" x1="8" x2="11.5" y1="5.5" y2="11"><stop stop-color="#F94543"/><stop offset="1" stop-color="#F94543" stop-opacity="0"/></linearGradient><linearGradient gradientUnits="userSpaceOnUse" id="ptab-flow-2" x1="3.5" x2="17.5" y1="13.5" y2="12"><stop stop-color="#FABC12"/><stop offset=".46" stop-color="#FABC12" stop-opacity="0"/></linearGradient></defs></svg>
+                <span data-i18n="gen.providerFlow">Google Flow</span>
+              </button>
+              <button type="button" class="provider-tab" data-provider="chatgpt" role="tab" aria-selected="false">
+                <svg class="provider-tab-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 4.981 4.18a5.985 5.985 0 0 0-3.998 2.9 6.046 6.046 0 0 0 .743 7.097 5.98 5.98 0 0 0 .51 4.911 6.051 6.051 0 0 0 6.515 2.9A5.985 5.985 0 0 0 13.26 24a6.056 6.056 0 0 0 5.772-4.206 5.99 5.99 0 0 0 3.997-2.9 6.056 6.056 0 0 0-.747-7.073zM13.26 22.43a4.476 4.476 0 0 1-2.876-1.04l.141-.081 4.779-2.758a.795.795 0 0 0 .392-.681v-6.737l2.02 1.168a.071.071 0 0 1 .038.052v5.583a4.504 4.504 0 0 1-4.494 4.494zM3.6 18.304a4.47 4.47 0 0 1-.535-3.014l.142.085 4.783 2.759a.771.771 0 0 0 .78 0l5.843-3.369v2.332a.08.08 0 0 1-.033.062L9.74 19.95a4.5 4.5 0 0 1-6.14-1.646zM2.34 7.896a4.485 4.485 0 0 1 2.366-1.973V11.6a.766.766 0 0 0 .388.676l5.815 3.355-2.02 1.168a.076.076 0 0 1-.071 0l-4.83-2.786A4.504 4.504 0 0 1 2.34 7.872zm16.597 3.855l-5.833-3.387L15.119 7.2a.076.076 0 0 1 .071 0l4.83 2.791a4.494 4.494 0 0 1-.676 8.105v-5.678a.79.79 0 0 0-.407-.667zm2.01-3.023l-.141-.085-4.774-2.782a.776.776 0 0 0-.785 0L9.409 9.23V6.897a.066.066 0 0 1 .028-.061l4.83-2.787a4.5 4.5 0 0 1 6.68 4.66zm-12.64 4.135l-2.02-1.164a.08.08 0 0 1-.038-.057V6.075a4.5 4.5 0 0 1 7.375-3.453l-.142.08L8.704 5.46a.795.795 0 0 0-.393.681zm1.097-2.365l2.602-1.5 2.607 1.5v2.999l-2.597 1.5-2.607-1.5z"/></svg>
+                <span data-i18n="gen.providerChatGPT">ChatGPT</span>
+              </button>
+              <button type="button" class="provider-tab" data-provider="grok" role="tab" aria-selected="false">
+                <svg class="provider-tab-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd"><path d="M9.27 15.29l7.978-5.897c.391-.29.95-.177 1.137.272.98 2.369.542 5.215-1.41 7.169-1.951 1.954-4.667 2.382-7.149 1.406l-2.711 1.257c3.889 2.661 8.611 2.003 11.562-.953 2.341-2.344 3.066-5.539 2.388-8.42l.006.007c-.983-4.232.242-5.924 2.75-9.383.06-.082.12-.164.179-.248l-3.301 3.305v-.01L9.267 15.292M7.623 16.723c-2.792-2.67-2.31-6.801.071-9.184 1.761-1.763 4.647-2.483 7.166-1.425l2.705-1.25a7.808 7.808 0 00-1.829-1A8.975 8.975 0 005.984 5.83c-2.533 2.536-3.33 6.436-1.962 9.764 1.022 2.487-.653 4.246-2.34 6.022-.599.63-1.199 1.259-1.682 1.925l7.62-6.815"/></svg>
+                <span data-i18n="gen.providerGrok">Grok</span>
+              </button>
+              <!-- [FIX 2026-07-09] Gỡ pill Gemini + Claude khỏi tab Gen: cả hai là provider TEXT/phân-tích
+                   (gemini:submitAndWait + claude chỉ trả text, không có automation gen ảnh/video). Chúng
+                   thuộc Prompt Assistant + i2p. Tab Gen chỉ giữ provider gen ảnh/video thật: Flow/ChatGPT/Grok.
+                   Nano Banana (model của Gemini) vẫn tạo được qua provider Flow. -->
+              <!-- Hidden input giữ giá trị để code legacy đọc qua #genProvider.value -->
+              <input type="hidden" id="genProvider" value="flow" />
+            </div>
+          </section>
+
+          <!-- Generation Settings - Compact bar -->
+          <section class="section">
+            <div class="section-header">
+              <label>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+                  <line x1="4" y1="21" x2="4" y2="14"></line>
+                  <line x1="4" y1="10" x2="4" y2="3"></line>
+                  <line x1="12" y1="21" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12" y2="3"></line>
+                  <line x1="20" y1="21" x2="20" y2="16"></line>
+                  <line x1="20" y1="12" x2="20" y2="3"></line>
+                  <line x1="1" y1="14" x2="7" y2="14"></line>
+                  <line x1="9" y1="8" x2="15" y2="8"></line>
+                  <line x1="17" y1="16" x2="23" y2="16"></line>
+                </svg>
+                <span data-i18n="gen.settings">Cài đặt</span>
+              </label>
+            </div>
+
+            <!-- Compact controls bar -->
+            <div class="gen-compact-bar" id="genCompactBar" data-gen-mode="image">
+              <!-- CLUSTER 1: TOGGLE -->
+              <div class="setting-cluster cluster-toggle">
+              <!-- Gen Type Toggle (Image/Video) -->
+              <div class="gen-compact-item" id="genTypeTabs">
+                <div class="gen-type-toggle" id="genTypeToggle">
+                  <button type="button" class="gen-type-btn active" data-value="Image" data-i18n-title="gen.typeImage" title="Tạo ảnh">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                      <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                      <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                  </button>
+                  <button type="button" class="gen-type-btn" data-value="Video" data-i18n-title="gen.typeVideo" title="Tạo video">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="m22 8-6 4 6 4V8Z"></path>
+                      <rect x="2" y="6" width="14" height="12" rx="2" ry="2"></rect>
+                    </svg>
+                  </button>
+                </div>
+                <!-- Hidden select for compatibility -->
+                <select id="genType" class="hidden">
+                  <option value="Image">Ảnh</option>
+                  <option value="Video">Video</option>
+                </select>
+              </div>
+              </div>
+              <!-- CLUSTER 2: SETTINGS -->
+              <div class="setting-cluster cluster-settings">
+              <div class="gen-compact-item" id="imageModelContainer" data-cg5-model="1">
+                <div class="input-group select-group compact-select">
+                  <select id="imageModel">
+                    <option value="Nano Banana Pro">Nano Banana Pro</option>
+                    <option value="Nano Banana 2">Nano Banana 2</option>
+                  </select>
+                  <svg class="select-arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+              </div>
+              <!-- ChatGPT model (Instant/Thinking — GPT-5.5) — chỉ hiện khi provider='chatgpt' -->
+              <div class="gen-compact-item hidden" id="chatgptModelContainer">
+                <div class="input-group select-group compact-select">
+                  <select id="chatgptModel">
+                    <option value="Instant">Instant</option>
+                    <option value="Thinking">Thinking</option>
+                  </select>
+                  <svg class="select-arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+              </div>
+              <!-- Gemini model -->
+              <div class="gen-compact-item hidden" id="geminiModelContainer">
+                <div class="input-group select-group compact-select">
+                  <select id="geminiModel">
+                    <option value="1.5-flash-lite">3.1 Flash-Lite</option>
+                    <option value="1.5-flash">3.5 Flash</option>
+                    <option value="1.5-pro">3.1 Pro</option>
+                  </select>
+                  <svg class="select-arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+              </div>
+              <!-- Claude model -->
+              <div class="gen-compact-item hidden" id="claudeModelContainer">
+                <div class="input-group select-group compact-select">
+                  <select id="claudeModel">
+                    <option value="sonnet-5">Sonnet 5</option>
+                    <option value="opus-4.8">👑 Opus 4.8 (Premium)</option>
+                    <option value="fable-5">👑 Fable 5 (Premium)</option>
+                    <option value="haiku-4.5">Haiku 4.5</option>
+                  </select>
+                  <svg class="select-arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+              </div>
+              <div class="gen-compact-item hidden" id="videoModelContainer">
+                <div class="input-group select-group compact-select">
+                  <select id="videoModel">
+                    <option value="Omni Flash">Omni Flash</option>
+                    <option value="Veo 3.1 Lite">Veo 3.1 Lite</option>
+                    <option value="Veo 3.1 Fast">Veo 3.1 Fast</option>
+                    <option value="Veo 3.1 Quality">Veo 3.1 Quality</option>
+                    <option value="Veo 3.1 Lite [Lower Priority]">Veo 3.1 Lite [Lower Priority]</option>
+                  </select>
+                  <svg class="select-arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+              </div>
+              <!-- Voice + Character moved xuống sau qty (1 hàng với Style) — xem #quantitySection. -->
+              <!-- Flex wrap break: chỉ active khi Video mode (data-gen-mode="video" trên #genCompactBar).
+                   Đẩy TẤT CẢ setting SAU Model (InputType + Duration + Ratio + Quantity + Style + ...)
+                   xuống dòng dưới. Image mode giữ 1 hàng compact (break hidden). -->
+              <!-- Removed break video -->
+              <div class="gen-compact-item hidden" id="videoInputTypeContainer">
+                <div class="input-group select-group compact-select">
+                  <select id="videoInputType">
+                    <option value="Frames">Frames</option>
+                    <option value="Ingredients">Ingredients</option>
+                  </select>
+                  <svg class="select-arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+              </div>
+              <!-- Flow video duration — chỉ hiển thị khi provider='flow' && genType='Video' -->
+              <div class="gen-compact-item hidden" id="flowVideoDurationContainer">
+                <div class="input-group select-group compact-select">
+                  <select id="flowVideoDuration" data-i18n-title="flow.videoDuration" title="Thời lượng video">
+                    <!-- Options populated from server via GenTab.updateFlowVideoDurationOptions() -->
+                  </select>
+                  <svg class="select-arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+              </div>
+              <!-- G: Grok video duration — chỉ hiển thị khi provider='grok' && genType='Video' -->
+              <div class="gen-compact-item hidden" id="grokDurationContainer">
+                <div class="input-group select-group compact-select">
+                  <select id="grokDuration" data-i18n-title="grok.videoDuration6s" title="Thời lượng video">
+                    <option value="6s">6s</option>
+                    <option value="10s">10s</option>
+                  </select>
+                  <svg class="select-arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+              </div>
+              <!-- G: Grok video resolution — chỉ hiển thị khi provider='grok' && genType='Video' -->
+              <div class="gen-compact-item hidden" id="grokResolutionContainer">
+                <div class="input-group select-group compact-select">
+                  <select id="grokResolution" data-i18n-title="grok.videoResolution720p" title="Độ phân giải video">
+                    <option value="480p">480p</option>
+                    <option value="720p">720p</option>
+                  </select>
+                  <svg class="select-arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+              </div>
+              <!-- G: Grok image quality — chỉ hiển thị khi provider='grok' && genType='Image' (Grok update 2026-04) -->
+              <div class="gen-compact-item hidden" id="grokImageQualityContainer">
+                <div class="input-group select-group compact-select">
+                  <select id="grokImageQuality" data-i18n-title="grok.imageQualityHint" title="Chất lượng ảnh">
+                    <option value="speed" data-i18n="grok.imageQualitySpeed">Nhanh</option>
+                    <option value="quality" data-i18n="grok.imageQualityQuality">Chất lượng</option>
+                  </select>
+                  <svg class="select-arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+              </div>
+              <!-- ChatGPT: toggle xóa tin nhắn sau khi gen thành công — chỉ hiển thị khi provider='chatgpt' -->
+              <div class="gen-compact-item hidden" id="chatgptDeleteAfterGenContainer">
+                <label class="gen-compact-toggle" title="Xóa tin nhắn sau khi gen thành công" data-i18n-title="settings.chatgptDeleteAfterGen">
+                  <input type="checkbox" id="genChatgptDeleteAfterGen" />
+                  <span class="gen-compact-toggle-icon">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                  </span>
+                  <span class="gen-compact-toggle-label" data-i18n="gen.deleteAfterGen">Xóa sau gen</span>
+                </label>
+              </div>
+              <div class="gen-compact-item" id="ratioSection">
+                <div class="input-group select-group compact-select">
+                  <!-- Placeholder options (FOUC prevention). GenTab.updateRatioOptions() overwrite tại init từ ProviderConfigManager.getRatiosSync('flow', mode). -->
+                  <select id="aspectRatio">
+                    <option value="16:9">▬ 16:9</option>
+                    <option value="4:3">▭ 4:3</option>
+                    <option value="1:1">□ 1:1</option>
+                    <option value="3:4">▯ 3:4</option>
+                    <option value="9:16">▮ 9:16</option>
+                  </select>
+                  <svg class="select-arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+              </div>
+              <div class="gen-compact-item" id="quantitySection">
+                <div class="input-group compact-qty">
+                  <button class="compact-qty-btn" id="genQtyMinus" type="button" data-i18n-title="gen.quantityTitle" title="Giảm số lượng">-</button>
+                  <input type="number" id="quantitySelect" data-i18n-title="gen.quantityTitle" title="Số lượng ảnh mỗi lần tạo" min="1" max="4" value="1" />
+                  <button class="compact-qty-btn" id="genQtyPlus" type="button" data-i18n-title="gen.quantityTitle" title="Tăng số lượng">+</button>
+                </div>
+              </div>
+              <!-- Break LUÔN active → Character/Voice/Style xuống 1 line riêng -->
+              <!-- Removed break always -->
+              </div>
+              <!-- CLUSTER 3: ADDONS -->
+              <div class="setting-cluster cluster-addons">
+              <!-- Flow Character Selector — line riêng (Flow image+video) -->
+              <div class="gen-compact-item hidden" id="genCharacterContainer">
+                <button type="button" class="voice-picker-trigger" id="genCharacterTrigger" data-i18n-title="character.pickerTitle" title="Chọn nhân vật">
+                  <span class="voice-picker-trigger-thumb-svg" id="genCharacterTriggerThumb">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="8" r="4"></circle>
+                      <path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"></path>
+                    </svg>
+                  </span>
+                  <span class="voice-picker-label" id="genCharacterLabel" data-i18n="character.none">Character</span>
+                  <svg class="voice-picker-arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+                <input type="hidden" id="genCharacterSelect" value="" />
+              </div>
+              <!-- Flow Voice Selector — 1 hàng sau qty (chỉ video) -->
+              <div class="gen-compact-item hidden" id="genVideoVoiceContainer">
+                <button type="button" class="voice-picker-trigger" id="genVideoVoiceTrigger" data-i18n-title="voice.pickerTitle" title="Choose voice">
+                  <span class="voice-picker-trigger-thumb-svg" id="genVideoVoiceTriggerThumb">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                      <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                      <line x1="12" y1="19" x2="12" y2="23"></line>
+                      <line x1="8" y1="23" x2="16" y2="23"></line>
+                    </svg>
+                  </span>
+                  <span class="voice-picker-label" id="genVideoVoiceLabel" data-i18n="voice.random">Random voice</span>
+                  <svg class="voice-picker-arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+                <input type="hidden" id="genVideoVoiceSelect" value="" />
+              </div>
+              <!-- Đã bỏ input "delay between prompts" trên gen tab — dùng chung setting #delayBetweenPrompts trong Settings popup. -->
+              <!-- Q1.7: Addon Prompts / Phong Cách - Custom Search Dropdown -->
+              <div class="gen-compact-item">
+                <div class="addon-prompt-dropdown" id="addonPromptDropdown">
+                  <button type="button" class="addon-prompt-trigger" id="addonPromptTrigger" data-i18n-title="gen.styleTitle" title="Phong cách">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z"></path>
+                      <path d="M17 4a2 2 0 0 0 2 2a2 2 0 0 0 -2 2a2 2 0 0 0 -2 -2a2 2 0 0 0 2 -2"></path>
+                    </svg>
+                    <span class="addon-prompt-label" data-i18n="gen.style">Phong cách</span>
+                    <svg class="addon-prompt-arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  </button>
+                  <div class="addon-prompt-popup hidden" id="addonPromptPopup">
+                    <div class="addon-prompt-search">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                      </svg>
+                      <input type="text" id="addonPromptSearch" data-i18n-placeholder="gen.styleSearch" placeholder="Tìm phong cách..." />
+                    </div>
+                    <div class="addon-prompt-list" id="addonPromptList">
+                      <!-- Populated by JS -->
+                    </div>
+                  </div>
+                </div>
+                <!-- Hidden select for form compatibility -->
+                <select id="addonPromptSelect" class="hidden" title="Phong cách">
+                  <option value="">Phong cách</option>
+                </select>
+              </div>
+            </div>
+          </section>
+
+          <!-- Reference Images (Image / Video+Ingredients) -->
+          <section class="section" id="refImagesSection">
+            <div class="section-header section-header--premium">
+              <div class="section-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                <span data-i18n="gen.refImages">Ảnh tham chiếu</span>
+              </div>
+              <div class="section-header-actions">
+                <button class="btn btn-icon-only" id="refFindRefsBtn" title="Tìm mẫu từ Prompt" style="position: relative;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                </button>
+                <button class="btn btn-icon-only" id="refSearchBtn" data-target="photos-search" title="Tìm kiếm">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </button>
+                <div class="premium-select-wrapper ref-mode-select" title="Cách dùng ảnh tham chiếu">
+                  <svg class="premium-select-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                  <select id="refImageMode">
+                    <option value="all" data-i18n="gen.refModeAll">Tất cả</option>
+                    <option value="mention">@Mention</option>
+                    <option value="sequential" data-i18n="gen.refModeSequential">Thứ tự</option>
+                    <option value="none" data-i18n="gen.refModeNone">Không dùng</option>
+                  </select>
+                  <svg class="premium-select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+              </div>
+            </div>
+
+            <div class="ref-premium-toolbar" id="refToolbarActions">
+              <button class="ref-premium-upload-btn" id="openImagePickerBtn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                <span data-i18n="gen.selectUploadImage">Chọn ảnh / Kéo thả vào đây</span>
+                <svg class="ref-btn-spinner hidden" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="12"></circle></svg>
+              </button>
+              <button class="ref-premium-capture-btn" id="screenCaptureBtn" data-i18n-tooltip="gen.screenCapture" data-tooltip-pos="bottom">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="4" fill="currentColor"></circle><path d="M22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C21.5093 4.43821 21.8356 5.80655 21.9449 8"></path></svg>
+              </button>
+            </div>
+
+            <!-- Drag hint + Stats -->
+            <div class="ref-toolbar" id="refToolbar">
+              <div class="ref-drag-hint hidden" id="refImagesDragHint">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="5 9 2 12 5 15"></polyline>
+                  <polyline points="9 5 12 2 15 5"></polyline>
+                  <polyline points="15 19 12 22 9 19"></polyline>
+                  <polyline points="19 9 22 12 19 15"></polyline>
+                  <line x1="2" y1="12" x2="22" y2="12"></line>
+                  <line x1="12" y1="2" x2="12" y2="22"></line>
+                </svg>
+                <span id="refDragHintText" data-i18n="gen.dragToSort">Kéo thả để sắp xếp</span>
+              </div>
+              <!-- Stats count (separate from drag-hint for independent visibility) -->
+              <span class="ref-ratio-count" id="refRatioCount"></span>
+            </div>
+
+            <!-- Thumbnails grid -->
+            <div id="refImagesPreview" class="ref-grid"></div>
+
+            <!-- Mention helper bar (only visible in mention mode) -->
+            <div class="ref-mention-bar hidden" id="mentionHelper">
+              <span class="ref-mention-label" data-i18n="gen.imageName">Tên ảnh:</span>
+              <div class="ref-mention-tags" id="mentionHelperTags"></div>
+            </div>
+
+            <!-- Hint: max ref images per prompt (visible in mention mode) -->
+            <div class="ref-limit-hint hidden" id="refLimitHint">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              <span id="refLimitHintText"></span>
+            </div>
+
+            <!-- Image count + Save-to-album button (moved to right of ref-count per user request) -->
+            <div class="ref-count-row" id="refCountRow">
+              <div class="ref-count hidden" id="refImagesCount"></div>
+              <button class="ref-btn-album hidden" id="saveToAlbumBtn" data-tooltip="Lưu vào album" data-i18n-tooltip="gen.saveToAlbum" title="Lưu vào album">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 11V14M12 14V17M12 14H15M12 14H9M6 7H18M8 5H16M6 9H18C19.1046 9 20 9.89543 20 11V17C20 18.1046 19.1046 19 18 19H6C4.89543 19 4 18.1046 4 17V11C4 9.89543 4.89543 9 6 9Z"/>
+                </svg>
+              </button>
+            </div>
+
+            <input type="hidden" id="fileIds" value="" />
+            <div class="hidden" id="refModeSelectRow"></div>
+          </section>
+
+          <!-- Video Frames Config (Video+Frames only) -->
+          <section class="section hidden" id="videoFramesSection">
+            <div class="section-header">
+              <label>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -2px; margin-right: 4px;">
+                  <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                  <line x1="7" y1="2" x2="7" y2="22"></line>
+                  <line x1="17" y1="2" x2="17" y2="22"></line>
+                  <line x1="2" y1="12" x2="22" y2="12"></line>
+                  <line x1="2" y1="7" x2="7" y2="7"></line>
+                  <line x1="2" y1="17" x2="7" y2="17"></line>
+                  <line x1="17" y1="7" x2="22" y2="7"></line>
+                  <line x1="17" y1="17" x2="22" y2="17"></line>
+                </svg>
+                <span data-i18n="gen.videoFrames">Video Frames</span>
+              </label>
+            </div>
+            <!-- Single-prompt: global frame pair -->
+            <div id="globalFrameConfig" class="frame-config">
+              <div class="frame-slot" id="genTabFrame1Slot">
+                <div class="frame-slot-header">
+                  <svg class="frame-slot-icon" viewBox="0 0 11 10" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7.5L8.9 7.5C9.46005 7.5 9.74008 7.5 9.95399 7.39101C10.1422 7.29513 10.2951 7.14215 10.391 6.95399C10.5 6.74008 10.5 6.46005 10.5 5.9V4.1C10.5 3.53995 10.5 3.25992 10.391 3.04601C10.2951 2.85785 10.1422 2.70487 9.95399 2.60899C9.74008 2.5 9.46005 2.5 8.9 2.5L5 2.5M3 7.5H2.1C1.53995 7.5 1.25992 7.5 1.04601 7.39101C0.857847 7.29513 0.704867 7.14215 0.608994 6.95399C0.5 6.74008 0.5 6.46005 0.5 5.9V4.1C0.5 3.53995 0.5 3.25992 0.608994 3.04601C0.704867 2.85785 0.857847 2.70487 1.04601 2.60899C1.25992 2.5 1.53995 2.5 2.1 2.5H3M3 0.5L3 9.5M1.75 9.5L4.25 9.5M1.75 0.499996L4.25 0.5"></path></svg>
+                  <span class="frame-slot-label" data-i18n="gen.frameStart">Start</span>
+                </div>
+                <div class="frame-slot-body" id="genTabFrame1Body">
+                  <div class="frame-dropzone" id="genTabFrame1PickBtn">
+                    <svg class="frame-dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                    <span class="frame-dropzone-text" data-i18n="gen.addFrame">Add</span>
+                  </div>
+                </div>
+                <input type="hidden" id="genTabFrame1FileId" value="" />
+              </div>
+              <div class="frame-slot" id="genTabFrame2Slot">
+                <div class="frame-slot-header">
+                  <svg class="frame-slot-icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 3.5H2.6C2.03995 3.5 1.75992 3.5 1.54601 3.60899C1.35785 3.70487 1.20487 3.85785 1.10899 4.04601C1 4.25992 1 4.53995 1 5.1V6.9C1 7.46005 1 7.74008 1.10899 7.95399C1.20487 8.14215 1.35785 8.29513 1.54601 8.39101C1.75992 8.5 2.03995 8.5 2.6 8.5H6.5M8.5 3.5H9.4C9.96005 3.5 10.2401 3.5 10.454 3.60899C10.6422 3.70487 10.7951 3.85785 10.891 4.04601C11 4.25992 11 4.53995 11 5.1V6.9C11 7.46005 11 7.74008 10.891 7.95399C10.7951 8.14215 10.6422 8.29513 10.454 8.39101C10.2401 8.5 9.96005 8.5 9.4 8.5H8.5M8.5 10.5L8.5 1.5M9.75 1.5L7.25 1.5M9.75 10.5L7.25 10.5"></path></svg>
+                  <span class="frame-slot-label" data-i18n="gen.frameEnd">End</span>
+                </div>
+                <div class="frame-slot-body" id="genTabFrame2Body">
+                  <div class="frame-dropzone" id="genTabFrame2PickBtn">
+                    <svg class="frame-dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                    <span class="frame-dropzone-text" data-i18n="gen.addFrame">Add</span>
+                  </div>
+                </div>
+                <input type="hidden" id="genTabFrame2FileId" value="" />
+              </div>
+            </div>
+            <!-- Multi-prompt: per-prompt frame pairs (rendered dynamically by GenTab.js) -->
+            <div id="perPromptFramesContainer" class="hidden"></div>
+          </section>
+
+          <!-- Auto Download: toggle + subfolder + resolution in one row -->
+          <section class="section">
+            <div class="auto-download-row">
+              <label class="toolbar-toggle" for="genTabAutoDownload" data-i18n-title="gen.autoDownloadTitle" title="Tự động tải xuống">
+                <input type="checkbox" id="genTabAutoDownload" />
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                <span class="toggle-label" data-i18n="gen.autoDownload">Tự động tải</span>
+              </label>
+              <!-- Subfolder input (visible when toggle ON) — icon nằm BÊN TRONG input bên trái -->
+              <span class="gen-dl-subfolder-wrap hidden" id="genTabSubFolderWrap">
+                <svg class="gen-dl-subfolder-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 10V16M12 16L10 14M12 16L14 14M12.0627 6.06274L11.9373 5.93726C11.5914 5.59135 11.4184 5.4184 11.2166 5.29472C11.0376 5.18506 10.8425 5.10425 10.6385 5.05526C10.4083 5 10.1637 5 9.67452 5H6.2C5.0799 5 4.51984 5 4.09202 5.21799C3.71569 5.40973 3.40973 5.71569 3.21799 6.09202C3 6.51984 3 7.07989 3 8.2V15.8C3 16.9201 3 17.4802 3.21799 17.908C3.40973 18.2843 3.71569 18.5903 4.09202 18.782C4.51984 19 5.07989 19 6.2 19H17.8C18.9201 19 19.4802 19 19.908 18.782C20.2843 18.5903 20.5903 18.2843 20.782 17.908C21 17.4802 21 16.9201 21 15.8V10.2C21 9.0799 21 8.51984 20.782 8.09202C20.5903 7.71569 20.2843 7.40973 19.908 7.21799C19.4802 7 18.9201 7 17.8 7H14.3255C13.8363 7 13.5917 7 13.3615 6.94474C13.1575 6.89575 12.9624 6.81494 12.7834 6.70528C12.5816 6.5816 12.4086 6.40865 12.0627 6.06274Z"/>
+                </svg>
+                <input type="text" id="genTabSubFolder" class="gen-dl-subfolder-input" value="seosonaflow-01" data-i18n-placeholder="gen.folder" placeholder="Folder" data-i18n-title="gen.subfolderTitle" title="Thư mục con lưu ảnh tải về" />
+              </span>
+              <!-- Image resolution (1K/2K) -->
+              <span class="dl-res-select-wrap hidden" id="genTabDownloadResWrap">
+                <svg class="dl-res-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                <select id="genTabDownloadResolution" class="pill-select pill-select-sm" data-i18n-title="gen.imageQuality" title="Chất lượng ảnh tải về">
+                  <option value="1k">1K</option>
+                  <option value="2k">2K (Pro)</option>
+                  <option value="4k">4K (Ultra)</option>
+                  <option value="original">Gốc (Full size)</option>
+                </select>
+              </span>
+              <!-- Video resolution (720p/1080p) -->
+              <span class="dl-res-select-wrap hidden" id="genTabVideoDownloadResWrap">
+                <svg class="dl-res-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                <select id="genTabVideoDownloadResolution" class="pill-select pill-select-sm" data-i18n-title="gen.videoQuality" title="Chất lượng video tải về">
+                  <option value="720p">720p</option>
+                  <option value="1080p" selected>1080p</option>
+                  <option value="4k">4K (Ultra)</option>
+                </select>
+              </span>
+              <!-- Công tắc NHÌN THẤY NGAY: chôn trong Settings thì người dùng không biết
+                   file mình vừa tải đã được xử lý hay chưa. Cùng khoá lưu với ô tick Settings. -->
+              <label class="toolbar-toggle" for="genTabWmVideo" id="genTabWmVideoWrap"
+                     data-i18n-title="gen.removeWatermarkVideoTitle" title="Tự xoá watermark khỏi video tải về (encode lại, chậm hơn)">
+                <input type="checkbox" id="genTabWmVideo" />
+                <span data-i18n="gen.removeWatermarkVideo">Không watermark</span>
+              </label>
+              <label class="toolbar-toggle" for="genTabScrubMeta" id="genTabScrubMetaWrap"
+                     data-i18n-title="gen.scrubMetadataTitle" title="Dọn GPS, thiết bị, prompt khỏi file tải về (không nén lại)">
+                <input type="checkbox" id="genTabScrubMeta" />
+                <span data-i18n="gen.scrubMetadata">Sạch metadata</span>
+              </label>
+            </div>
+          </section>
+
+          <!-- Failed Prompts Panel -->
+          <section class="section failed-prompts-section hidden" id="failedPromptsSection">
+            <div class="failed-prompts-header">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              <span><span data-i18n="gen.failedPrompts">Prompt lỗi</span> (<span id="failedPromptsCount">0</span>)</span>
+              <div class="failed-prompts-actions">
+                <button class="btn btn-primary btn-sm" id="retryFailedPromptsBtn" data-i18n-title="gen.retryAll" title="Chạy lại tất cả">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                  <span data-i18n="gen.retryAll">Chạy lại</span>
+                </button>
+                <button class="btn btn-secondary btn-sm" id="clearFailedPromptsBtn" data-i18n-title="gen.clearList" title="Xóa danh sách">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+              </div>
+            </div>
+            <div class="failed-prompts-list" id="failedPromptsList"></div>
+          </section>
+          </div><!-- /.tab-gen-scroll -->
+
+          <!-- Action Buttons -->
+          <section class="section actions">
+            <div class="gen-run-mode-row">
+              <button class="gen-run-mode-btn active" id="genRunModeBtn" data-i18n-title="gen.runModeParallel">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="4" y1="6" x2="20" y2="6"></line>
+                  <line x1="4" y1="12" x2="20" y2="12"></line>
+                  <line x1="4" y1="18" x2="20" y2="18"></line>
+                </svg>
+                <span class="gen-run-mode-label" data-i18n="gen.parallel">Song song</span>
+              </button>
+            </div>
+            <!-- Generate button (full width - controls moved to ExecutionBlocker) -->
+            <div class="gen-btn-row" id="genBtnRow">
+              <button class="btn btn-generate" id="startBtn">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path d="M11.8525 4.21651L11.7221 3.2387C11.6906 3.00226 11.4889 2.82568 11.2504 2.82568C11.0118 2.82568 10.8102 3.00226 10.7786 3.23869L10.6483 4.21651C10.2658 7.0847 8.00939 9.34115 5.14119 9.72358L4.16338 9.85396C3.92694 9.88549 3.75037 10.0872 3.75037 10.3257C3.75037 10.5642 3.92694 10.7659 4.16338 10.7974L5.14119 10.9278C8.00938 11.3102 10.2658 13.5667 10.6483 16.4349L10.7786 17.4127C10.8102 17.6491 11.0118 17.8257 11.2504 17.8257C11.4889 17.8257 11.6906 17.6491 11.7221 17.4127L11.8525 16.4349C12.2349 13.5667 14.4913 11.3102 17.3595 10.9278L18.3374 10.7974C18.5738 10.7659 18.7504 10.5642 18.7504 10.3257C18.7504 10.0872 18.5738 9.88549 18.3374 9.85396L17.3595 9.72358C14.4913 9.34115 12.2349 7.0847 11.8525 4.21651Z"></path><path d="M4.6519 14.7568L4.82063 14.2084C4.84491 14.1295 4.91781 14.0757 5.00037 14.0757C5.08292 14.0757 5.15582 14.1295 5.1801 14.2084L5.34883 14.7568C5.56525 15.4602 6.11587 16.0108 6.81925 16.2272L7.36762 16.3959C7.44652 16.4202 7.50037 16.4931 7.50037 16.5757C7.50037 16.6582 7.44652 16.7311 7.36762 16.7554L6.81926 16.9241C6.11587 17.1406 5.56525 17.6912 5.34883 18.3946L5.1801 18.9429C5.15582 19.0218 5.08292 19.0757 5.00037 19.0757C4.91781 19.0757 4.84491 19.0218 4.82063 18.9429L4.65191 18.3946C4.43548 17.6912 3.88486 17.1406 3.18147 16.9241L2.63311 16.7554C2.55421 16.7311 2.50037 16.6582 2.50037 16.5757C2.50037 16.4931 2.55421 16.4202 2.63311 16.3959L3.18148 16.2272C3.88486 16.0108 4.43548 15.4602 4.6519 14.7568Z"></path></svg>
+                <span data-i18n="gen.generate">Generate</span>
+              </button>
+            </div>
+          </section>
+        </div>
+
+        <!-- ======================= -->
+        <!-- TAB: TEMPLATES -->
+        <!-- ======================= -->
+        <div id="tab-prompts" class="tab-pane">
+          <!-- Module-blocked-overlay được thêm động bởi app.js nếu feature disabled -->
+          <!-- Sub-tab navigation -->
+          <div class="prompts-subtabs">
+            <button class="prompts-subtab active" data-subtab="subtab-templates">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7" rx="1"/>
+                <rect x="14" y="3" width="7" height="7" rx="1"/>
+                <rect x="14" y="14" width="7" height="7" rx="1"/>
+                <rect x="3" y="14" width="7" height="7" rx="1"/>
+              </svg>
+              <span data-i18n="tab.templates">Templates</span>
+            </button>
+            <button class="prompts-subtab" data-subtab="subtab-myprompts">
+              <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8.469 15.896c2.206-1.921 5.694-1.953 7.897-.032.32.28.275.772-.055 1.04-.316.254-.773.207-1.088-.048-1.599-1.289-4.017-1.257-5.615.035-.314.254-.77.3-1.085.046-.33-.268-.375-.762-.054-1.042m.447-9.645c.828 0 1.5.784 1.5 1.75s-.672 1.75-1.5 1.75-1.5-.784-1.5-1.75.672-1.75 1.5-1.75"></path><path d="M13.873 1.998q.679 0 1.29.235.63.21 1.168.609l3.116 2.412q.727.562 1.124 1.404a3.8 3.8 0 0 1 .422 1.757v9.578q0 1.664-1.17 2.834-1.172 1.17-2.835 1.171H7.012q-1.664 0-2.834-1.17-1.171-1.173-1.171-2.835V6.003q0-1.664 1.17-2.834 1.172-1.17 2.835-1.171zm-6.861 1.5a2.38 2.38 0 0 0-1.78.75 2.4 2.4 0 0 0-.726 1.756v11.99q-.001 1.031.725 1.78.728.726 1.78.726h9.977q1.054.002 1.78-.726.726-.75.726-1.78V9.751h-3.49a2.72 2.72 0 0 1-2.763-2.74V3.498zM14.74 7.01q0 .515.375.89.375.351.889.351h3.49a2.5 2.5 0 0 0-.305-1.007 2.3 2.3 0 0 0-.655-.796L15.42 4.036a4 4 0 0 0-.327-.21 2.4 2.4 0 0 0-.352-.165z"></path></svg>
+              <span data-i18n="templates.myPrompts">My Prompt</span>
+            </button>
+          </div>
+
+          <!-- Sub-tab: Templates (TemplatesTab renders here) -->
+          <div id="subtab-templates" class="prompts-subtab-pane active">
+            <!-- TemplatesTab sẽ render nội dung vào đây -->
+          </div>
+
+          <!-- Sub-tab: My Prompt -->
+          <div id="subtab-myprompts" class="prompts-subtab-pane">
+            <div class="myprompts-container">
+              <div class="sf-toolbar" style="flex-wrap: wrap; overflow: visible; gap: 10px 8px;">
+                <div class="sf-search-box">
+                  <svg class="sf-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="m21 21-4.3-4.3"/>
+                  </svg>
+                  <input type="text" class="sf-search-input" id="myPromptsSearch" data-i18n-placeholder="templates.searchPrompt" placeholder="Tìm kiếm prompt..." />
+                </div>
+                <button class="btn btn-secondary btn-sm btn-toolbar-icon sf-reload-btn" id="reloadMyPromptsBtn" title="Tải lại">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                </button>
+                <select id="myPromptsCategoryFilter" class="sf-filter-select" style="max-width: fit-content !important;">
+                  <option value="" data-i18n="templates.category">Danh mục</option>
+                </select>
+                <div class="sf-spacer"></div>
+                <button class="btn btn-primary btn-sm btn-icon-text btn-add-short" id="addMyPromptBtn" data-i18n-title="templates.addPrompt" title="Thêm Prompt">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                  <span data-i18n="templates.add">Thêm</span>
+                </button>
+              </div>
+              <div class="myprompts-list" id="myPromptsList"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ======================= -->
+        <!-- TAB 2: MULTI TASK -->
+        <!-- ======================= -->
+        <div id="tab-tasks" class="tab-pane">
+          <!-- Module-blocked-overlay được thêm động bởi app.js nếu feature disabled -->
+          <!-- Static toolbar (giống Workflow pattern - đầy đủ buttons, JS chỉ bind events) -->
+          <div class="task-toolbar">
+            <div class="task-toolbar-left">
+              <button class="btn btn-secondary btn-sm btn-toolbar-icon" disabled id="taskSearchToggle" data-i18n-title="common.search" title="Tìm kiếm">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.35-4.35"></path>
+                </svg>
+              </button>
+              <button class="btn btn-secondary btn-sm btn-toolbar-icon" disabled id="refreshTasksBtn" data-i18n-title="common.reload" title="Tải lại">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+              </button>
+            </div>
+            <div class="task-toolbar-right">
+              <select class="task-project-select-inline hidden" disabled id="taskProjectSelectInline" data-i18n-title="workflow.filterByProject" title="Lọc theo project"></select>
+              <button class="btn btn-secondary btn-sm task-run-mode-btn" disabled id="taskRunModeBtn" data-i18n-title="tasks.runMode" title="Chế độ chạy">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="4" y1="6" x2="20" y2="6"></line>
+                  <line x1="4" y1="12" x2="20" y2="12"></line>
+                  <line x1="4" y1="18" x2="20" y2="18"></line>
+                </svg>
+                <span class="task-run-mode-label" data-i18n="tasks.parallel">Parallel</span>
+              </button>
+              <button class="btn btn-secondary btn-sm" disabled id="runAllTasksBtn" data-i18n-title="tasks.runAll" title="Chạy tất cả">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                <span data-i18n="tasks.runAll">Chạy tất cả</span>
+              </button>
+              <button class="btn btn-primary btn-sm btn-icon-text btn-add-short" disabled id="addTaskBtn" data-i18n-title="tasks.addTask" title="Thêm task">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span data-i18n="tasks.add">Thêm</span>
+              </button>
+            </div>
+          </div>
+          <!-- MultiTaskTab sẽ render nội dung vào đây -->
+        </div>
+
+        <!-- ======================= -->
+        <!-- TAB 3: WORKFLOW -->
+        <!-- ======================= -->
+        <div id="tab-spaces" class="tab-pane">
+          <!-- WorkflowTab sẽ render subtabs (Templates/Workflows/Shared) động -->
+          <!-- Workflow List View -->
+          <section class="section" id="workflowListSection">
+            <!-- Toolbar -->
+            <div class="sf-toolbar">
+                <div class="sf-search-box">
+                  <svg class="sf-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                  </svg>
+                  <input type="text" class="sf-search-input" data-i18n-placeholder="workflow.searchPlaceholder" placeholder="Tìm kiếm workflow..." id="wfSearchInput" />
+                </div>
+                <button class="btn btn-secondary btn-sm btn-toolbar-icon" id="refreshWorkflowsBtn" data-i18n-title="workflow.reload" title="Tải lại">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                </button>
+                <button class="btn btn-secondary btn-sm btn-toolbar-icon" id="importWorkflowBtn" data-i18n-title="workflow.importFromFile" title="Nhập workflow">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                </button>
+                <select class="sf-filter-select hidden" id="wfProjectSelectInline" data-i18n-title="workflow.filterByProject" title="Lọc theo project"></select>
+                <div class="sf-spacer"></div>
+                <button class="btn btn-primary btn-sm btn-icon-text btn-add-short" id="runAllWorkflowsBtn" data-i18n-title="workflow.runAll" title="Chạy tất cả">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                  </svg>
+                  <span data-i18n="workflow.runAll">Chạy tất cả</span>
+                </button>
+              </div>
+            <!-- Batch Progress Bar -->
+            <div class="wf-batch-progress hidden" id="wfBatchProgress">
+              <div class="batch-progress-info">
+                <span class="batch-progress-label" id="wfBatchProgressLabel">Đang chạy workflow...</span>
+                <span class="batch-progress-count" id="wfBatchProgressCount">0/0</span>
+              </div>
+              <div class="batch-progress-bar">
+                <div class="batch-progress-fill" id="wfBatchProgressFill"></div>
+              </div>
+            </div>
+            <!-- Project filter rendered inline in toolbar -->
+            <div class="workflow-empty-state hidden" id="workflowEmptyState">
+              <div class="wf-empty-hero-icon">
+                <div class="wf-empty-glow"></div>
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </div>
+              <h3 class="workflow-empty-title" data-i18n="workflow.emptyTitle">Tạo Workflow Đầu Tiên Của Bạn</h3>
+              <p class="workflow-empty-subtitle" data-i18n="workflow.emptySubtitle">Nối các node kéo-thả để tự động hóa sáng tạo nội dung hàng loạt trên Google Flow, ChatGPT, Grok & hơn thế nữa.</p>
+              <div class="wf-empty-pills">
+                <span class="wf-empty-pill">⚡ AI Multi-Node</span>
+                <span class="wf-empty-pill">🎬 Sinh Ảnh & Video</span>
+                <span class="wf-empty-pill">🚀 Tự Động Hóa</span>
+              </div>
+              <div class="workflow-empty-actions">
+                <button class="wf-empty-primary-btn" id="createFirstWorkflowBtn" data-i18n="workflow.createFirst">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  <span>Tạo Workflow Mới</span>
+                </button>
+                <button class="wf-empty-secondary-btn" id="browseTemplatesFromEmpty" data-i18n="workflow.browseTemplates">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+                  <span>Khám Phá Template Mẫu</span>
+                </button>
+              </div>
+            </div>
+            <div id="workflowList" class="workflow-list">
+              <!-- Workflow cards sẽ được inject ở đây -->
+            </div>
+            
+            </section>
+            
+            <!-- Floating Create Button with 3 Options Dropdown -->
+            <div class="wf-floating-create-wrapper" id="wfCreateMenuWrapper">
+              <button class="wf-create-workflow-btn" id="createWorkflowBtn" title="Tạo mới Workflow / Template">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>Tạo mới</span>
+              </button>
+              
+              <div class="wf-create-dropdown hidden" id="wfCreateDropdown">
+                <button class="wf-create-dropdown-item" id="optCreateAi" type="button">
+                  <span class="wf-create-opt-icon ai-icon">✨</span>
+                  <div class="wf-create-opt-info">
+                    <span class="wf-create-opt-title">Tạo workflow bằng AI</span>
+                    <span class="wf-create-opt-desc">Tự động gợi ý &amp; tạo workflow bằng AI</span>
+                  </div>
+                </button>
+                <button class="wf-create-dropdown-item" id="optCreateManual" type="button">
+                  <span class="wf-create-opt-icon manual-icon">➕</span>
+                  <div class="wf-create-opt-info">
+                    <span class="wf-create-opt-title">Tạo workflow thủ công</span>
+                    <span class="wf-create-opt-desc">Tạo workflow rỗng thủ công</span>
+                  </div>
+                </button>
+                <button class="wf-create-dropdown-item hidden" id="optCreateTemplate" type="button">
+                  <span class="wf-create-opt-icon template-icon">📦</span>
+                  <div class="wf-create-opt-info">
+                    <span class="wf-create-opt-title">Tạo Template Mẫu</span>
+                    <span class="wf-create-opt-desc">Tạo template công khai (Admin)</span>
+                  </div>
+                </button>
+              </div>
+            </div>
+        </div>
+
+        <!-- Settings tab removed - now in separate window (settings.html) -->
+
+        <!-- TAB: HISTORY -->
+        <!-- ======================= -->
+        <!-- TAB: PHOTOS -->
+        <!-- ======================= -->
+        <div id="tab-photos" class="tab-pane">
+          <div class="photos-tab-container">
+            <!-- Sub-tabs navigation -->
+            <div class="photos-subtabs">
+              <button class="photos-subtab active" data-subtab="photos-album">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                </svg>
+                <span data-i18n="albums.album">Album</span>
+              </button>
+              <button class="photos-subtab" data-subtab="photos-flow-images">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="7" height="7"/>
+                  <rect x="14" y="3" width="7" height="7"/>
+                  <rect x="14" y="14" width="7" height="7"/>
+                  <rect x="3" y="14" width="7" height="7"/>
+                </svg>
+                <span data-i18n="albums.flowImages">Flow Images</span>
+              </button>
+              <button class="photos-subtab" data-subtab="photos-search">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"/>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <span data-i18n="albums.search">Tìm kiếm</span>
+              </button>
+            </div>
+
+            <!-- Sub-tab: Album -->
+            <div class="photos-subtab-pane active" id="photos-album">
+              <div class="album-list-container" id="albumListContainer">
+                <!-- Album list rendered by AlbumList.js -->
+              </div>
+            </div>
+
+            <!-- Sub-tab: Flow Images -->
+            <div class="photos-subtab-pane" id="photos-flow-images">
+              <div class="photos-flow-images-header">
+                <button class="btn btn-secondary btn-sm" id="refreshFlowImagesBtn" data-i18n-title="albums.refresh" title="Làm mới">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="23 4 23 10 17 10"/>
+                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                  </svg>
+                  <span data-i18n="albums.refresh">Làm mới</span>
+                </button>
+              </div>
+              <div class="photos-flow-images-grid" id="photosFlowImagesGrid">
+                <div class="photos-flow-images-loading">
+                  <div class="spinner"></div>
+                  <span data-i18n="albums.loadingFromFlow">Đang tải ảnh từ Flow...</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sub-tab: Search -->
+            <div class="photos-subtab-pane" id="photos-search">
+              <div class="photos-search-form">
+                <div class="photos-search-input-wrapper">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                  </svg>
+                  <input type="text" id="photosSearchInput" data-i18n-placeholder="albums.searchKeyword" placeholder="Nhập từ khóa tìm kiếm...">
+                </div>
+                <div class="photos-search-header">
+                  <p class="photos-search-hint" data-i18n="albums.selectChannel">Chọn kênh để tìm kiếm</p>
+                  <label class="photos-multisearch-toggle">
+                    <input type="checkbox" id="photosMultiSearchToggle">
+                    <span class="photos-toggle-slider"></span>
+                    <span class="photos-toggle-label">Đa kênh</span>
+                  </label>
+                </div>
+
+                <div class="photos-search-subtabs">
+                  <button class="photos-subtab-btn active" data-search-tab="images">🖼️ Ảnh</button>
+                  <button class="photos-subtab-btn" data-search-tab="video">🎥 Video</button>
+                  <button class="photos-subtab-btn" data-search-tab="audio">🎵 Nhạc</button>
+                  <button class="photos-subtab-btn" data-search-tab="graphics">📐 Đồ Họa</button>
+                </div>
+
+                <!-- Panel: Images -->
+                <div class="photos-search-panel active" id="searchPanel-images">
+                  <div class="photos-search-categories">
+                    <div class="photos-search-category">
+                      <p class="photos-category-title">MẠNG XÃ HỘI &amp; TÌM KIẾM</p>
+                      <div class="photos-search-channels">
+                        <button class="photos-channel-btn" data-channel="pinterest"><svg width="16" height="16" fill="currentColor" role="img" viewBox="0 0 24 24"><title>Pinterest</title><path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 11.985-5.365 11.985-11.987C23.97 5.39 18.592.026 11.985.026L12.017 0z"/></svg>Pinterest</button>
+                        <button class="photos-channel-btn" data-channel="youtube"><svg width="16" height="16" fill="currentColor" role="img" viewBox="0 0 24 24"><title>YouTube</title><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>Youtube</button>
+                        <button class="photos-channel-btn" data-channel="tiktok"><svg width="16" height="16" fill="currentColor" role="img" viewBox="0 0 24 24"><title>TikTok</title><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>Tiktok</button>
+                        <button class="photos-channel-btn" data-channel="google-photos"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.744 12.27c0-.827-.066-1.606-.192-2.368H12v4.618h6.726c-.305 1.554-1.22 2.864-2.545 3.738v3.087h4.088c2.408-2.198 3.475-5.46 3.475-9.075Z"/><path fill="#34A853" d="M12 24c3.275 0 6.035-1.073 8.045-2.887l-4.088-3.087c-1.094.733-2.482 1.155-3.957 1.155-3.076 0-5.672-2.05-6.612-4.85H1.18v3.167C3.197 21.464 7.275 24 12 24Z"/><path fill="#FBBC05" d="M5.388 14.331c-.244-.733-.388-1.516-.388-2.331s.144-1.598.388-2.331V6.502H1.18A11.968 11.968 0 0 0 0 12c0 1.936.467 3.766 1.18 5.498l4.208-3.167Z"/><path fill="#EA4335" d="M12 4.818c1.785 0 3.385.607 4.646 1.802l3.47-3.47C18.03 1.135 15.27 0 12 0 7.275 0 3.197 2.536 1.18 6.502l4.208 3.167c.94-2.8 3.536-4.851 6.612-4.851Z"/></svg>Google</button>
+                        <button class="photos-channel-btn" data-channel="facebook"><svg width="16" height="16" fill="currentColor" role="img" viewBox="0 0 24 24"><title>Facebook</title><path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z"/></svg>Facebook</button>
+                      </div>
+                    </div>
+                    <div class="photos-search-category">
+                      <p class="photos-category-title">CẢM HỨNG THIẾT KẾ</p>
+                      <div class="photos-search-channels">
+                        <button class="photos-channel-btn" data-channel="behance"><svg width="16" height="16" fill="currentColor" role="img" viewBox="0 0 24 24"><title>Behance</title><path d="M16.969 16.927a2.561 2.561 0 0 0 1.901.677 2.501 2.501 0 0 0 1.531-.475c.362-.235.636-.584.779-.99h2.585a5.091 5.091 0 0 1-1.9 2.896 5.292 5.292 0 0 1-3.091.88 5.839 5.839 0 0 1-2.284-.433 4.871 4.871 0 0 1-1.723-1.211 5.657 5.657 0 0 1-1.08-1.874 7.057 7.057 0 0 1-.383-2.393c-.005-.8.129-1.595.396-2.349a5.313 5.313 0 0 1 5.088-3.604 4.87 4.87 0 0 1 2.376.563c.661.362 1.231.87 1.668 1.485a6.2 6.2 0 0 1 .943 2.133c.194.821.263 1.666.205 2.508h-7.699c-.063.79.184 1.574.688 2.187ZM6.947 4.084a8.065 8.065 0 0 1 1.928.198 4.29 4.29 0 0 1 1.49.638c.418.303.748.711.958 1.182.241.579.357 1.203.341 1.83a3.506 3.506 0 0 1-.506 1.961 3.726 3.726 0 0 1-1.503 1.287 3.588 3.588 0 0 1 2.027 1.437c.464.747.697 1.615.67 2.494a4.593 4.593 0 0 1-.423 2.032 3.945 3.945 0 0 1-1.163 1.413 5.114 5.114 0 0 1-1.683.807 7.135 7.135 0 0 1-1.928.259H0V4.084h6.947Zm-.235 12.9c.308.004.616-.029.916-.099a2.18 2.18 0 0 0 .766-.332c.228-.158.411-.371.534-.619.142-.317.208-.663.191-1.009a2.08 2.08 0 0 0-.642-1.715 2.618 2.618 0 0 0-1.696-.505h-3.54v4.279h3.471Zm13.635-5.967a2.13 2.13 0 0 0-1.654-.619 2.336 2.336 0 0 0-1.163.259 2.474 2.474 0 0 0-.738.62 2.359 2.359 0 0 0-.396.792c-.074.239-.12.485-.137.734h4.769a3.239 3.239 0 0 0-.679-1.785l-.002-.001Zm-13.813-.648a2.254 2.254 0 0 0 1.423-.433c.399-.355.607-.88.56-1.413a1.916 1.916 0 0 0-.178-.891 1.298 1.298 0 0 0-.495-.533 1.851 1.851 0 0 0-.711-.274 3.966 3.966 0 0 0-.835-.073H3.241v3.631h3.293v-.014ZM21.62 5.122h-5.976v1.527h5.976V5.122Z"/></svg>Behance</button>
+                        <button class="photos-channel-btn" data-channel="dribbble"><svg width="16" height="16" fill="currentColor" role="img" viewBox="0 0 24 24"><title>Dribbble</title><path d="M12 24C5.385 24 0 18.615 0 12S5.385 0 12 0s12 5.385 12 12-5.385 12-12 12zm10.12-10.358c-.35-.11-3.17-.953-6.384-.438 1.34 3.684 1.887 6.684 1.992 7.308 2.3-1.555 3.936-4.02 4.395-6.87zm-6.115 7.808c-.153-.9-.75-4.032-2.19-7.77l-.066.02c-5.79 2.015-7.86 6.025-8.04 6.4 1.73 1.358 3.92 2.166 6.29 2.166 1.42 0 2.77-.29 4-.814zm-11.62-2.58c.232-.4 3.045-5.055 8.332-6.765.135-.045.27-.084.405-.12-.26-.585-.54-1.167-.832-1.74C7.17 11.775 2.206 11.71 1.756 11.7l-.004.312c0 2.633.998 5.037 2.634 6.855zm-2.42-8.955c.46.008 4.683.026 9.477-1.248-1.698-3.018-3.53-5.558-3.8-5.928-2.868 1.35-5.01 3.99-5.676 7.17zM9.6 2.052c.282.38 2.145 2.914 3.822 6 3.645-1.365 5.19-3.44 5.373-3.702-1.81-1.61-4.19-2.586-6.795-2.586-.825 0-1.63.1-2.4.285zm10.335 3.483c-.218.29-1.935 2.493-5.724 4.04.24.49.47.985.68 1.486.08.18.15.36.22.53 3.41-.43 6.8.26 7.14.33-.02-2.42-.88-4.64-2.31-6.38z"/></svg>Dribbble</button>
+                      </div>
+                    </div>
+                    <div class="photos-search-category">
+                      <p class="photos-category-title">KHO ẢNH CHẤT LƯỢNG CAO</p>
+                      <div class="photos-search-channels">
+                        <button class="photos-channel-btn" data-channel="unsplash"><svg width="16" height="16" fill="currentColor" role="img" viewBox="0 0 24 24"><title>Unsplash</title><path d="M7.5 6.75V0h9v6.75h-9zm9 3.75H24V24H0V10.5h7.5v6.75h9V10.5z"/></svg>Unsplash</button>
+                        <button class="photos-channel-btn" data-channel="pixabay"><svg width="16" height="16" fill="currentColor" role="img" viewBox="0 0 24 24"><title>Pixabay</title><path d="M5.627 10.234a.888.888 0 01-.887-.888H1.7c0 .49-.398.888-.888.888H0v9.447h15.56v-9.447H5.64zm-.886 2.796h-3.04v-1.323h3.04v1.323zm5.344 5.234a3.271 3.271 0 01-3.267-3.269c0-1.802 1.466-3.193 3.267-3.193s3.267 1.39 3.267 3.193a3.271 3.271 0 01-3.267 3.269zm1.756-3.269c0 .969-.788 1.757-1.756 1.757a1.759 1.759 0 01-1.756-1.757c0-.969.788-1.757 1.756-1.757s1.756.788 1.756 1.757zM24 9.501l-3.93 10.156-3.164-1.226V16.7l2.242.869 2.765-7.146L11.55 6.407l-.96 2.482h-1.73l1.769-4.57L24 9.501Z"/></svg>Pixabay</button>
+                        <button class="photos-channel-btn" data-channel="magnific"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11.5 22c-.16 0-.31-.08-.4-.23l-3.37-6.26-6.26-3.37c-.24-.13-.24-.48 0-.61l6.26-3.37 3.37-6.26c.13-.24.48-.24.61 0l3.37 6.26 6.26 3.37c.24.13.24.48 0 .61l-6.26 3.37-3.37 6.26c-.09.15-.24.23-.4.23z"/></svg>Magnific</button>
+                        <button class="photos-channel-btn" data-channel="pexels"><svg width="16" height="16" fill="currentColor" role="img" viewBox="0 0 24 24"><title>Pexels</title><path d="M1.5 0A1.5 1.5 0 000 1.5v21A1.5 1.5 0 001.5 24h21a1.5 1.5 0 001.5-1.5v-21A1.5 1.5 0 0022.5 0h-21zm6.75 6.75h5.2715a3.843 3.843 0 01.627 7.6348V17.25H8.25V6.75zm1.5 1.5v7.5h2.8984v-2.8145h.873a2.343 2.343 0 100-4.6855H9.75Z"/></svg>Pexels</button>
+                        <button class="photos-channel-btn" data-channel="shutterstock"><svg width="16" height="16" fill="currentColor" role="img" viewBox="0 0 24 24"><title>Shutterstock</title><path d="M9.839 18.761h5.313a1.53 1.53 0 0 0 1.527-1.528v-5.76h5.237v5.76A6.767 6.767 0 0 1 15.152 24H9.839v-5.239M14.16 5.237H8.85a1.53 1.53 0 0 0-1.53 1.527v5.761H2.085V6.764A6.763 6.763 0 0 1 8.85 0h5.31v5.237Z"/></svg>Shutterstock</button>
+                      </div>
+                    </div>
+                    <div class="photos-search-category">
+                      <p class="photos-category-title">THƯƠNG MẠI ĐIỆN TỬ &amp; POD</p>
+                      <div class="photos-search-channels">
+                        <button class="photos-channel-btn" data-channel="amazon"><svg width="16" height="16" fill="currentColor" role="img" viewBox="0 0 24 24"><title>Amazon</title><path d="M.045 18.02c.072-.116.187-.124.348-.022 3.636 2.11 7.594 3.166 11.87 3.166 2.852 0 5.668-.533 8.447-1.595l.315-.14c.138-.06.234-.1.293-.13.226-.088.39-.046.525.13.12.174.09.336-.12.48-.256.19-.6.41-1.006.654-1.244.743-2.64 1.316-4.185 1.726a17.617 17.617 0 01-10.951-.577 17.88 17.88 0 01-5.43-3.35c-.1-.074-.151-.15-.151-.22 0-.047.021-.09.051-.13z"/></svg>Amazon</button>
+                        <button class="photos-channel-btn" data-channel="etsy"><svg width="16" height="16" fill="currentColor" role="img" viewBox="0 0 24 24"><title>Etsy</title><path d="M8.559 2.445c0-.325.033-.52.59-.52h7.465c1.3 0 2.02 1.11 2.54 3.193l.42 1.666h1.27c.23-4.728.43-6.784.43-6.784s-3.196.36-5.09.36H6.635L1.521.196v1.37l1.725.326c1.21.24 1.5.496 1.6 1.606 0 0 .11 3.27.11 8.64 0 5.385-.09 8.61-.09 8.61 0 .973-.39 1.333-1.59 1.573l-1.722.33V24l5.13-.165h8.55c1.935 0 6.39.165 6.39.165.105-1.17.75-6.48.855-7.064h-1.2l-1.284 2.91c-1.005 2.28-2.476 2.445-4.11 2.445h-4.906c-1.63 0-2.415-.64-2.415-2.05V12.8s3.62 0 4.79.096c.912.064 1.463.325 1.76 1.598l.39 1.695h1.41l-.09-4.278.192-4.305h-1.391l-.45 1.89c-.283 1.244-.48 1.47-1.754 1.6-1.666.17-4.815.14-4.815.14V2.45h-.05z"/></svg>Etsy</button>
+                        <button class="photos-channel-btn" data-channel="redbubble"><svg width="16" height="16" fill="currentColor" role="img" viewBox="0 0 24 24"><title>Redbubble</title><path d="M16.633 16.324h-3.199a.321.321 0 0 1-.32-.322V7.974a.32.32 0 0 1 .32-.32H16.4c2.226 0 2.693 1.31 2.693 2.408 0 .636-.169 1.14-.504 1.511.816.337 1.256 1.096 1.256 2.194 0 1.601-1.201 2.557-3.212 2.557m-4.644 0H5.345a.32.32 0 0 1-.32-.322V7.974a.32.32 0 0 1 .32-.32h3.103c1.939 0 3.096 1.043 3.096 2.791 0 1.163-.585 2.077-1.527 2.448l2.21 2.897a.322.322 0 0 1-.24.533M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12c6.628 0 12-5.373 12-12S18.63 0 12.001 0"/></svg>Redbubble</button>
+                        <button class="photos-channel-btn" data-channel="aliexpress"><svg width="16" height="16" fill="currentColor" role="img" viewBox="0 0 24 24"><title>AliExpress</title><path d="M5.166 9.096a.022.022 0 0 0-.022.021c0 .396-.32.717-.713.717a.021.021 0 0 0-.021.022c0 .012.01.021.021.021.394 0 .713.322.713.718 0 .012.01.021.022.021.011 0 .021-.01.021-.021A.717.717 0 0 1 5.9 9.88a.021.021 0 0 0 0-.043.716.716 0 0 1-.713-.718v-.002a.021.021 0 0 0-.006-.015.022.022 0 0 0-.015-.006z"/></svg>AliExpress</button>
+                        <button class="photos-channel-btn" data-channel="ebay"><svg width="16" height="16" fill="currentColor" role="img" viewBox="0 0 24 24"><title>eBay</title><path d="M6.056 12.132v-4.92h1.2v3.026c.59-.703 1.402-.906 2.202-.906 1.34 0 2.828.904 2.828 2.855 0 .233-.015.457-.06.668.24-.953 1.274-1.305 2.896-1.344.51-.018 1.095-.018 1.56-.018v-.135c0-.885-.556-1.244-1.53-1.244-.72 0-1.245.3-1.305.81h-1.275c.136-1.29 1.5-1.62 2.686-1.62 1.064 0 1.995.27 2.415 1.02l-.436-.84h1.41l2.055 4.125 2.055-4.126H24l-3.72 7.305h-1.346l1.07-2.04-2.33-4.38c.13.255.2.555.2.93v2.46c0 .346.01.69.04 1.005z"/></svg>eBay</button>
+                      </div>
+                    </div>
+                    <div class="photos-search-category">
+                      <p class="photos-category-title">TRÍ TUỆ NHÂN TẠO (AI)</p>
+                      <div class="photos-search-channels">
+                        <button class="photos-channel-btn" data-channel="lexica"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>Lexica.art</button>
+                        <button class="photos-channel-btn" data-channel="prompthero"><svg width="16" height="16" fill="currentColor" role="img" viewBox="0 0 24 24"><title>OpenAI</title><path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729z"/></svg>PromptHero</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Panel: Video -->
+                <!-- Panel: Video -->
+                <div class="photos-search-panel hidden" id="searchPanel-video">
+                  <div class="photos-search-categories">
+                    <div class="photos-search-category">
+                      <p class="photos-category-title">VIDEO &amp; FOOTAGE MIỄN PHÍ</p>
+                      <div class="photos-search-channels">
+                        <button class="photos-channel-btn" data-channel="pexelsvideo"><svg width="16" height="16" fill="currentColor" role="img" viewBox="0 0 24 24"><title>Pexels Video</title><path d="M1.5 0A1.5 1.5 0 000 1.5v21A1.5 1.5 0 001.5 24h21a1.5 1.5 0 001.5-1.5v-21A1.5 1.5 0 0022.5 0h-21zm6.75 6.75h5.2715a3.843 3.843 0 01.627 7.6348V17.25H8.25V6.75zm1.5 1.5v7.5h2.8984v-2.8145h.873a2.343 2.343 0 100-4.6855H9.75Z"/></svg>Pexels Video</button>
+                        <button class="photos-channel-btn" data-channel="pixabayvideo"><svg width="16" height="16" fill="currentColor" role="img" viewBox="0 0 24 24"><title>Pixabay Video</title><path d="M5.627 10.234a.888.888 0 01-.887-.888H1.7c0 .49-.398.888-.888.888H0v9.447h15.56v-9.447H5.64zm-.886 2.796h-3.04v-1.323h3.04v1.323zm5.344 5.234a3.271 3.271 0 01-3.267-3.269c0-1.802 1.466-3.193 3.267-3.193s3.267 1.39 3.267 3.193a3.271 3.271 0 01-3.267 3.269zm1.756-3.269c0 .969-.788 1.757-1.756 1.757a1.759 1.759 0 01-1.756-1.757c0-.969.788-1.757 1.756-1.757s1.756.788 1.756 1.757zM24 9.501l-3.93 10.156-3.164-1.226V16.7l2.242.869 2.765-7.146L11.55 6.407l-.96 2.482h-1.73l1.769-4.57L24 9.501Z"/></svg>Pixabay Video</button>
+                        <button class="photos-channel-btn" data-channel="mixkit"><svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Mixkit</button>
+                        <button class="photos-channel-btn" data-channel="coverr"><svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>Coverr</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Panel: Audio -->
+                <div class="photos-search-panel hidden" id="searchPanel-audio">
+                  <div class="photos-search-categories">
+                    <div class="photos-search-category">
+                      <p class="photos-category-title">ÂM THANH &amp; BGM</p>
+                      <div class="photos-search-channels">
+                        <button class="photos-channel-btn" data-channel="epidemic"><svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>Epidemic Sound</button>
+                        <button class="photos-channel-btn" data-channel="freesound"><svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>Freesound</button>
+                        <button class="photos-channel-btn" data-channel="chosic"><svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 5h-3v5.5c0 1.38-1.12 2.5-2.5 2.5S10 13.88 10 12.5s1.12-2.5 2.5-2.5c.57 0 1.08.19 1.5.51V5h4v2zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6z"/></svg>Chosic</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Panel: Graphics -->
+                <div class="photos-search-panel hidden" id="searchPanel-graphics">
+                  <div class="photos-search-categories">
+                    <div class="photos-search-category">
+                      <p class="photos-category-title">VECTORS &amp; ICONS</p>
+                      <div class="photos-search-channels">
+                        <button class="photos-channel-btn" data-channel="flaticon"><svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/></svg>Flaticon</button>
+                        <button class="photos-channel-btn" data-channel="svgrepo"><svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2z"/></svg>SVGRepo</button>
+                        <button class="photos-channel-btn" data-channel="magnific"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11.5 22c-.16 0-.31-.08-.4-.23l-3.37-6.26-6.26-3.37c-.24-.13-.24-.48 0-.61l6.26-3.37 3.37-6.26c.13-.24.48-.24.61 0l3.37 6.26 6.26 3.37c.24.13.24.48 0 .61l-6.26 3.37-3.37 6.26c-.09.15-.24.23-.4.23z"/></svg>Magnific</button>
+                      </div>
+                    </div>
+                    <div class="photos-search-category">
+                      <p class="photos-category-title">PHÔNG CHỮ (FONTS)</p>
+                      <div class="photos-search-channels">
+                        <button class="photos-channel-btn" data-channel="googlefonts"><svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M9.93 13.5h4.14L12 7.98 9.93 13.5zM20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-4.05 16.5l-1.14-3H9.17l-1.12 3H5.96l5.11-13h1.86l5.11 13h-2.09z"/></svg>Google Fonts</button>
+                        <button class="photos-channel-btn" data-channel="dafont"><svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M9.93 13.5h4.14L12 7.98 9.93 13.5zM20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-4.05 16.5l-1.14-3H9.17l-1.12 3H5.96l5.11-13h1.86l5.11 13h-2.09z"/></svg>DaFont</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Multi-search action button -->
+                <div class="photos-multisearch-action" style="display: none;">
+                  <button id="photosMultiSearchBtn" class="album-btn-primary" style="width: 100%; border-radius: 9999px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    Tìm kiếm các kênh đã chọn
+                  </button>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Storage usage progress bar (visible across all sub-tabs) -->
+            <div class="album-storage-bar" id="albumStorageBar">
+              <button class="album-storage-bar__icon-btn" id="albumStorageBarIconBtn" data-i18n-title="albums.storageBarTooltip" title="Storage settings">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="22" y1="12" x2="2" y2="12"></line>
+                  <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11Z"></path>
+                  <line x1="6" y1="16" x2="6.01" y2="16"></line>
+                  <line x1="10" y1="16" x2="10.01" y2="16"></line>
+                </svg>
+              </button>
+              <div class="album-storage-bar__progress" id="albumStorageBarProgress">
+                <div class="album-storage-bar__fill" id="albumStorageBarFill"></div>
+              </div>
+              <span class="album-storage-bar__label" id="albumStorageBarLabel">--</span>
+            </div>
+          </div>
+        </div>
+        <!-- TAB: TOOLS -->
+        <!-- ======================= -->
+        <div id="tab-tools" class="tab-pane">
+          <div class="tools-grid">
+            <button class="tools-item" id="toolsWatermarkBtn">
+              <div class="tools-item-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 7v10l8 5 8-5V7z"/><path d="m9 12 2 2 4-4"/></svg>
+              </div>
+              <span class="tools-item-label" data-i18n="tools.watermark">Xoá watermark</span>
+              <span class="tools-item-desc" data-i18n="tools.watermarkDesc">Gỡ watermark khỏi ảnh và video Veo — có hậu kiểm</span>
+            </button>
+            <button class="tools-item" id="toolsMetadataBtn">
+              <div class="tools-item-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12h6"/></svg>
+              </div>
+              <span class="tools-item-label" data-i18n="tools.metadata">Dọn metadata</span>
+              <span class="tools-item-desc" data-i18n="tools.metadataDesc">Gỡ GPS, thiết bị, prompt khỏi ảnh/video — không nén lại</span>
+            </button>
+            <button class="tools-item" id="toolsTextOverlayBtn">
+              <div class="tools-item-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>
+              </div>
+              <span class="tools-item-label" data-i18n="tools.textOverlay">Chữ lên ảnh</span>
+              <span class="tools-item-desc" data-i18n="tools.textOverlayDesc">Đặt chữ vector lên ảnh — đúng chính tả, đủ dấu</span>
+            </button>
+            <button class="tools-item" id="toolsStyleAnchorBtn">
+              <div class="tools-item-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 7v10l8 5 8-5V7z"/><circle cx="12" cy="12" r="3"/></svg>
+              </div>
+              <span class="tools-item-label" data-i18n="tools.styleAnchor">Neo phong cách</span>
+              <span class="tools-item-desc" data-i18n="tools.styleAnchorDesc">Thử khối style trước khi đưa vào workflow</span>
+            </button>
+            <button class="tools-item" id="anglesToolbarBtn">
+              <div class="tools-item-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="22" y1="12" x2="18" y2="12"/>
+                  <line x1="6" y1="12" x2="2" y2="12"/>
+                  <line x1="12" y1="6" x2="12" y2="2"/>
+                  <line x1="12" y1="22" x2="12" y2="18"/>
+                </svg>
+              </div>
+              <span class="tools-item-label" data-i18n="tools.angles">Góc Camera</span>
+              <span class="tools-item-desc" data-i18n="tools.anglesDesc">Tạo ảnh với nhiều góc camera khác nhau</span>
+            </button>
+            <button class="tools-item" id="effectsToolbarBtn">
+              <div class="tools-item-icon tools-item-icon--cyan">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="3"/>
+                  <path d="M12 2v4m0 12v4M2 12h4m12 0h4"/>
+                  <path d="m4.93 4.93 2.83 2.83m8.48 8.48 2.83 2.83M4.93 19.07l2.83-2.83m8.48-8.48 2.83-2.83"/>
+                </svg>
+              </div>
+              <span class="tools-item-label" data-i18n="tools.effects">Hiệu ứng</span>
+              <span class="tools-item-desc" data-i18n="tools.effectsDesc">Áp dụng hiệu ứng lên ảnh</span>
+            </button>
+            <button class="tools-item" id="aiAgentToolbarBtn">
+              <div class="tools-item-icon tools-item-icon--purple">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+                  <circle cx="8.5" cy="16" r="1.1" fill="currentColor" stroke="none"></circle>
+                  <circle cx="15.5" cy="16" r="1.1" fill="currentColor" stroke="none"></circle>
+                  <path d="M12 7V4M9 4h6"></path>
+                </svg>
+              </div>
+              <span class="tools-item-label" data-i18n="tools.aiAgent">AI Agent</span>
+              <span class="tools-item-desc" data-i18n="tools.aiAgentDesc">Kết nối Claude/Cursor (MCP) tự gen & dựng workflow</span>
+            </button>
+            <button class="tools-item" id="telegramToolbarBtn">
+              <div class="tools-item-icon tools-item-icon--blue">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+                </svg>
+              </div>
+              <span class="tools-item-label" data-i18n="tools.telegram">Telegram</span>
+              <span class="tools-item-desc" data-i18n="tools.telegramDesc">Liên kết bot để điều khiển từ xa</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="tab-history" class="tab-pane">
+          <!-- HistoryTab sẽ render nội dung vào đây -->
+        </div>
+
+        <!-- TAB: LOGS -->
+        <div id="tab-logs" class="tab-pane">
+          <!-- Sub-tab pills -->
+          <div class="seosonaflow-logs-subtabs">
+            <button class="seosonaflow-logs-subtab active" data-subtab="logs-main" data-i18n-title="logs.logs" title="Nhật ký"><span data-i18n="logs.logs">Nhật ký</span></button>
+            <button class="seosonaflow-logs-subtab" data-subtab="logs-queue" data-i18n-title="logs.queue" title="Hàng đợi"><span data-i18n="logs.queue">Hàng đợi</span></button>
+            <button class="seosonaflow-logs-subtab" data-subtab="logs-results" data-i18n-title="logs.results" title="Kết quả các lần chạy workflow"><span data-i18n="logs.results">Kết quả</span></button>
+            <button class="seosonaflow-logs-subtab" data-subtab="logs-doctor" data-i18n-title="logs.doctor" title="Gặp lỗi? Tra ở đây để biết làm gì tiếp"><span data-i18n="logs.doctor">Bác sĩ</span></button>
+          </div>
+
+          <!-- Sub-tab: Nhật ký (existing log content) -->
+          <div class="seosonaflow-logs-subtab-content" id="logsMainContent">
+            <div class="log-tab-header sf-toolbar" style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+              <button class="btn btn-secondary btn-sm" id="exportLogsBtn" data-i18n-title="logs.exportLogs" title="Xuất nhật ký" style="height: 32px; border-radius: 8px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #e8e8ea; display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; font-size: 12.5px; transition: all 0.2s;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span data-i18n="logs.export">Xuất</span>
+              </button>
+              <button class="btn btn-secondary btn-sm" id="clearLogsBtn" data-i18n-title="logs.clearLogs" title="Xoá nhật ký" style="height: 32px; border-radius: 8px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #e8e8ea; display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; font-size: 12.5px; transition: all 0.2s;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                <span data-i18n="logs.clear">Xoá</span>
+              </button>
+            </div>
+            <div class="log-tab-container" id="logContainer">
+              <div class="logs-empty-hero" id="logsEmptyHero">
+                <div class="wf-empty-hero-icon">
+                  <div class="wf-empty-glow"></div>
+                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="4 17 10 11 4 5"></polyline>
+                    <line x1="12" y1="19" x2="20" y2="19"></line>
+                  </svg>
+                </div>
+                <h3 class="workflow-empty-title">Nhật Ký Thực Thi Hệ Thống</h3>
+                <p class="workflow-empty-subtitle">Theo dõi dòng chảy dữ liệu, tiến trình gửi prompt và phản hồi từ các AI Provider theo thời gian thực.</p>
+                <div class="wf-empty-pills">
+                  <span class="wf-empty-pill">⚡ Realtime Logs</span>
+                  <span class="wf-empty-pill">📥 Xuất File Dữ Liệu</span>
+                  <span class="wf-empty-pill">🐛 Theo Dõi Báo Lỗi</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sub-tab: Hàng đợi (QueueMonitor) -->
+          <div class="seosonaflow-logs-subtab-content seosonaflow-logs-subtab-content--hidden" id="logsQueueContent">
+            <div class="seosonaflow-queue-monitor" id="queueMonitorContent">
+              <!-- QueueMonitor.js will render here -->
+            </div>
+          </div>
+          <div class="seosonaflow-logs-subtab-content seosonaflow-logs-subtab-content--hidden" id="logsResultsContent">
+            <div class="wfr-root" id="workflowResultsContent">
+              <!-- WorkflowResultsTab.js will render here -->
+            </div>
+          </div>
+          <!-- Sub-tab: Bác sĩ — tra mã lỗi Flow ra quy trình khôi phục + nút tự kiểm. -->
+          <div class="seosonaflow-logs-subtab-content seosonaflow-logs-subtab-content--hidden" id="logsDoctorContent">
+            <div class="wfd-root" id="flowDoctorContent">
+              <!-- FlowDoctorTab.js render vào đây -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress section moved to log tab -->
+
+      <!-- Queue Panel (G10-G11) -->
+      <div class="seosonaflow-queue-panel-wrapper" id="queuePanelContainer">
+        <!-- QueuePanel will render here -->
+      </div>
+
+      <!-- globalProgressBar removed: progress consolidated into FloatingTracker (PQ-11) -->
+
+      <!-- T-2: Confirm Run Modal -->
+      <div class="confirm-run-overlay hidden" id="confirmRunOverlay">
+        <div class="confirm-run-modal">
+          <div class="confirm-run-header">
+            <span class="confirm-run-title" data-i18n="dialog.confirmRun">Xác nhận chạy</span>
+            <button class="confirm-run-close" id="confirmRunClose" data-i18n-title="common.close" title="Đóng">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+          </div>
+          <div class="confirm-run-body">
+            <div class="confirm-run-stat">
+              <span class="confirm-run-stat-label">Prompts</span>
+              <span class="confirm-run-stat-value" id="confirmPromptCount">0</span>
+            </div>
+            <div class="confirm-run-provider-status hidden" id="confirmProviderStatus">
+              <span class="confirm-run-provider-label" id="confirmProviderLabel">ChatGPT</span>
+              <span class="confirm-run-provider-badge is-checking" id="confirmProviderBadge">
+                <svg class="badge-icon badge-icon-spin" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                <span class="badge-text" data-i18n="gen.providerStatusChecking">Đang kiểm tra...</span>
+              </span>
+            </div>
+            <div class="confirm-run-fields">
+              <div class="confirm-run-field">
+                <label for="confirmAspectRatio" data-i18n="gen.ratio">Tỷ lệ</label>
+                <select id="confirmAspectRatio" class="pill-select pill-select-sm">
+                  <option value="16:9">▬ 16:9</option>
+                  <option value="4:3">▭ 4:3</option>
+                  <option value="1:1">□ 1:1</option>
+                  <option value="3:4">▯ 3:4</option>
+                  <option value="9:16">▮ 9:16</option>
+                </select>
+              </div>
+              <div class="confirm-run-field">
+                <label for="confirmQuantity" data-i18n="gen.quantity">Số lượng</label>
+                <div class="input-group compact-qty">
+                  <button class="compact-qty-btn" id="confirmQtyMinus" type="button" title="Giảm">-</button>
+                  <input type="number" id="confirmQuantity" min="1" max="4" value="1" />
+                  <button class="compact-qty-btn" id="confirmQtyPlus" type="button" title="Tăng">+</button>
+                </div>
+              </div>
+              <div class="confirm-run-field">
+                <label for="confirmDownloadRes" data-i18n="gen.download">Tải xuống</label>
+                <select id="confirmDownloadRes" class="pill-select pill-select-sm">
+                  <!-- Options populated dynamically by GenTab based on genType -->
+                </select>
+              </div>
+              <div class="confirm-run-field confirm-run-mode-row hidden" id="confirmRunModeRow">
+                <label for="confirmRunMode" data-i18n="gen.runMode">Chế độ chạy</label>
+                <select id="confirmRunMode" class="pill-select pill-select-sm">
+                  <option value="parallel" data-i18n="gen.parallel">Song song</option>
+                  <option value="sequential" data-i18n="gen.sequential">Tuần tự</option>
+                </select>
+              </div>
+            </div>
+            <div class="confirm-run-reload-row hidden" id="confirmReloadRow">
+              <label class="confirm-run-reload-label" for="confirmReloadFlow">
+                <input type="checkbox" id="confirmReloadFlow" />
+                <span data-i18n="dialog.reloadFlowBeforeRun">Reload Flow page trước khi chạy</span>
+              </label>
+              <span class="confirm-run-reload-hint" data-i18n="dialog.reloadFlowHint">Pipeline rỗng — refresh DOM/session để giảm fail</span>
+            </div>
+          </div>
+          <div class="confirm-run-footer">
+            <button class="confirm-run-cancel" id="confirmRunCancel" data-i18n="common.cancel">Hủy</button>
+            <button class="confirm-run-submit" id="confirmRunSubmit">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              <span data-i18n="workflow.run">Chạy</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task Confirm Run Modal (giống GenTab với settings + provider status) -->
+      <div class="confirm-run-overlay hidden" id="taskConfirmRunOverlay">
+        <div class="confirm-run-modal">
+          <div class="confirm-run-header">
+            <span class="confirm-run-title" id="taskConfirmTitle" data-i18n="tasks.runSingleConfirmTitle">Xác nhận chạy Task</span>
+            <button class="confirm-run-close" id="taskConfirmClose" data-i18n-title="common.close" title="Đóng">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+          </div>
+          <div class="confirm-run-body">
+            <div class="confirm-run-info-row">
+              <span class="confirm-run-info-label" data-i18n="tasks.taskName">Task</span>
+              <span class="confirm-run-info-value" id="taskConfirmName">Task Name</span>
+            </div>
+            <div class="confirm-run-provider-status" id="taskConfirmProviderStatus">
+              <span class="confirm-run-provider-label" id="taskConfirmProviderLabel">ChatGPT</span>
+              <span class="confirm-run-provider-badge is-checking" id="taskConfirmProviderBadge">
+                <svg class="badge-icon badge-icon-spin" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                <span class="badge-text" data-i18n="gen.providerStatusChecking">Đang kiểm tra...</span>
+              </span>
+            </div>
+            <div class="confirm-run-info-row" id="taskConfirmRatioRow">
+              <span class="confirm-run-info-label" data-i18n="gen.ratio">Tỷ lệ</span>
+              <span class="confirm-run-info-value" id="taskConfirmRatio">▬ 16:9</span>
+            </div>
+            <div class="confirm-run-info-row" id="taskConfirmQuantityRow">
+              <span class="confirm-run-info-label" data-i18n="gen.quantity">Số lượng</span>
+              <span class="confirm-run-info-value" id="taskConfirmQuantity">x1</span>
+            </div>
+            <div class="confirm-run-info-row hidden" id="taskConfirmDownloadRow">
+              <span class="confirm-run-info-label" data-i18n="gen.download">Tải xuống</span>
+              <span class="confirm-run-info-value" id="taskConfirmDownloadRes">-</span>
+            </div>
+          </div>
+          <div class="confirm-run-footer">
+            <button class="confirm-run-cancel" id="taskConfirmCancel" data-i18n="common.cancel">Hủy</button>
+            <button class="confirm-run-submit" id="taskConfirmSubmit">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              <span data-i18n="tasks.runSingleConfirmBtn">Chạy</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer: Quick Controls — auto-download/retry toggles + counter hôm nay (local-first) -->
+      <footer class="qc-footer" id="appFooter">
+        <!-- Tín dụng Google Flow (2026-07-27). Thay cho 2 toggle "Tải tự động"/"Thử lại" —
+             cả hai ĐÃ có trong Settings (autoDownloadToggle / autoRetryToggle) nên đây chỉ là
+             bản trùng; gỡ đi không mất chức năng, lại nhường chỗ cho thông tin không có ở đâu khác. -->
+        <div class="qc-credits" id="flowCreditsBar"></div>
+        <div class="qc-counters" title="Số liệu hôm nay">
+          <span class="qc-counter" id="qcCountGen" data-i18n-title="footer.promptTooltip" title="Prompt đã gửi hôm nay">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <b class="qc-counter-value">0</b>
+          </span>
+          <span class="qc-counter" id="qcCountTasks" data-i18n-title="footer.taskTooltip" title="Task chạy hôm nay">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            <b class="qc-counter-value">0</b>
+          </span>
+          <span class="qc-counter" id="qcCountWf" data-i18n-title="footer.wfTooltip" title="Workflow chạy hôm nay">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+            <b class="qc-counter-value">0</b>
+          </span>
+        </div>
+        <!-- [tracker-unified] Nút Dừng độc lập tab Flow — hiện khi có tác vụ chạy (sau khi bỏ tracker sidebar). -->
+        <button type="button" class="qc-stop-btn" id="qcStopAll" title="Dừng tất cả tác vụ đang chạy" hidden>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+          <span data-i18n="footer.stopAll">Dừng</span>
+        </button>
+      </footer>
+
+      <!-- Usage Stats Modal -->
+      <div class="usage-stats-overlay hidden" id="usageStatsOverlay">
+        <div class="usage-stats-modal">
+          <div class="usage-stats-header">
+            <div class="usage-stats-header-left">
+              <div class="usage-stats-header-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 20V10"/>
+                  <path d="M18 20V4"/>
+                  <path d="M6 20v-4"/>
+                </svg>
+              </div>
+              <div class="usage-stats-header-text">
+                <h3 data-i18n="usageStats.title">Thống kê sử dụng</h3>
+                <div class="usage-stats-plan-row">
+                  <span class="usage-stats-plan-badge" id="usageStatsPlanName">Free</span>
+                  <span class="usage-stats-expiry hidden" id="usageStatsExpiry">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                    <span id="usageStatsExpiryDate">--</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <button class="usage-stats-close" id="usageStatsCloseBtn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+          </div>
+          <div class="usage-stats-body">
+            <!-- Stats with Progress Bars -->
+            <div class="usage-stats-section">
+              <div class="usage-stats-section-title" data-i18n="usageStats.quotasTitle">Quota sử dụng</div>
+              <div class="usage-stats-grid">
+                <div class="usage-stats-item" id="usageStatsPromptsItem">
+                  <div class="usage-stats-item-header">
+                    <div class="usage-stats-icon usage-stats-icon--prompts">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                      </svg>
+                    </div>
+                    <span class="usage-stats-label" data-i18n="usageStats.submitPromptsToday">Prompts hôm nay</span>
+                    <span class="usage-stats-value" id="usageStatsPrompts">0/50</span>
+                  </div>
+                  <div class="usage-stats-progress">
+                    <div class="usage-stats-progress-bar usage-stats-progress--prompts" id="usageStatsPromptsBar" style="width: 0%"></div>
+                  </div>
+                </div>
+                <div class="usage-stats-item" id="usageStatsTasksItem">
+                  <div class="usage-stats-item-header">
+                    <div class="usage-stats-icon usage-stats-icon--tasks">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 11l3 3L22 4"/>
+                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                      </svg>
+                    </div>
+                    <span class="usage-stats-label" data-i18n="usageStats.tasks">Tasks đã tạo</span>
+                    <span class="usage-stats-value" id="usageStatsTasks">0/10</span>
+                  </div>
+                  <div class="usage-stats-progress">
+                    <div class="usage-stats-progress-bar usage-stats-progress--tasks" id="usageStatsTasksBar" style="width: 0%"></div>
+                  </div>
+                </div>
+                <div class="usage-stats-item" id="usageStatsWorkflowsItem">
+                  <div class="usage-stats-item-header">
+                    <div class="usage-stats-icon usage-stats-icon--workflows">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <path d="M3 9h18"/>
+                        <path d="M9 21V9"/>
+                      </svg>
+                    </div>
+                    <span class="usage-stats-label" data-i18n="usageStats.workflows">Workflows đã tạo</span>
+                    <span class="usage-stats-value" id="usageStatsWorkflows">0/5</span>
+                  </div>
+                  <div class="usage-stats-progress">
+                    <div class="usage-stats-progress-bar usage-stats-progress--workflows" id="usageStatsWorkflowsBar" style="width: 0%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Provider Support Section -->
+            <div class="usage-stats-section">
+              <div class="usage-stats-section-title" data-i18n="usageStats.providersTitle">Nhà cung cấp</div>
+              <div class="usage-stats-providers" id="usageStatsProviders">
+                <div class="usage-stats-provider usage-stats-provider--flow" id="usageStatsProviderFlow" data-enabled="false" title="Google Flow - Tạo ảnh/video AI" data-i18n-title="usageStats.providerFlowDesc">
+                  <div class="usage-stats-provider-logo usage-stats-provider-logo--flow">
+                    <svg width="20" height="20" viewBox="0 0 24 24"><path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="#3186FF"/><path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="url(#flow-grad-0)"/><path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="url(#flow-grad-1)"/><path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="url(#flow-grad-2)"/><defs><linearGradient gradientUnits="userSpaceOnUse" id="flow-grad-0" x1="7" x2="11" y1="15.5" y2="12"><stop stop-color="#08B962"/><stop offset="1" stop-color="#08B962" stop-opacity="0"/></linearGradient><linearGradient gradientUnits="userSpaceOnUse" id="flow-grad-1" x1="8" x2="11.5" y1="5.5" y2="11"><stop stop-color="#F94543"/><stop offset="1" stop-color="#F94543" stop-opacity="0"/></linearGradient><linearGradient gradientUnits="userSpaceOnUse" id="flow-grad-2" x1="3.5" x2="17.5" y1="13.5" y2="12"><stop stop-color="#FABC12"/><stop offset=".46" stop-color="#FABC12" stop-opacity="0"/></linearGradient></defs></svg>
+                  </div>
+                  <div class="usage-stats-provider-info">
+                    <span class="usage-stats-provider-name">Flow</span>
+                    <span class="usage-stats-provider-quota" id="usageStatsProviderFlowQuota">
+                      <span class="usage-stats-provider-quota-value">0/0</span>
+                      <span class="usage-stats-provider-quota-period">/day</span>
+                    </span>
+                    <div class="usage-stats-provider-progress" id="usageStatsProviderFlowProgress">
+                      <div class="usage-stats-provider-progress-fill"></div>
+                    </div>
+                  </div>
+                  <span class="usage-stats-provider-status"></span>
+                </div>
+                <div class="usage-stats-provider usage-stats-provider--chatgpt" id="usageStatsProviderChatGPT" data-enabled="false" title="ChatGPT - Tạo ảnh Image 2" data-i18n-title="usageStats.providerChatGPTDesc">
+                  <div class="usage-stats-provider-logo usage-stats-provider-logo--chatgpt">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 4.981 4.18a5.985 5.985 0 0 0-3.998 2.9 6.046 6.046 0 0 0 .743 7.097 5.98 5.98 0 0 0 .51 4.911 6.051 6.051 0 0 0 6.515 2.9A5.985 5.985 0 0 0 13.26 24a6.056 6.056 0 0 0 5.772-4.206 5.99 5.99 0 0 0 3.997-2.9 6.056 6.056 0 0 0-.747-7.073zM13.26 22.43a4.476 4.476 0 0 1-2.876-1.04l.141-.081 4.779-2.758a.795.795 0 0 0 .392-.681v-6.737l2.02 1.168a.071.071 0 0 1 .038.052v5.583a4.504 4.504 0 0 1-4.494 4.494zM3.6 18.304a4.47 4.47 0 0 1-.535-3.014l.142.085 4.783 2.759a.771.771 0 0 0 .78 0l5.843-3.369v2.332a.08.08 0 0 1-.033.062L9.74 19.95a4.5 4.5 0 0 1-6.14-1.646zM2.34 7.896a4.485 4.485 0 0 1 2.366-1.973V11.6a.766.766 0 0 0 .388.676l5.815 3.355-2.02 1.168a.076.076 0 0 1-.071 0l-4.83-2.786A4.504 4.504 0 0 1 2.34 7.872zm16.597 3.855l-5.833-3.387L15.119 7.2a.076.076 0 0 1 .071 0l4.83 2.791a4.494 4.494 0 0 1-.676 8.105v-5.678a.79.79 0 0 0-.407-.667zm2.01-3.023l-.141-.085-4.774-2.782a.776.776 0 0 0-.785 0L9.409 9.23V6.897a.066.066 0 0 1 .028-.061l4.83-2.787a4.5 4.5 0 0 1 6.68 4.66zm-12.64 4.135l-2.02-1.164a.08.08 0 0 1-.038-.057V6.075a4.5 4.5 0 0 1 7.375-3.453l-.142.08L8.704 5.46a.795.795 0 0 0-.393.681zm1.097-2.365l2.602-1.5 2.607 1.5v2.999l-2.597 1.5-2.607-1.5z"/></svg>
+                  </div>
+                  <div class="usage-stats-provider-info">
+                    <span class="usage-stats-provider-name">ChatGPT</span>
+                    <span class="usage-stats-provider-quota" id="usageStatsProviderChatGPTQuota">
+                      <span class="usage-stats-provider-quota-value">0/0</span>
+                      <span class="usage-stats-provider-quota-period">/day</span>
+                    </span>
+                    <div class="usage-stats-provider-progress" id="usageStatsProviderChatGPTProgress">
+                      <div class="usage-stats-provider-progress-fill"></div>
+                    </div>
+                  </div>
+                  <span class="usage-stats-provider-status"></span>
+                </div>
+                <div class="usage-stats-provider usage-stats-provider--grok" id="usageStatsProviderGrok" data-enabled="false" title="Grok - Tạo ảnh Aurora" data-i18n-title="usageStats.providerGrokDesc">
+                  <div class="usage-stats-provider-logo usage-stats-provider-logo--grok">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd"><path d="M9.27 15.29l7.978-5.897c.391-.29.95-.177 1.137.272.98 2.369.542 5.215-1.41 7.169-1.951 1.954-4.667 2.382-7.149 1.406l-2.711 1.257c3.889 2.661 8.611 2.003 11.562-.953 2.341-2.344 3.066-5.539 2.388-8.42l.006.007c-.983-4.232.242-5.924 2.75-9.383.06-.082.12-.164.179-.248l-3.301 3.305v-.01L9.267 15.292M7.623 16.723c-2.792-2.67-2.31-6.801.071-9.184 1.761-1.763 4.647-2.483 7.166-1.425l2.705-1.25a7.808 7.808 0 00-1.829-1A8.975 8.975 0 005.984 5.83c-2.533 2.536-3.33 6.436-1.962 9.764 1.022 2.487-.653 4.246-2.34 6.022-.599.63-1.199 1.259-1.682 1.925l7.62-6.815"/></svg>
+                  </div>
+                  <div class="usage-stats-provider-info">
+                    <span class="usage-stats-provider-name">Grok</span>
+                    <span class="usage-stats-provider-quota" id="usageStatsProviderGrokQuota">
+                      <span class="usage-stats-provider-quota-value">0/0</span>
+                      <span class="usage-stats-provider-quota-period">/day</span>
+                    </span>
+                    <div class="usage-stats-provider-progress" id="usageStatsProviderGrokProgress">
+                      <div class="usage-stats-provider-progress-fill"></div>
+                    </div>
+                  </div>
+                  <span class="usage-stats-provider-status"></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Key Features Section -->
+            <div class="usage-stats-section">
+              <div class="usage-stats-section-title" data-i18n="usageStats.featuresTitle">Tính năng gói</div>
+              <div class="usage-stats-features" id="usageStatsFeatures">
+                <div class="usage-stats-feature" id="usageStatsFeaturePipeline" data-enabled="false" title="Chạy nhiều tác vụ liên tiếp" data-i18n-title="usageStats.featurePipelineHint">
+                  <span class="usage-stats-feature-status usage-stats-feature-status--off">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                  </span>
+                  <span class="usage-stats-feature-text" data-i18n="usageStats.featurePipeline">Pipeline</span>
+                </div>
+                <div class="usage-stats-feature" id="usageStatsFeatureAutoDownload" data-enabled="false" title="Tự động tải sau khi gen" data-i18n-title="usageStats.featureAutoDownloadHint">
+                  <span class="usage-stats-feature-status usage-stats-feature-status--off">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                  </span>
+                  <span class="usage-stats-feature-text" data-i18n="usageStats.featureAutoDownload">Download</span>
+                </div>
+                <div class="usage-stats-feature" id="usageStatsFeatureAutoRetry" data-enabled="false" title="Tự động retry khi lỗi" data-i18n-title="usageStats.featureAutoRetryHint">
+                  <span class="usage-stats-feature-status usage-stats-feature-status--off">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                  </span>
+                  <span class="usage-stats-feature-text" data-i18n="usageStats.featureAutoRetry">Retry</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Premium Teaser (only for free users) -->
+
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Onboarding Overlay (F10) -->
+      <div class="seosonaflow-onboarding-overlay hidden" id="onboardingOverlay">
+        <div class="seosonaflow-onboarding-backdrop" id="onboardingBackdrop"></div>
+        <div class="seosonaflow-onboarding-tooltip" id="onboardingTooltip">
+          <div class="seosonaflow-onboarding-tooltip__content" id="onboardingContent"></div>
+          <div class="seosonaflow-onboarding-tooltip__footer">
+            <span class="seosonaflow-onboarding-step-indicator" id="onboardingStepIndicator"></span>
+            <div class="seosonaflow-onboarding-tooltip__actions">
+              <button class="btn btn-secondary btn-sm" id="onboardingSkipBtn" data-i18n="onboarding.skip">Bỏ qua</button>
+              <button class="btn btn-primary btn-sm" id="onboardingNextBtn" data-i18n="onboarding.next">Tiếp theo</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+            
+
+    </div>
+  </div>
+</div>
+
+<!-- JS modules (same order as old manifest.json content_scripts) -->
+<script src="../lib/drawflow.min.js"></script>
+<script src="../lib/html2canvas.min.js"></script>
+<!-- i18n: Server-only — src/i18n/*.js kept for authoring, NOT loaded at runtime -->
+<script src="../src/core/ApiClient.js"></script>
+  <script src="../src/core/RuntimeMode.js"></script>
+  <script src="../src/i18n/vi.js"></script>
+  <script src="../src/i18n/en.js"></script>
+<script src="../src/core/utils.js"></script>
+<script src="../src/core/IdGenerator.js"></script>
+<script src="../src/core/EventBus.js"></script>
+<script src="../src/core/ApiBaseConfig.js"></script>
+<script src="../src/core/ServerHealthCheck.js"></script>
+<script src="../src/core/ExecutionConfig.js"></script>
+<script src="../src/core/StorageMigration.js"></script>
+<script src="../src/core/RequestSigner.js"></script>
+<script src="../src/core/ProviderConfigManager.js"></script>
+<script src="../src/core/ProviderMeta.js"></script>
+<script src="../src/core/ModelRegistry.js"></script>
+<script src="../src/core/VoiceRegistry.js"></script>
+<script src="../src/shared/VoiceSelectModal.js"></script>
+<script src="../src/core/VoicePicker.js"></script>
+<script src="../src/core/CharacterRegistry.js"></script>
+<script src="../src/shared/CharacterSelectModal.js"></script>
+<script src="../src/core/CharacterPicker.js"></script>
+<script src="../src/core/LocationCache.js"></script>
+<script src="../src/core/DomSelectorHelper.js"></script>
+<script src="../src/core/SystemConfig.js"></script>
+<script src="../src/core/ValidationRules.js"></script>
+<script src="../src/core/LocalStorage.js"></script>
+<script src="../src/core/FeatureGate.js"></script>
+<script src="../src/core/ConfigVersionPoller.js"></script>
+<script src="../src/core/TrialGate.js"></script>
+<script src="../src/core/ExecutionGate.js"></script>
+<script src="../src/core/errors/ConfigRequiredError.js"></script>
+<script src="../src/core/errors/ConfigErrorHandler.js"></script>
+<script src="../src/core/errors/QuotaErrorHandler.js"></script>
+<script src="../src/core/RequestCoalescer.js"></script>
+<script src="../src/core/ApiStorage.js"></script>
+<script src="../src/core/StorageManager.js"></script>
+<script src="../src/core/BlobUrlManager.js"></script>
+<script src="../src/core/ThumbnailCache.js"></script>
+<script src="../src/core/PendingUploadStore.js"></script>
+<script src="../src/core/TileCache.js"></script>
+<script src="../src/core/TileResolver.js"></script>
+<script src="../src/core/AlbumStore.js"></script>
+<script src="../src/core/ImageStore.js"></script>
+<script src="../src/core/ImageNameRegistry.js"></script>
+<script src="../src/core/MentionParser.js"></script>
+<script src="../src/core/FileUploader.js"></script>
+<script src="../src/core/MediaRegistry.js"></script>
+<script src="../src/core/watermark-alpha-data.js"></script>
+<script src="../src/core/gwr-bundle.js"></script>
+<script src="../src/core/WatermarkRemover.js"></script>
+<script src="../src/core/TextOverlay.js"></script>
+<script src="../src/core/ImageComposite.js"></script>
+<script src="../src/core/TextIntegrity.js"></script>
+<script src="../src/core/PromptLint.js"></script>
+<script src="../src/core/VietnameseLint.js"></script>
+<script src="../src/core/PngText.js"></script>
+<script src="../src/core/SelectorOverride.js"></script>
+<script src="../src/core/SelectorDoctor.js"></script>
+<script src="../src/core/ProviderCapability.js"></script>
+<script src="../src/core/AccountPlan.js"></script>
+<script src="../src/core/FlowCredits.js"></script>
+<script src="../src/core/CreditsPanel.js"></script>
+<script src="../src/core/MemoryStore.js"></script>
+<script src="../src/core/MotionRecipes.js"></script>
+<script src="../src/core/CostEstimator.js"></script>
+<script src="../src/core/StyleAnchor.js"></script>
+<script src="../src/core/EntitySheet.js"></script>
+<script src="../src/core/PromptHygiene.js"></script>
+<script src="../src/core/FlowDoctor.js"></script>
+<script src="../src/core/QualityGate.js"></script>
+<script src="../src/core/VideoChain.js"></script>
+<script src="../src/core/TileConfidence.js"></script>
+<script src="../src/core/SseBroadcastManager.js"></script>
+<script src="../src/core/SseClient.js"></script>
+<script src="../src/core/UsageSync.js"></script>
+<script src="../src/core/TelegramExecutor.js"></script>
+<script src="../src/core/McpExecutor.js"></script>
+<!-- Local MCP bridge (LOCAL mode only): nối WS tới mcp-local/server.mjs để Claude Code/Cursor điều khiển. Gỡ dòng này để tắt. -->
+<script src="../scripts/local-mcp-bridge.js"></script>
+<script src="../src/core/I18n.js"></script>
+<script src="../src/core/NotificationManager.js"></script>
+<script src="../src/core/RetryHelper.js"></script>
+<script src="../src/core/ExecutionLock.js"></script>
+<script src="../src/core/QueueItem.js"></script>
+<script src="../src/core/Job.js"></script>
+<script src="../src/core/VideoFrameExtractor.js"></script>
+<script src="../src/core/EditorExecutor.js"></script>
+<script src="../src/core/TileMonitor.js"></script>
+<script src="../src/core/DownloadExecutor.js"></script>
+<script src="../src/core/PromptQueue.js"></script>
+<script src="../src/core/ExecutionTracker.js"></script>
+<script src="../src/core/PipelineFooter.js"></script>
+<!-- [tracker-unified] Heavy-stop dùng chung cho nút Dừng ở footer sidebar (độc lập tab Flow). -->
+<script src="../src/core/ExecutionStop.js"></script>
+<script src="../src/core/QueueMonitor.js"></script>
+<!-- Phân loại lỗi + backoff + cầu chì — PHẢI nạp TRƯỚC WorkflowExecutor. -->
+<script src="../src/workflow/RetryPolicy.js"></script>
+<script src="../src/core/MetadataScrubber.js"></script>
+<script src="../src/core/WorkflowExecutor.js"></script>
+<script src="../src/core/BatchQueue.js"></script>
+<script src="../src/core/MessageBridge.js"></script>
+<script src="../src/core/ProviderTabLock.js"></script>
+<script src="../src/core/ChatGPTSession.js"></script>
+<script src="../src/core/ChatGPTConfig.js"></script>
+<script src="../src/core/GrokSession.js"></script>
+<script src="../src/core/GrokConfig.js"></script>
+<script src="../src/core/GeminiSession.js"></script>
+<script src="../src/core/ClaudeSession.js"></script>
+<script src="../src/core/providers/AIProviderAdapter.js"></script>
+<script src="../src/core/providers/FlowAdapter.js"></script>
+<script src="../src/core/providers/ChatGPTAdapter.js"></script>
+<script src="../src/core/providers/GrokAdapter.js"></script>
+<script src="../src/core/providers/GeminiAdapter.js"></script>
+<script src="../src/core/providers/ProviderRegistry.js"></script>
+<script src="../src/core/ImmediateUploader.js"></script>
+<script src="../src/capture/ScreenCapture.js"></script>
+<script src="../src/core/BackendSync.js"></script>
+<script src="../src/queue/QueuePanel.js"></script>
+<script src="../src/shared/ProviderBrandIcons.js"></script>
+<script src="../src/shared/SmartTooltip.js"></script>
+<script src="../src/shared/BaseModal.js"></script>
+<script src="../src/shared/CustomSelect.js"></script>
+<script src="../src/shared/CustomDialog.js"></script>
+<script src="../src/shared/ImagePickerModal.js"></script>
+<script src="../src/storage/UserStyleStore.js"></script>
+<script src="../src/shared/StyleSelectModal.js"></script>
+<script src="../src/shared/DownloadHelper.js"></script>
+<script src="../src/shared/ProjectHelper.js"></script>
+<script src="../src/shared/PlanContentRenderer.js"></script>
+<script src="../src/albums/AlbumList.js"></script>
+<script src="../src/albums/AlbumCreateModal.js"></script>
+<script src="../src/photos/PhotosTab.js"></script>
+<script src="../src/settings/StorageSettings.js"></script>
+<script src="../src/history/GenerationHistory.js"></script>
+<script src="../src/history/HistoryTab.js"></script>
+<script src="../src/prompts/BundledPrompts.js"></script>
+<script src="../src/prompts/PromptSlots.js"></script>
+<script src="../src/prompts/BundledPromptGallery.js"></script>
+<script src="../src/snippets/UserPromptsManager.js"></script>
+<script src="../src/snippets/SnippetsPanel.js"></script>
+<script src="../src/prompts/PromptMerge.js"></script>
+<script src="../src/templates/TemplatesTab.js"></script>
+<script src="../src/prompts/MyPromptsTab.js"></script>
+<script src="../src/multi-task/TaskList.js"></script>
+<script src="../src/multi-task/TaskModal.js"></script>
+<script src="../src/multi-task/MultiTaskTab.js"></script>
+<script src="../src/workflow/NodeTemplates.js"></script>
+<script src="../src/workflow/DiagramCanvas.js"></script>
+<script src="../src/shared/WorkflowExportHelper.js"></script>
+<script src="../src/workflow/BundledWorkflows.js"></script>
+<script src="../src/workflow/WorkflowList.js"></script>
+<!-- Tab "Kết quả" trong Logs — đọc run đã ghi bởi WorkflowResultsStore (qua message workflowResults:*). -->
+<script src="../src/workflow/WorkflowResultsTab.js"></script>
+<script src="../src/workflow/FlowDoctorTab.js"></script>
+<script src="../src/core/ConnectorHealthDot.js"></script>
+  <script src="../src/workflow/BundledTemplates.js"></script>
+  <script src="../src/workflow/BundledWorkflowsExtra.js"></script>
+  <!-- Kho template RIÊNG của user (af_user_templates) — tách khỏi bản mặc định bundled. -->
+  <script src="../src/workflow/UserTemplateStore.js"></script>
+  <script src="../src/workflow/WorkflowTemplateList.js"></script>
+<script src="../src/workflow/WorkflowMediaModal.js"></script>
+<script src="../src/workflow/SaveTemplateModal.js"></script>
+<!-- [Affiliate Creator Page] Publish + manage community template từ sidebar -->
+<script src="../src/creator/MyTemplatesList.js"></script>
+<script src="../src/creator/CreatorTemplatePublish.js"></script>
+<script src="../src/workflow/ShareWorkflowModal.js"></script>
+<script src="../src/workflow/SharedWorkflowOverlay.js"></script>
+<script src="../src/workflow/WorkflowEditor.js"></script>
+<!-- Tách từ WorkflowEditor.js (form cấu hình node) — PHẢI nạp SAU file trên. -->
+<script src="../src/workflow/WorkflowEditorNodeForm.js"></script>
+<script src="../src/workflow/WorkflowEditorPickers.js"></script>
+<script src="../src/workflow/WorkflowEditorRun.js"></script>
+<script src="../src/workflow/WorkflowEditorEvents.js"></script>
+<script src="../src/workflow/WorkflowTab.js"></script>
+<!-- Workflow Framework + AI Agent (framework core dùng chung; load thứ tự: catalog→schema→validate→operations→agent→modal) -->
+<script src="../src/workflow/framework/catalog.js"></script>
+<script src="../src/workflow/framework/schema.js"></script>
+<script src="../src/workflow/framework/validate.js"></script>
+<script src="../src/workflow/framework/operations.js"></script>
+<script src="../src/workflow/framework/WorkflowConventions.js"></script>
+<script src="../src/workflow/framework/WorkflowIntent.js"></script>
+<script src="../src/workflow/framework/WorkflowAgent.js"></script>
+<script src="../src/workflow/framework/WorkflowAgentModal.js"></script>
+<script src="../src/chat/PromptAssistantModal.js"></script>
+<script src="../src/shared/styles_data.js"></script>
+<script src="../src/prompts/GenTab.js"></script>
+<script src="../src/core/SidebarManager.js"></script>
+<script src="../src/app.js"></script>
+<script src="../scripts/boot.js"></script>
+</body>
+</html>

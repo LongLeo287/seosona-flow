@@ -1,0 +1,61 @@
+# ── Bản copy tham chiếu của extension bên thứ ba (KHÔNG phải code của dự án này) ──
+# template/ là gói TobyFlow tải từ Chrome Web Store (có _metadata/verified_contents.json,
+# tức chữ ký gói của Google) — chỉ dùng để đối chiếu khi dev, tuyệt đối không phân phối lại.
+template/
+
+# ── Knowledge base / ghi chú cá nhân, không thuộc extension ──
+seosona-ux-ui/
+_removed_from_stickman_backup/
+# Gói review của Magnific — tài liệu tham chiếu để học pattern, 60MB, KHÔNG phải code dự án.
+seosona-flow/magnific-ai-review/
+
+# Bản GỐC của thumbnail trước khi nén (72MB). Giữ trên máy để lỡ cần dựng lại,
+# KHÔNG đưa vào git — bản đã nén 5,3MB mới là thứ đi kèm sản phẩm.
+seosona-flow/assets/templates/_original/
+
+# ── Artifact baseline: BẮT BUỘC untracked ──
+# repository-inventory.json băm TOÀN BỘ file tracked (git ls-files). Nếu tự nó được track
+# thì nó băm chính mình → không bao giờ hoà giải được → check:architecture đỏ vĩnh viễn.
+# 4 baseline còn lại đi cùng bộ nên để chung một chỗ cho nhất quán. Regen tại chỗ để
+# chạy --check cục bộ; đừng commit.
+seosona-flow/artifacts/
+
+# ── Cấu hình máy cục bộ / tooling ──
+.claude/
+.cursorrules
+.clauderules
+
+# ── Node ──
+node_modules/
+npm-debug.log*
+# package-lock.json is intentionally tracked: CI `npm ci` needs a reproducible
+# lockfile (roadmap P2.T1 / P9 supply chain). Do not re-ignore it.
+!seosona-flow/package-lock.json
+
+# ── Build / đóng gói extension ──
+*.crx
+*.pem
+*.zip
+# Chỉ bỏ thư mục OUTPUT ở gốc. Trước đây viết `build/` (không có dấu / đầu) nên nó khớp
+# MỌI thư mục tên build ở mọi độ sâu — nuốt luôn seosona-flow/scripts/build/ vốn là MÃ NGUỒN
+# thật (render-page-scripts, check-generated, sync-node-catalog). Hậu quả: clone repo về thì
+# check:architecture gãy vì thiếu script, mà git status không hề báo (file ignored ≠ untracked).
+/dist/
+/build/
+/seosona-flow/dist/
+/seosona-flow/build/
+
+# ── Bí mật ──
+.env
+.env.*
+*.key
+*.sqlite
+*.db
+
+# ── Rác OS / editor ──
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+.idea/
+.vscode/

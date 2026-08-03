@@ -1,0 +1,46 @@
+{
+  "schema": "seosona.build.generated-artifacts.v1",
+  "note": "Registry of in-repo generated artifacts and their source-and-generator chain. Reproducible entries are byte-verified by scripts/build/check-generated.mjs. Non-reproducible legacy artifacts are explicit, owned deferrals.",
+  "reproducible": [
+    {
+      "artifact": "seosona-flow/config/page-scripts.json",
+      "generator": "node scripts/build/render-page-scripts.mjs",
+      "checkCommand": "node scripts/build/render-page-scripts.mjs --check",
+      "source": "extension HTML pages (script src order)"
+    },
+    {
+      "artifact": "seosona-flow/artifacts/audit/phase-01/repository-inventory.json",
+      "generator": "node scripts/audit/inventory.mjs",
+      "checkCommand": "node scripts/audit/inventory.mjs --check",
+      "source": "git ls-files tracked scope"
+    },
+    {
+      "artifact": "seosona-flow/artifacts/audit/phase-01/message-contracts.json",
+      "generator": "node scripts/audit/message-contracts.mjs",
+      "checkCommand": "node scripts/audit/message-contracts.mjs --check",
+      "source": "tracked JS message handlers"
+    },
+    {
+      "artifact": "seosona-flow/artifacts/architecture/phase-04/globals.json",
+      "generator": "node scripts/audit/global-dependencies.mjs",
+      "checkCommand": "node scripts/audit/global-dependencies.mjs --check",
+      "source": "tracked JS global reads/writes"
+    }
+  ],
+  "deferred": [
+    {
+      "artifact": "src/prompts/* (prompt-pack data)",
+      "reason": "Prompt-pack entries were authored and expanded by hand; the original generator and source corpus are not in-repo.",
+      "owner": "Release Model",
+      "risk": "medium — cannot byte-verify prompt data provenance yet",
+      "reviewTrigger": "A release provenance review reconstructs the source-and-generator chain."
+    },
+    {
+      "artifact": "localization strings (loading-i18n / locale tables)",
+      "reason": "Locale tables are edited inline; no single source-of-truth generator exists yet.",
+      "owner": "UX and Accessibility Model",
+      "risk": "low",
+      "reviewTrigger": "Phase 8 design-token / i18n consolidation."
+    }
+  ]
+}

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Template Editor - SEOSONA Flow</title>
+  <link rel="stylesheet" href="../styles/sidebar.css">
+  <link rel="stylesheet" href="../lib/drawflow.min.css">
+  <link rel="stylesheet" href="../src/shared/custom-dialog.css">
+  <link rel="stylesheet" href="../src/shared/image-picker.css">
+  <link rel="stylesheet" href="../src/history/history-tab.css">
+  <link rel="stylesheet" href="../src/workflow/workflow.css">
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: var(--background, #1c1c1f);
+      color: var(--foreground, #e8e8ea);
+      overflow: hidden;
+    }
+    /* workflow.css handles .workflow-editor-overlay styles */
+  </style>
+</head>
+<body>
+<!-- Template editor will render here via JS -->
+
+<!-- Owned suppression: phải nạp TRƯỚC mọi module (catch im lặng gọi SEOSONA_swallow). -->
+<script src="../src/core/ErrorCatalog.js"></script>
+<script src="../lib/drawflow.min.js"></script>
+<script src="../lib/html2canvas.min.js"></script>
+<script src="../src/core/ApiClient.js"></script>
+  <script src="../src/core/RuntimeMode.js"></script>
+<script src="../src/core/utils.js"></script>
+<script src="../src/core/IdGenerator.js"></script>
+<script src="../src/core/EventBus.js"></script>
+<!-- I18n -->
+<script src="../src/i18n/vi.js"></script>
+<script src="../src/i18n/en.js"></script>
+<script src="../src/core/I18n.js"></script>
+<script src="../src/core/ApiBaseConfig.js"></script>
+<script src="../src/core/LocalStorage.js"></script>
+<script src="../src/core/FeatureGate.js"></script>
+<script src="../src/core/SystemConfig.js"></script>
+<script src="../src/core/ValidationRules.js"></script>
+<script src="../src/core/RequestSigner.js"></script>
+<script src="../src/core/ProviderConfigManager.js"></script>
+<script src="../src/core/ModelRegistry.js"></script>
+<script src="../src/core/VoiceRegistry.js"></script>
+<script src="../src/shared/VoiceSelectModal.js"></script>
+<script src="../src/core/VoicePicker.js"></script>
+<script src="../src/core/CharacterRegistry.js"></script>
+<script src="../src/shared/CharacterSelectModal.js"></script>
+<script src="../src/core/CharacterPicker.js"></script>
+<script src="../src/core/ExecutionGate.js"></script>
+<script src="../src/core/TrialGate.js"></script>
+<script src="../src/core/RequestCoalescer.js"></script>
+<script src="../src/core/ApiStorage.js"></script>
+<script src="../src/core/StorageManager.js"></script>
+<script src="../src/core/SseBroadcastManager.js"></script>
+<script src="../src/core/SseClient.js"></script>
+<script src="../src/core/TelegramExecutor.js"></script>
+<script src="../src/core/RetryHelper.js"></script>
+<script src="../src/core/ExecutionLock.js"></script>
+<script src="../src/core/BlobUrlManager.js"></script>
+<script src="../src/core/ThumbnailCache.js"></script>
+<script src="../src/core/PendingUploadStore.js"></script>
+<script src="../src/core/TileCache.js"></script>
+<script src="../src/core/TileResolver.js"></script>
+<script src="../src/core/AlbumStore.js"></script>
+<script src="../src/core/ImageStore.js"></script>
+<script src="../src/core/FileUploader.js"></script>
+<script src="../src/core/MediaRegistry.js"></script>
+<!-- PromptQueue dependencies (cho pipeline execution) -->
+<script src="../src/settings/StorageSettings.js"></script>
+<script src="../src/core/QueueItem.js"></script>
+<script src="../src/core/Job.js"></script>
+<script src="../src/core/EditorExecutor.js"></script>
+<script src="../src/core/TileMonitor.js"></script>
+<script src="../src/core/PromptQueue.js"></script>
+<!-- Phân loại lỗi + backoff + cầu chì — PHẢI nạp TRƯỚC WorkflowExecutor. -->
+<script src="../src/workflow/RetryPolicy.js"></script>
+<!-- Cùng bộ module mà workflow-editor.html đã nạp: executor chạy ở đây nên thiếu là ném *_UNAVAILABLE. -->
+<script src="../src/core/StyleAnchor.js"></script>
+<script src="../src/core/PngText.js"></script>
+<script src="../src/core/TextOverlay.js"></script>
+<script src="../src/core/ImageComposite.js"></script>
+<script src="../src/core/TextIntegrity.js"></script>
+<script src="../src/core/VietnameseLint.js"></script>
+<script src="../src/core/EntitySheet.js"></script>
+<script src="../src/core/PromptHygiene.js"></script>
+<script src="../src/core/FlowDoctor.js"></script>
+<script src="../src/core/QualityGate.js"></script>
+<script src="../src/core/VideoChain.js"></script>
+<script src="../src/core/MetadataScrubber.js"></script>
+<script src="../src/core/WorkflowExecutor.js"></script>
+<script src="../src/core/MessageBridge.js"></script>
+<script src="../src/core/ProviderTabLock.js"></script>
+<script src="../src/core/ChatGPTSession.js"></script>
+<script src="../src/core/ChatGPTConfig.js"></script>
+<script src="../src/core/GrokSession.js"></script>
+<script src="../src/core/GrokConfig.js"></script>
+<script src="../src/core/GeminiSession.js"></script>
+<script src="../src/core/providers/AIProviderAdapter.js"></script>
+<script src="../src/core/providers/FlowAdapter.js"></script>
+<script src="../src/core/providers/ChatGPTAdapter.js"></script>
+<script src="../src/core/providers/GrokAdapter.js"></script>
+<script src="../src/core/providers/GeminiAdapter.js"></script>
+<script src="../src/core/providers/ProviderRegistry.js"></script>
+<script src="../src/core/ImmediateUploader.js"></script>
+<script src="../src/core/BackendSync.js"></script>
+<script src="../src/shared/SmartTooltip.js"></script>
+<script src="../src/shared/CustomDialog.js"></script>
+<script src="../src/shared/ProjectHelper.js"></script>
+<script src="../src/shared/ImagePickerModal.js"></script>
+<script src="../src/shared/DownloadHelper.js"></script>
+<script src="../src/workflow/NodeTemplates.js"></script>
+<script src="../src/workflow/DiagramCanvas.js"></script>
+<script src="../src/workflow/WorkflowHistory.js"></script>
+<script src="../src/shared/WorkflowExportHelper.js"></script>
+<script src="../src/workflow/WorkflowList.js"></script>
+<!-- Template mode required scripts -->
+<script src="../src/workflow/WorkflowMediaModal.js"></script>
+<!-- Kho template user — _updateTemplate ghi bản fork/user vào đây khi local mode. -->
+<script src="../src/workflow/UserTemplateStore.js"></script>
+<script src="../src/workflow/SaveTemplateModal.js"></script>
+<!-- [Creator Page] Affiliate sửa community template → _updateCreatorTemplate dùng CreatorTemplatePublish -->
+<script src="../src/creator/CreatorTemplatePublish.js"></script>
+<script src="../src/workflow/WorkflowEditor.js"></script>
+<!-- Tách từ WorkflowEditor.js — PHẢI nạp SAU file trên (augment prototype). -->
+<script src="../src/workflow/WorkflowEditorNodeForm.js"></script>
+<script src="../src/workflow/WorkflowEditorPickers.js"></script>
+<script src="../src/workflow/WorkflowEditorRun.js"></script>
+<script src="../src/workflow/WorkflowEditorEvents.js"></script>
+<script src="../scripts/workflow-template-editor-init.js"></script>
+</body>
+</html>

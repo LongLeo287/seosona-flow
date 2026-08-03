@@ -1,0 +1,270 @@
+{
+  "background": {
+    "service_worker": "background.js"
+  },
+  "commands": {
+    "generate": {
+      "description": "Generate with current prompt",
+      "suggested_key": {
+        "default": "Alt+G"
+      }
+    },
+    "toggle-sidebar": {
+      "description": "Toggle sidebar",
+      "suggested_key": {
+        "default": "Alt+S"
+      }
+    }
+  },
+  "content_scripts": [
+    {
+      "css": [],
+      "js": [
+        "src/core/ErrorCatalog.js",
+        "src/core/MetadataScrubber.js",
+        "src/core/RuntimeMode.js",
+        "src/core/ProviderConfigManager.js",
+        "src/core/ProviderMeta.js",
+        "src/core/SelectorOverride.js",
+        "src/core/SelectorDoctor.js",
+        "src/core/SelectorHealth.js",
+        "src/core/ProviderCapability.js",
+        "src/core/AccountPlan.js",
+        "src/core/FlowCredits.js",
+        "src/core/FlowCreditsScanner.js",
+        "src/core/MediaCache.js",
+        "content_scripts/content.js"
+      ],
+      "matches": [
+        "https://labs.google/fx/*"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "js": [
+        "src/core/ErrorCatalog.js",
+        "content_scripts/flow-credits-bridge.js"
+      ],
+      "matches": [
+        "https://labs.google/fx/*"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "js": [
+        "src/core/ErrorCatalog.js",
+        "src/core/MediaCache.js",
+        "content_scripts/slate-bridge.js"
+      ],
+      "matches": [
+        "https://labs.google/fx/*"
+      ],
+      "run_at": "document_idle",
+      "world": "MAIN"
+    },
+    {
+      "js": [
+        "src/core/ErrorCatalog.js",
+        "src/core/ProviderMeta.js",
+        "content_scripts/floating-tracker-rich.js",
+        "src/core/SelectorOverride.js",
+        "src/core/SelectorDoctor.js",
+        "content_scripts/chat-content-chatgpt.js"
+      ],
+      "matches": [
+        "*://chatgpt.com/*"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "js": [
+        "src/core/ErrorCatalog.js",
+        "src/core/ProviderMeta.js",
+        "content_scripts/floating-tracker-rich.js",
+        "src/core/SelectorOverride.js",
+        "src/core/SelectorDoctor.js",
+        "content_scripts/chat-content-grok.js"
+      ],
+      "matches": [
+        "https://grok.com/*",
+        "https://*.grok.com/*"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "js": [
+        "src/core/ErrorCatalog.js",
+        "src/core/SelectorOverride.js",
+        "src/core/SelectorDoctor.js",
+        "content_scripts/chat-content-gemini.js"
+      ],
+      "matches": [
+        "*://gemini.google.com/*"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "js": [
+        "src/core/ErrorCatalog.js",
+        "content_scripts/chat-content-claude.js"
+      ],
+      "matches": [
+        "*://claude.ai/*"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "js": [
+        "src/core/ErrorCatalog.js",
+        "src/core/watermark-alpha-data.js",
+        "src/core/gwr-bundle.js",
+        "src/core/FlowWatermarkProfiles.js",
+        "src/core/WatermarkRemover.js",
+        "src/core/VeoWatermarkProbe.js",
+        "src/core/VeoWatermarkProfile.js",
+        "content_scripts/watermark-inject.js"
+      ],
+      "matches": [
+        "https://labs.google/fx/*",
+        "*://gemini.google.com/*"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "js": [
+        "src/core/ErrorCatalog.js",
+        "src/core/VeoWatermarkProbe.js",
+        "src/core/VeoWatermarkProfile.js",
+        "content_scripts/watermark-inject.js"
+      ],
+      "matches": [
+        "*://chatgpt.com/*",
+        "https://grok.com/*",
+        "https://*.grok.com/*"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "all_frames": false,
+      "exclude_matches": [
+        "*://accounts.google.com/*",
+        "*://*.accounts.google.com/*",
+        "*://oauth.googleusercontent.com/*",
+        "*://*.oauth.googleusercontent.com/*",
+        "*://*.stripe.com/*",
+        "*://checkout.link.com/*",
+        "*://*.lemonsqueezy.com/*",
+        "*://*.paypal.com/*",
+        "*://polar.sh/*",
+        "*://*.polar.sh/*",
+        "*://*.sepay.vn/*"
+      ],
+      "js": [
+        "src/core/ErrorCatalog.js",
+        "content_scripts/i2p-content.js"
+      ],
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self';"
+  },
+  "description": "Auto Flow - Automate ChatGPT, Grok & Google Flow for AI image/video generation. Batch prompts, smart workflows, auto 2K/4K download.",
+  "host_permissions": [
+    "https://labs.google/*",
+    "*://chatgpt.com/*",
+    "*://gemini.google.com/*",
+    "*://claude.ai/*",
+    "https://grok.com/*",
+    "https://*.grok.com/*",
+    "*://x.com/*",
+    "*://*.x.com/*",
+    "*://*.x.ai/*",
+    "*://storage.googleapis.com/*",
+    "*://flow-content.google/*",
+    "*://*.googleusercontent.com/*",
+    "*://*.googlevideo.com/*",
+    "*://www.google.com/*"
+  ],
+  "optional_host_permissions": [
+    "*://www.pinterest.com/*",
+    "*://www.youtube.com/*",
+    "*://www.tiktok.com/*",
+    "*://www.facebook.com/*",
+    "*://unsplash.com/*",
+    "*://www.etsy.com/*",
+    "*://pixabay.com/*",
+    "*://www.amazon.com/*",
+    "<all_urls>"
+  ],
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "manifest_version": 3,
+  "name": "SEOSONA Flow",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "unlimitedStorage",
+    "sidePanel",
+    "scripting",
+    "tabs",
+    "downloads",
+    "notifications",
+    "alarms",
+    "contextMenus",
+    "clipboardWrite"
+  ],
+  "short_name": "SEOSONA Flow",
+  "side_panel": {
+    "default_path": "pages/sidebar.html"
+  },
+  "version": "1.1.37",
+  "web_accessible_resources": [
+    {
+      "matches": [
+        "https://labs.google/*"
+      ],
+      "resources": [
+        "pages/sidebar.html",
+        "pages/workflow-editor.html",
+        "pages/workflow-template-editor.html",
+        "scripts/workflow-template-editor-init.js",
+        "pages/angles-editor.html",
+        "pages/effects-editor.html",
+        "pages/settings.html",
+        "styles/settings.css",
+        "scripts/settings-page.js",
+        "scripts/workflow-editor-init.js",
+        "scripts/angles-editor-init.js",
+        "scripts/effects-editor-init.js",
+        "styles/angles-editor.css",
+        "src/**/*.js",
+        "src/**/*.css",
+        "lib/*.js",
+        "lib/*.css",
+        "data/meigen.json",
+        "data/meigen-images/*",
+        "config/flow-api.json"
+      ]
+    },
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "resources": [
+        "icons/icon-48.png",
+        "icons/icon-128.png"
+      ]
+    }
+  ]
+}

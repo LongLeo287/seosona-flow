@@ -1,0 +1,646 @@
+{
+  "chatgpt": {
+    "name": "ChatGPT",
+    "color": "chatgpt",
+    "inputs": 1,
+    "outputs": 1,
+    "portType": "image",
+    "ports_in": [
+      {
+        "name": "image_ref",
+        "type": "image",
+        "required": false,
+        "multiple": true,
+        "visibleWhen": null,
+        "acceptFromNodeTypes": null
+      },
+      {
+        "name": "text",
+        "type": "text",
+        "required": false,
+        "multiple": true,
+        "visibleWhen": null,
+        "acceptFromNodeTypes": null
+      }
+    ],
+    "ports_out": [
+      {
+        "name": "media",
+        "type": "image"
+      }
+    ]
+  },
+  "condition": {
+    "name": "Condition",
+    "color": "condition",
+    "inputs": 1,
+    "outputs": 2,
+    "portType": "any",
+    "ports_in": [
+      {
+        "name": "in",
+        "type": "any",
+        "required": false,
+        "multiple": true,
+        "visibleWhen": null,
+        "acceptFromNodeTypes": null
+      }
+    ],
+    "ports_out": [
+      {
+        "name": "true",
+        "type": "any"
+      },
+      {
+        "name": "false",
+        "type": "any"
+      }
+    ]
+  },
+  "delay": {
+    "name": "Wait",
+    "color": "delay",
+    "inputs": 1,
+    "outputs": 1,
+    "portType": "any",
+    "ports_in": [
+      {
+        "name": "any_in",
+        "type": "any",
+        "required": false,
+        "multiple": false,
+        "visibleWhen": null,
+        "acceptFromNodeTypes": null
+      }
+    ],
+    "ports_out": [
+      {
+        "name": "any_out",
+        "type": "any"
+      }
+    ]
+  },
+  "download": {
+    "name": "Download",
+    "color": "download",
+    "inputs": 1,
+    "outputs": 0,
+    "portType": "any",
+    "ports_in": [
+      {
+        "name": "media_in",
+        "type": "any",
+        "required": true,
+        "multiple": true,
+        "visibleWhen": null,
+        "acceptFromNodeTypes": null
+      }
+    ],
+    "ports_out": []
+  },
+  "entity_ref": {
+    "name": "Bảng thực thể",
+    "color": "image",
+    "inputs": 1,
+    "outputs": 1,
+    "portType": "any",
+    "ports_in": [
+      {
+        "name": "text",
+        "type": "text",
+        "required": false,
+        "multiple": true,
+        "visibleWhen": null,
+        "acceptFromNodeTypes": null
+      }
+    ],
+    "ports_out": [
+      {
+        "name": "image",
+        "type": "image"
+      }
+    ]
+  },
+  "generate": {
+    "name": "Tạo ảnh/video",
+    "color": "generate",
+    "inputs": 1,
+    "outputs": 1,
+    "portType": "image",
+    "ports_in": [
+      {
+        "name": "image_ref",
+        "type": "image",
+        "required": false,
+        "multiple": true,
+        "visibleWhen": null,
+        "acceptFromNodeTypes": null
+      },
+      {
+        "name": "text",
+        "type": "text",
+        "required": false,
+        "multiple": true,
+        "visibleWhen": null,
+        "acceptFromNodeTypes": null
+      },
+      {
+        "name": "frame_1",
+        "type": "frame",
+        "required": false,
+        "multiple": false,
+        "visibleWhen": "isVideoFrames",
+        "acceptFromNodeTypes": null
+      },
+      {
+        "name": "frame_2",
+        "type": "frame",
+        "required": false,
+        "multiple": false,
+        "visibleWhen": "isVideoFrames",
+        "acceptFromNodeTypes": null
+      },
+      {
+        "name": "video_ref",
+        "type": "video",
+        "required": false,
+        "multiple": false,
+        "visibleWhen": "isVideoIngredient",
+        "acceptFromNodeTypes": [
+          "generate"
+        ]
+      }
+    ],
+    "ports_out": [
+      {
+        "name": "media",
+        "type": "image"
+      },
+      {
+        "name": "frame",
+        "type": "image"
+      }
+    ]
+  },
+  "grok": {
+    "name": "Grok",
+    "color": "grok",
+    "inputs": 1,
+    "outputs": 1,
+    "portType": "image",
+    "ports_in": [
+      {
+        "name": "image_ref",
+        "type": "image",
+        "required": false,
+        "multiple": true,
+        "visibleWhen": null,
+        "acceptFromNodeTypes": null
+      },
+      {
+        "name": "text",
+        "type": "text",
+        "required": false,
+        "multiple": true,
+        "visibleWhen": null,
+        "acceptFromNodeTypes": null
+      }
+    ],
+    "ports_out": [
+      {
+        "name": "media",
+        "type": "image"
+      },
+      {
+        "name": "frame",
+        "type": "image"
+      }
+    ]
+  },
+  "image": {
+    "name": "Image",
+    "color": "image",
+    "inputs": 0,
+    "outputs": 1,
+    "portType": "image",
+    "ports_in": [],
+    "ports_out": [
+      {
+        "name": "media",
+        "type": "image"
+      }
+    ]
+  },
+  "image_composite": {
+    "name": "Ghép ảnh",
+    "color": "image",
+    "inputs": 2,
+    "outputs": 1,
+    "portType": "image",
+    "ports_in": [
+      {
+        "name": "base",
+        "type": "image",
+        "required": true,
+        "multiple": false,
+        "visibleWhen": null,
+        "acceptFromNodeTypes": null
+      },
+      {
+        "name": "overlay",
+        "type": "image",
+        "required": true,
+        "multiple": false,
+        "visibleWhen": null,
+        "acceptFromNodeTypes": null
+      }
+    ],
+    "ports_out": [
+      {
+        "name": "image",
+        "type": "image"
+      }
+    ]
+  },
+  "loop": {
+    "name": "Loop / Batch",
+    "color": "text",
+    "inputs": 1,
+    "outputs": 1,
+    "portType": "text",
+    "ports_in": [
+      {
+        "name": "text",
+        "type": "text",
+        "required": false,
+        "multiple": true,
+        "visibleWhen": null,
+        "acceptFromNodeTypes": null
+      }
+    ],
+    "ports_out": [
+      {
+        "name": "text",
+        "type": "text"
+      }
+    ]
+  },
+  "merge": {
+    "name": "Merge",
+    "color": "merge",
+    "inputs": 2,
+    "outputs": 1,
+    "portType": "any",
+    "ports_in": [],
+    "ports_out": []
+  },
+  "note": {
+    "name": "Ghi chú",
+    "color": "note",
+    "inputs": 0,
+    "outputs": 0,
+    "portType": "none",
+    "ports_in": [],
+    "ports_out": []
+  },
+  "prompt": {
+    "name": "AI Agent",
+    "color": "prompt",
+    "inputs": 1,
+    "outputs": 1,
+    "portType": "text",
+    "ports_in": [
+      {
+        "name": "text",
+        "type": "text",
+        "required": false,
+        "multiple": true,
+        "visibleWhen": null,
+        "acceptFromNodeTypes": null
+      },
+      {
+        "name": "image_ref",
+        "type": "image",
+        "required": false,
+        "multiple": true,
+        "visibleWhen": "enhance",
+        "acceptFromNodeTypes": null
+      }
+    ],
+    "ports_out": [
+      {
+        "name": "text",
+        "type": "text"
+      }
+    ]
+  },
+  "prompt_sequence": {
+    "name": "Prompt Sequence",
+    "color": "text",
+    "inputs": 1,
+    "outputs": 1,
+    "portType": "text",
+    "ports_in": [
+      {
+        "name": "text",
+        "type": "text",
+        "required": false,
+        "multiple": true,
+        "visibleWhen": null,
+        "acceptFromNodeTypes": null
+      }
+    ],
+    "ports_out": [
+      {
+        "name": "text",
+        "type": "text"
+      }
+    ]
+  },
+  "quality_gate": {
+    "name": "Cổng chất lượng",
+    "color": "text",
+    "inputs": 1,
+    "outputs": 2,
+    "portType": "any",
+    "ports_in": [
+      {
+        "name": "image",
+        "type": "image",
+        "required": true,
+        "multiple": true,
+        "visibleWhen": null,
+        "acceptFromNodeTypes": null
+      }
+    ],
+    "ports_out": [
+      {
+        "name": "pass",
+        "type": "image"
+      },
+      {
+        "name": "fail",
+        "type": "image"
+      }
+    ]
+  },
+  "random_pick": {
+    "name": "Random Pick",
+    "color": "text",
+    "inputs": 1,
+    "outputs": 1,
+    "portType": "text",
+    "ports_in": [
+      {
+        "name": "text",
+        "type": "text",
+        "required": false,
+        "multiple": true,
+        "visibleWhen": null,
+        "acceptFromNodeTypes": null
+      }
+    ],
+    "ports_out": [
+      {
+        "name": "text",
+        "type": "text"
+      }
+    ]
+  },
+  "style_anchor": {
+    "name": "Style Anchor",
+    "color": "text",
+    "inputs": 1,
+    "outputs": 1,
+    "portType": "text",
+    "ports_in": [
+      {
+        "name": "text",
+        "type": "text",
+        "required": true,
+        "multiple": true,
+        "visibleWhen": null,
+        "acceptFromNodeTypes": null
+      }
+    ],
+    "ports_out": [
+      {
+        "name": "text",
+        "type": "text"
+      }
+    ]
+  },
+  "switch": {
+    "name": "Switch",
+    "color": "condition",
+    "inputs": 1,
+    "outputs": 4,
+    "portType": "any",
+    "ports_in": [
+      {
+        "name": "in",
+        "type": "any",
+        "required": false,
+        "multiple": true,
+        "visibleWhen": null,
+        "acceptFromNodeTypes": null
+      }
+    ],
+    "ports_out": [
+      {
+        "name": "case1",
+        "type": "any"
+      },
+      {
+        "name": "case2",
+        "type": "any"
+      },
+      {
+        "name": "case3",
+        "type": "any"
+      },
+      {
+        "name": "else",
+        "type": "any"
+      }
+    ]
+  },
+  "telegram": {
+    "name": "Telegram",
+    "color": "telegram",
+    "inputs": 1,
+    "outputs": 1,
+    "portType": "any",
+    "ports_in": [
+      {
+        "name": "media_in",
+        "type": "any",
+        "required": true,
+        "multiple": true,
+        "visibleWhen": null,
+        "acceptFromNodeTypes": null
+      }
+    ],
+    "ports_out": [
+      {
+        "name": "pass",
+        "type": "any"
+      }
+    ]
+  },
+  "text": {
+    "name": "Text",
+    "color": "text",
+    "inputs": 0,
+    "outputs": 1,
+    "portType": "text",
+    "ports_in": [],
+    "ports_out": [
+      {
+        "name": "text",
+        "type": "text"
+      }
+    ]
+  },
+  "text_export": {
+    "name": "Xuất file text",
+    "color": "output",
+    "inputs": 1,
+    "outputs": 0,
+    "portType": "text",
+    "ports_in": [
+      {
+        "name": "text",
+        "type": "text",
+        "required": true,
+        "multiple": true,
+        "visibleWhen": null,
+        "acceptFromNodeTypes": null
+      }
+    ],
+    "ports_out": []
+  },
+  "text_extract": {
+    "name": "Text Extract",
+    "color": "text",
+    "inputs": 1,
+    "outputs": 1,
+    "portType": "text",
+    "ports_in": [
+      {
+        "name": "text",
+        "type": "text",
+        "required": true,
+        "multiple": false,
+        "visibleWhen": null,
+        "acceptFromNodeTypes": null
+      }
+    ],
+    "ports_out": [
+      {
+        "name": "text",
+        "type": "text"
+      }
+    ]
+  },
+  "text_overlay": {
+    "name": "Text Overlay",
+    "color": "text",
+    "inputs": 2,
+    "outputs": 1,
+    "portType": "any",
+    "ports_in": [
+      {
+        "name": "image",
+        "type": "image",
+        "required": true,
+        "multiple": false,
+        "visibleWhen": null,
+        "acceptFromNodeTypes": null
+      },
+      {
+        "name": "text",
+        "type": "text",
+        "required": false,
+        "multiple": false,
+        "visibleWhen": null,
+        "acceptFromNodeTypes": null
+      }
+    ],
+    "ports_out": [
+      {
+        "name": "image",
+        "type": "image"
+      }
+    ]
+  },
+  "text_qa": {
+    "name": "Text QA",
+    "color": "text",
+    "inputs": 1,
+    "outputs": 1,
+    "portType": "any",
+    "ports_in": [
+      {
+        "name": "image",
+        "type": "image",
+        "required": true,
+        "multiple": false,
+        "visibleWhen": null,
+        "acceptFromNodeTypes": null
+      }
+    ],
+    "ports_out": [
+      {
+        "name": "image",
+        "type": "image"
+      }
+    ]
+  },
+  "text_template": {
+    "name": "Text Template",
+    "color": "text",
+    "inputs": 1,
+    "outputs": 1,
+    "portType": "text",
+    "ports_in": [
+      {
+        "name": "text",
+        "type": "text",
+        "required": false,
+        "multiple": true,
+        "visibleWhen": null,
+        "acceptFromNodeTypes": null
+      }
+    ],
+    "ports_out": [
+      {
+        "name": "text",
+        "type": "text"
+      }
+    ]
+  },
+  "variant_expand": {
+    "name": "Variant Expand",
+    "color": "text",
+    "inputs": 1,
+    "outputs": 1,
+    "portType": "text",
+    "ports_in": [
+      {
+        "name": "text",
+        "type": "text",
+        "required": false,
+        "multiple": true,
+        "visibleWhen": null,
+        "acceptFromNodeTypes": null
+      }
+    ],
+    "ports_out": [
+      {
+        "name": "text",
+        "type": "text"
+      }
+    ]
+  }
+}

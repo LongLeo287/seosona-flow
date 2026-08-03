@@ -1,0 +1,354 @@
+[
+  {
+    "id": 1,
+    "name": "Fan-cam bóng chày Hàn Quốc"
+  },
+  {
+    "id": 6,
+    "name": "Livestream bán hàng TikTok"
+  },
+  {
+    "id": 7,
+    "name": "Tập luyện fitness điện ảnh"
+  },
+  {
+    "id": 8,
+    "name": "Video người que"
+  },
+  {
+    "id": 9,
+    "name": "Anime fitness storyboard"
+  },
+  {
+    "id": 10,
+    "name": "Video thời trang đường phố"
+  },
+  {
+    "id": 14,
+    "name": "Biến ảnh thành sticker chuyển động"
+  },
+  {
+    "id": 15,
+    "name": "Video review túi xách"
+  },
+  {
+    "id": 16,
+    "name": "Video thương hiệu điện ảnh"
+  },
+  {
+    "id": 13,
+    "name": "Lookbook thời trang nam sang trọng"
+  },
+  {
+    "id": 2,
+    "name": "Video quảng cáo giày sneaker"
+  },
+  {
+    "id": 3,
+    "name": "Video trái cây trong bong bóng bay"
+  },
+  {
+    "id": 4,
+    "name": "Tom & Jerry — garage reveal điện ảnh"
+  },
+  {
+    "id": 5,
+    "name": "Đất sét tiền sử 3D"
+  },
+  {
+    "id": 17,
+    "name": "Người que tiền sử"
+  },
+  {
+    "id": 18,
+    "name": "Timelapse dọn vệ sinh đường phố"
+  },
+  {
+    "id": 19,
+    "name": "Tạo prompt người que đất sét 3D"
+  },
+  {
+    "id": 20,
+    "name": "POV ong mật"
+  },
+  {
+    "id": 21,
+    "name": "Timelapse xây dựng"
+  },
+  {
+    "id": 22,
+    "name": "Video thời trang thang máy"
+  },
+  {
+    "id": 12,
+    "name": "Lookbook thời trang công sở"
+  },
+  {
+    "id": 23,
+    "name": "Video thời trang trên thang cuốn"
+  },
+  {
+    "id": 11,
+    "name": "Outfit check gương thang máy"
+  },
+  {
+    "id": 24,
+    "name": "Ad Pain-Point → video clip"
+  },
+  {
+    "id": 25,
+    "name": "E-commerce → bộ PDP 10 ảnh"
+  },
+  {
+    "id": 26,
+    "name": "Cinematic reel (Seedance + chữ ký đạo diễn)"
+  },
+  {
+    "id": 27,
+    "name": "Kịch bản → ảnh mở đầu + video chuyển động (2 lớp)"
+  },
+  {
+    "id": 28,
+    "name": "KOC → bảng thiết kế nhân vật (6 panel)"
+  },
+  {
+    "id": 29,
+    "name": "Poster thương mại phân lớp"
+  },
+  {
+    "id": 30,
+    "name": "Halftone collage series"
+  },
+  {
+    "id": 31,
+    "name": "Concept → 4 tỉ lệ (multi-platform)"
+  },
+  {
+    "id": 32,
+    "name": "Subject → 4 phong cách"
+  },
+  {
+    "id": 33,
+    "name": "Sản phẩm → 4 góc chụp"
+  },
+  {
+    "id": 34,
+    "name": "Chủ đề → carousel nhiều slide"
+  },
+  {
+    "id": 35,
+    "name": "Thương hiệu → bộ visual đồng bộ (brand kit)"
+  },
+  {
+    "id": 36,
+    "name": "Ánh sáng explorer (1 cảnh → 4 setup)"
+  },
+  {
+    "id": 37,
+    "name": "Poster chữ chuẩn (chừa vùng → phủ chữ)"
+  },
+  {
+    "id": 38,
+    "name": "Storyboard → nhiều ảnh (batch)"
+  },
+  {
+    "id": 39,
+    "name": "1 concept → N biến thể (variant)"
+  },
+  {
+    "id": 40,
+    "name": "Try-on sản phẩm trên người mẫu"
+  },
+  {
+    "id": 41,
+    "name": "Character sheet (nhất quán nhân vật)"
+  },
+  {
+    "id": 42,
+    "name": "Before / After (so sánh)"
+  },
+  {
+    "id": 43,
+    "name": "Thumbnail YouTube CTR (chữ chuẩn)"
+  },
+  {
+    "id": 44,
+    "name": "Truyện tranh nhiều panel (comic)"
+  },
+  {
+    "id": 45,
+    "name": "Logo / mascot — bộ biến thể"
+  },
+  {
+    "id": 46,
+    "name": "QA chữ trong ảnh"
+  },
+  {
+    "id": 1001,
+    "name": "⭐ Ý tưởng → base keyframe → chuỗi scene nhất quán"
+  },
+  {
+    "id": 1002,
+    "name": "Storyboard 8-panel → batch generate"
+  },
+  {
+    "id": 1003,
+    "name": "Character board KOC (2 tầng): sheet base → 6 pose nhất quán"
+  },
+  {
+    "id": 1004,
+    "name": "1 prompt → so sánh 3 model (Flow/ChatGPT/Grok)"
+  },
+  {
+    "id": 1005,
+    "name": "Random style → đa dạng hoá gen"
+  },
+  {
+    "id": 1006,
+    "name": "Text Template: brand + sản phẩm → prompt động"
+  },
+  {
+    "id": 1007,
+    "name": "Condition: rẽ nhánh theo prompt"
+  },
+  {
+    "id": 1008,
+    "name": "Sản phẩm → bộ 4 góc nhất quán"
+  },
+  {
+    "id": 1009,
+    "name": "Sản phẩm → listing Shopee (2 tầng: hero → 6 ảnh)"
+  },
+  {
+    "id": 1010,
+    "name": "Quán ăn → bộ ảnh menu đồng bộ"
+  },
+  {
+    "id": 1011,
+    "name": "UGC / KOL quảng cáo sản phẩm"
+  },
+  {
+    "id": 1012,
+    "name": "Thương hiệu → bộ visual đồng bộ (brand kit)"
+  },
+  {
+    "id": 1013,
+    "name": "Chủ đề → carousel nhiều slide"
+  },
+  {
+    "id": 1014,
+    "name": "Sản phẩm → chiến dịch theo mùa/lễ (Tết)"
+  },
+  {
+    "id": 1015,
+    "name": "Ý tưởng tiếng Việt → prompt EN chuẩn → generate"
+  },
+  {
+    "id": 1016,
+    "name": "⭐ Ý tưởng → AI scene → Prompt Sequence → batch gen"
+  },
+  {
+    "id": 1017,
+    "name": "Công thức → bộ ảnh từng bước"
+  },
+  {
+    "id": 1018,
+    "name": "Bộ sưu tập → lookbook nhất quán"
+  },
+  {
+    "id": 1019,
+    "name": "Điểm đến → chuỗi ảnh du lịch"
+  },
+  {
+    "id": 1020,
+    "name": "12 con giáp → bộ ảnh đồng bộ"
+  },
+  {
+    "id": 1021,
+    "name": "Nhân vật → bộ emoji/reaction sticker"
+  },
+  {
+    "id": 1022,
+    "name": "Kênh YouTube → bộ nhận diện"
+  },
+  {
+    "id": 1023,
+    "name": "Ngành dọc → bộ ảnh marketing đồng bộ"
+  },
+  {
+    "id": 1024,
+    "name": "Chủ đề cưới → bộ ảnh concept"
+  },
+  {
+    "id": 1025,
+    "name": "Bất động sản → bộ ảnh các phòng"
+  },
+  {
+    "id": 1026,
+    "name": "Sản phẩm → chuỗi ảnh kể chuyện quảng cáo"
+  },
+  {
+    "id": 1027,
+    "name": "Sản phẩm → bộ ảnh xoay 360"
+  },
+  {
+    "id": 1028,
+    "name": "1 thiết kế → nhiều tỉ lệ (đa nền tảng)"
+  },
+  {
+    "id": 1029,
+    "name": "Nhân vật → \"một ngày\" (2 tầng: base → 6 khoảnh khắc)"
+  },
+  {
+    "id": 1030,
+    "name": "POV thiên nhiên → chuỗi cảnh video"
+  },
+  {
+    "id": 1031,
+    "name": "Timelapse tư liệu → chuỗi khung"
+  },
+  {
+    "id": 1032,
+    "name": "Nhân vật 2D nhất quán → series cảnh"
+  },
+  {
+    "id": 1033,
+    "name": "Nhân vật đất nặn 3D → series"
+  },
+  {
+    "id": 1034,
+    "name": "Quảng cáo sản phẩm điện ảnh → chuỗi shot"
+  },
+  {
+    "id": 1035,
+    "name": "Sản phẩm bay bổng trong bong bóng → hero"
+  },
+  {
+    "id": 1036,
+    "name": "Showcase giày đa góc điện ảnh"
+  },
+  {
+    "id": 1037,
+    "name": "Tư liệu động vật hoang dã → chuỗi cảnh"
+  },
+  {
+    "id": 1038,
+    "name": "Model thể thao (2 tầng): tạo model gốc → mặc đồ full-body"
+  },
+  {
+    "id": 1039,
+    "name": "Sản phẩm cao cấp (2 tầng): chính diện → đa góc nhất quán"
+  },
+  {
+    "id": 1040,
+    "name": "Model cầm sản phẩm (2 tầng): tạo model → ghép sản phẩm"
+  },
+  {
+    "id": 1041,
+    "name": "Sản phẩm → storyboard video (2 tầng: kịch bản → grid 3x3)"
+  },
+  {
+    "id": 1042,
+    "name": "Nhóm model + sản phẩm → chiến dịch (2 tầng)"
+  }
+]

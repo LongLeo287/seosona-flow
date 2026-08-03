@@ -1,0 +1,4 @@
+{
+  "note": "Deterministic network routes for worker/integration tests. Local mode expects zero backend routes.",
+  "routes": []
+}

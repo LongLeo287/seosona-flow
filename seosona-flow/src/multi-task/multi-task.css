@@ -1,0 +1,1483 @@
+/**
+ * Multi Task Tab Styles
+ * Tab 2: Quản lý và thực thi nhiều tasks
+ */
+
+/* ===== Task List ===== */
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-3);
+}
+
+.task-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  background: var(--secondary);
+  border: 1px solid var(--surface);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  z-index: 40;
+  opacity: 1 !important;
+}
+
+.task-card:hover {
+  border-color: var(--border-light);
+  background: var(--border);
+}
+
+.task-card.selected {
+  border-color: var(--foreground);
+  background: var(--primary-light);
+}
+
+/* .task-card.running — rules thống nhất ở sidebar.css (pink→blue gradient border).
+   Keyframe task-card-glow / .task-running-label cũ đã bị thay bằng wf-card-glow + tím. */
+
+.task-running-label {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  color: #c084fc;
+  margin-left: 6px;
+}
+
+.task-card.completed {
+  border-color: var(--success);
+  background: hsla(142, 71%, 45%, 0.08);
+}
+
+.task-card.failed {
+  border-color: var(--destructive);
+  background: hsla(0, 84%, 60%, 0.08);
+}
+
+/* Task Card Preview */
+.task-card-preview {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+}
+
+.task-card-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Task Card Components */
+.task-card-checkbox {
+  flex-shrink: 0;
+}
+
+/* .task-card-status — đã chuyển sang SVG icon. Rules thống nhất ở sidebar.css. */
+
+.task-card-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* Task name row with inline progress */
+.task-card-name-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  margin-bottom: 4px;
+}
+
+.task-card-name-row .task-card-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.task-card-name {
+  font-weight: 600;
+  color: var(--foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.task-card-name:hover {
+  color: var(--primary);
+}
+
+/* Inline progress bar - short bar next to task name (like workflow) */
+.task-card-inline-progress {
+  flex-shrink: 0;
+  width: 40px;
+  height: 4px;
+  margin-left: 5px;
+  background: var(--muted);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+
+.task-card-inline-progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* Indeterminate state: animated sweep when no progress updates */
+.task-card-inline-progress.indeterminate .task-card-inline-progress-bar {
+  width: 40% !important;
+  animation: task-progress-indeterminate 1.2s ease-in-out infinite;
+}
+
+@keyframes task-progress-indeterminate {
+  0% { left: -40%; }
+  100% { left: 100%; }
+}
+
+/* Determinate state: shimmer effect */
+.task-card-inline-progress:not(.indeterminate) .task-card-inline-progress-bar {
+  animation: task-progress-shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes task-progress-shimmer {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+.task-card-prompt {
+  font-size: 11px;
+  color: var(--muted-foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.task-card-meta {
+  display: flex;
+  gap: var(--space-2);
+  font-size: 10px;
+  color: var(--muted-foreground);
+}
+
+.task-card-meta span {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* Media type badge — đồng bộ style với history-item-badge (icon + text) */
+.task-media-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+.task-media-badge-icon {
+  flex-shrink: 0;
+  width: 12px;
+  height: 12px;
+}
+.task-media-badge-image {
+  background: var(--muted);
+  color: var(--foreground);
+}
+.task-media-badge-video {
+  background: var(--warning-light);
+  color: var(--warning);
+}
+
+/* Provider badge — đồng bộ style với history-item-provider (icon + text, neutral background, brand-colored icon) */
+.task-provider-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  padding: 1px 6px 1px 4px;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  background: var(--muted);
+  color: var(--foreground);
+  white-space: nowrap;
+}
+.task-provider-badge-icon {
+  flex-shrink: 0;
+  width: 12px;
+  height: 12px;
+}
+.task-provider-badge-flow .task-provider-badge-icon {
+  color: #3186FF;
+}
+.task-provider-badge-chatgpt .task-provider-badge-icon {
+  color: #10A37F;
+}
+.task-provider-badge-grok .task-provider-badge-icon {
+  color: #d4d4d8;
+}
+
+.task-card-actions {
+  display: flex;
+  gap: var(--space-1);
+  flex-shrink: 0;
+}
+
+.task-card-actions .btn {
+  padding: var(--space-1) var(--space-2);
+  font-size: 11px;
+}
+
+/* Provider row trong TaskModal — tách riêng row để pills không chen với select khác */
+.task-provider-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.task-provider-row .provider-tabs {
+  display: inline-flex;
+  width: auto;
+}
+
+/* ===== Task Modal ===== */
+.task-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: hsla(240, 5%, 11%, 0.8);
+  backdrop-filter: blur(4px);
+  z-index: 10000001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn var(--transition-normal);
+}
+
+.task-modal {
+  background: var(--card, #1e1e1e);
+  border: 1px solid var(--modal-border, #3f3f3f);
+  border-radius: var(--radius-lg);
+  width: 92%;
+  max-width: 600px;
+  max-height: 85vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  animation: slideIn var(--transition-normal);
+}
+
+#taskRefImagesGroup {
+  margin-top: 14px;
+}
+
+#taskFramesGroup {
+  margin-top: 14px;
+}
+
+.task-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-4);
+  border-bottom: none;
+}
+
+.task-modal-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.task-modal-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.task-modal-header-right .toolbar-toggle.compact {
+  margin: 0;
+  gap: 0;
+}
+
+.task-modal-header-right .toolbar-toggle.compact .toggle-label {
+  display: none;
+}
+
+.task-modal-close {
+  background: none;
+  border: none;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  padding: var(--space-1);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  height: 28px;
+}
+
+.task-modal-close:hover {
+  color: var(--foreground);
+  background: var(--muted);
+}
+
+.task-modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* All providers locked overlay - uses shared module-blocked-* classes */
+.task-all-locked-overlay {
+  position: relative;
+  border-radius: 0;
+  min-height: 300px;
+}
+
+.task-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-top: none;
+}
+
+/* Disabled state for footer buttons (when uploading local images) */
+.task-modal-footer .btn:disabled,
+.task-modal-footer .btn[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Form Fields in Modal */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-bottom: 10px;
+}
+
+.form-group label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.form-group .hint {
+  font-size: 11px;
+  color: var(--muted-foreground);
+  font-style: normal;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+/* ===== Task Toolbar ===== */
+.task-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  position: relative;
+  z-index: 40; /* Ensure tooltips appear above other elements */
+}
+
+.task-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.task-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex: 1;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+/* ─── Project Select Inline (giống workflow) ─── */
+
+.task-project-select-inline {
+  min-width: 0;
+  max-width: 280px;
+  flex: 1;
+  padding: 5px 22px 5px 15px;
+  font-size: 11px;
+  background: var(--input);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--foreground);
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8" fill="%23666"><path d="M1 1l5 5 5-5"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+  transition: all var(--transition-fast);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.task-project-select-inline:hover {
+  border-color: var(--border-focus);
+}
+
+.task-project-select-inline:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.task-project-select-inline.hidden {
+  display: none;
+}
+
+/* ===== Search Toggle Button (icon-only) ===== */
+.btn-icon {
+  width: 28px;
+  height: 28px;
+  padding: 0 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ===== Collapsible Search Row ===== */
+.task-search-row {
+  padding: 0 var(--space-4) var(--space-2);
+}
+
+.task-search-row.hidden {
+  display: none;
+}
+
+.task-search-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: var(--input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0 var(--space-2);
+  transition: border-color var(--transition-fast);
+}
+
+.task-search-input-wrapper:focus-within {
+  border-color: var(--border-focus, rgba(255,255,255,0.35));
+}
+
+.task-search-input-wrapper svg {
+  color: var(--muted-foreground);
+  flex-shrink: 0;
+}
+
+.task-search-input-wrapper input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: var(--space-2);
+  color: var(--foreground);
+  font-size: 12px;
+  outline: none;
+  min-width: 0;
+}
+
+.task-search-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--muted-foreground);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.task-search-close:hover {
+  color: var(--foreground);
+  background: var(--muted);
+}
+
+/* ===== Batch Actions ===== */
+.batch-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--background);
+}
+
+.batch-actions-count {
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+
+/* ===== Empty State ===== */
+.task-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  text-align: center;
+  color: var(--muted-foreground);
+  gap: var(--space-3);
+  background-image:
+    radial-gradient(70% 50% at 50% 50%, rgb(33 33 33 / 85%) 0%, var(--background) 100%),
+    url(/icons/grid-bkg.png);
+  background-size: auto, 24px 24px;
+  background-position: 55% 55%;
+  height: 100%;
+}
+
+.task-empty-state svg {
+  opacity: 0.5;
+}
+
+.task-empty-state p {
+  font-size: 13px;
+}
+
+/* ===== Task Thumbnails ===== */
+.task-thumbnails {
+  display: flex;
+  gap: var(--space-1);
+  flex-wrap: wrap;
+}
+
+.task-thumbnail {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  border: 1px solid var(--border);
+}
+
+.task-thumbnail-more {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: var(--muted-foreground);
+}
+
+/* ===== Image Upload in Modal ===== */
+.image-upload-area {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-4);
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.image-upload-area:hover {
+  border-color: var(--border-light);
+  background: var(--primary-light);
+}
+
+.image-upload-area.dragover {
+  border-color: var(--foreground);
+  background: var(--primary-light);
+}
+
+.image-upload-area svg {
+  color: var(--muted-foreground);
+  margin-bottom: var(--space-2);
+}
+
+.image-upload-area p {
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+
+.image-preview-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.image-preview-item {
+  position: relative;
+  width: 60px;
+  height: 60px;
+}
+
+.image-preview-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+.image-preview-remove {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--destructive);
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  transition: all var(--transition-fast);
+}
+
+.image-preview-remove:hover {
+  transform: scale(1.1);
+}
+
+/* ===== Task Toggle Button ===== */
+.task-toggle-btn {
+  display: flex;
+  align-items: center;
+  padding: 0;
+  margin-right: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.task-toggle-track {
+  position: relative;
+  width: 24px;
+  height: 12px;
+  border-radius: 6px;
+  background: var(--muted-foreground);
+  transition: background var(--transition-fast);
+  pointer-events: none;
+}
+.task-toggle-btn.on .task-toggle-track {
+  background: var(--primary);
+}
+.task-toggle-thumb {
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--background);
+  transition: transform var(--transition-fast);
+}
+.task-toggle-btn.on .task-toggle-thumb {
+  transform: translateX(12px);
+}
+
+/* ===== Task Disabled State ===== */
+.task-card.task-disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.task-card.task-disabled .task-card-name,
+.task-card.task-disabled .task-card-prompt {
+  color: var(--muted-foreground);
+}
+/* Bug fix 2026-06-06: cho phép tương tác với toggle bật lại + menu 3 chấm + checkbox
+   khi task disabled. Trước fix: pointer-events:none toàn card → user kẹt không thể
+   bật lại task hay mở menu actions. Giữ pointer-events:none cho các phần còn lại
+   (prompt edit, name click) để báo trạng thái disabled rõ ràng. */
+.task-card.task-disabled .task-toggle-btn,
+.task-card.task-disabled .seosonaflow-dot-menu,
+.task-card.task-disabled .seosonaflow-dot-menu-btn,
+.task-card.task-disabled .seosonaflow-dropdown-menu,
+.task-card.task-disabled .task-card-checkbox,
+.task-card.task-disabled .task-card-checkbox input {
+  pointer-events: auto;
+  opacity: 1;
+}
+
+/* ===== Task Ref Image Previews ===== */
+.task-card-refs {
+  display: inline-flex;
+  gap: 2px;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+/* Arrow between refs and results */
+.task-card-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 4px;
+  color: #fff;
+  vertical-align: middle;
+}
+.task-card-arrow svg {
+  width: 12px;
+  height: 12px;
+}
+.task-ref-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 3px;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  display: inline-block;
+  vertical-align: middle;
+}
+.task-ref-thumb-placeholder {
+  background: var(--muted);
+  font-size: 7px;
+  color: var(--muted-foreground);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.task-thumb-shimmer {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--muted) 25%, var(--surface-2, #3a3a42) 50%, var(--muted) 75%);
+  background-size: 200% 100%;
+  animation: shimmer-sweep 1.5s ease-in-out infinite;
+}
+.task-ref-thumb-more {
+  background: var(--muted);
+  font-size: 8px;
+  color: var(--muted-foreground);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Cross-project warning thumbnail */
+.task-ref-thumb.task-ref-thumb-cross-project {
+  position: relative;
+  border: 1px solid var(--destructive, #dc2626);
+  background: rgba(220, 38, 38, 0.1);
+  overflow: hidden;
+}
+
+.task-ref-thumb.task-ref-thumb-cross-project::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    110deg,
+    rgba(220, 38, 38, 0.15) 0%,
+    rgba(220, 38, 38, 0.08) 40%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(220, 38, 38, 0.08) 60%,
+    rgba(220, 38, 38, 0.15) 100%
+  );
+  background-size: 200% 100%;
+  animation: crossProjectSweep 1.5s ease-in-out infinite;
+}
+
+.task-ref-thumb.task-ref-thumb-cross-project .cross-project-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--destructive, #dc2626);
+  opacity: 0.8;
+  z-index: 1;
+}
+
+@keyframes crossProjectSweep {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ===== Task Modal Tabs ===== */
+.task-modal-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  margin: calc(-1 * var(--space-4));
+  margin-bottom: calc(-1 * var(--space-4));
+  padding: 0 var(--space-4);
+}
+.task-modal-tab {
+  padding: 8px 16px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--muted-foreground);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.task-modal-tab:hover {
+  color: var(--foreground);
+}
+.task-modal-tab.active {
+  color: var(--foreground);
+  border-bottom-color: var(--primary);
+}
+.task-modal-tab-content {
+  padding-top: var(--space-3);
+}
+.task-modal-tab-content.hidden {
+  display: none;
+}
+.task-modal-tab-content .prompt-editor-wrapper textarea {
+  min-height: 120px;
+}
+
+/* ===== Task Results Tab ===== */
+.task-result-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+/* Hint "(Original)" cho external provider — quality fixed từ CDN, không có option chọn */
+.task-result-quality-hint {
+  font-size: 10px;
+  font-weight: 400;
+  opacity: 0.7;
+  margin-left: 2px;
+}
+.task-result-status {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+.task-result-status.completed {
+  background: rgba(25, 208, 123, 0.15);
+  color: var(--success);
+}
+.task-result-status.failed {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--destructive);
+}
+.task-result-status.running {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--warning);
+}
+.task-result-status.pending {
+  background: var(--muted);
+  color: var(--muted-foreground);
+}
+.task-result-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+.task-result-item {
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.task-result-item.ratio-landscape {
+  aspect-ratio: 16/9;
+}
+.task-result-item.ratio-portrait {
+  aspect-ratio: 9/16;
+}
+.task-result-thumb {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--muted);
+}
+.task-result-thumb img,
+.task-result-thumb video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.task-result-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.task-result-shimmer {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--muted) 25%, var(--surface-2, #3a3a42) 50%, var(--muted) 75%);
+  background-size: 200% 100%;
+  animation: shimmer-sweep 1.5s ease-in-out infinite;
+  border-radius: 4px;
+}
+@keyframes shimmer-sweep {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.task-result-download-btn {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+.task-result-item:hover .task-result-download-btn {
+  opacity: 1;
+}
+.task-result-download-btn:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+.task-result-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  color: var(--muted-foreground);
+  font-size: 12px;
+  text-align: center;
+}
+
+/* Task Result Logs */
+.task-result-logs {
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-3);
+}
+.task-result-logs-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--foreground);
+  margin-bottom: var(--space-2);
+}
+.task-result-logs-body {
+  max-height: 150px;
+  overflow-y: auto;
+  background: var(--muted);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2);
+  font-family: monospace;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.task-log-entry {
+  padding: 2px 0;
+  color: var(--foreground);
+}
+.task-log-error {
+  color: var(--destructive);
+}
+.task-log-empty {
+  color: var(--muted-foreground);
+  font-style: italic;
+}
+
+/* ===== Toolbar button compact ===== */
+.btn-icon-text {
+  padding: 4px 8px !important;
+  font-size: 12px;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+/* ===== Add button short ===== */
+.btn-add-short {
+  padding: 4px 6px !important;
+  min-width: unset;
+  width: inherit;
+}
+
+/* ===== Run Mode Toggle ===== */
+.task-run-mode-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px !important;
+  font-size: 11px;
+  border-radius: 12px;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.task-run-mode-btn.active {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-color: var(--primary);
+}
+
+.task-run-mode-btn.active:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+.task-run-mode-label {
+  font-size: 11px;
+  line-height: 1;
+}
+
+/* ===== Run All / Stop button ===== */
+#runAllTasksBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px !important;
+  font-size: 12px;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+#runAllTasksBtn.btn-stop {
+  background: var(--destructive);
+  color: #fff;
+  border-color: var(--destructive);
+}
+
+#runAllTasksBtn.btn-stop:hover {
+  background: hsl(0, 84%, 50%);
+  border-color: hsl(0, 84%, 50%);
+}
+
+/* ===== Toolbar separator ===== */
+.task-toolbar-right {
+  gap: var(--space-1);
+}
+
+/* ===== TaskModal: Prompt form-group no bottom margin ===== */
+.task-modal .form-group:has(.prompt-editor-wrapper) {
+  margin-bottom: 0;
+}
+
+/* ===== TaskModal: Media Type Toggle (Image/Video icon button) =====
+ * Class riêng .task-media-toggle (KHÔNG dùng chung .node-form-mode-toggle với workflow node
+ * để tránh cross-context coupling). Style mirror .gen-type-toggle. */
+.task-modal .task-media-toggle {
+  display: inline-flex;
+  flex: 0 0 auto;
+  background: var(--surface, rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  border-radius: 999px;
+  padding: 2px;
+  gap: 4px;
+}
+.task-modal .task-media-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted-foreground, #8b8b92);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0;
+}
+.task-modal .task-media-btn:hover {
+  color: var(--foreground, #fff);
+  background: rgba(255, 255, 255, 0.06);
+}
+.task-modal .task-media-btn.active {
+  background: #fff;
+  color: #1a1a1e;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+.task-modal .task-media-btn svg {
+  flex-shrink: 0;
+}
+
+/* ===== TaskModal: Prompt Editor Wrapper ===== */
+.task-modal .prompt-editor-wrapper {
+  position: relative;
+}
+
+.task-modal .prompt-editor-wrapper textarea {
+  width: 100%;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  padding-top: var(--space-2);
+}
+
+.task-modal .multi-prompt-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  font-size: 11px;
+  color: var(--muted-foreground);
+  background: var(--muted);
+  border-radius: 0 0 var(--radius) var(--radius);
+  border: 1px solid var(--border);
+  border-top: none;
+}
+
+.task-modal .multi-prompt-hint.hidden {
+  display: none;
+}
+
+/* ===== TaskModal: Prompt Count Row ===== */
+.task-modal .prompt-count-row {
+  display: flex;
+  align-items: center;
+  margin-top: 4px;
+  margin-bottom: var(--space-2);
+}
+
+.task-modal .prompt-count {
+  font-size: 11px;
+  color: var(--muted-foreground);
+}
+
+.task-modal .prompt-count.prompt-count-warning {
+  color: var(--destructive);
+}
+
+.task-modal .prompt-count .prompt-count-short {
+  color: var(--destructive);
+  font-weight: 600;
+}
+
+/* ===== TaskModal: Prompt Icon Buttons ===== */
+.task-modal .prompt-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 2px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--foreground);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.task-modal .prompt-icon-btn:hover {
+  background: var(--surface-elevated);
+  color: var(--foreground);
+}
+
+.task-modal .prompt-search-icon-btn {
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-elevated);
+  color: var(--primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  z-index: 1;
+}
+
+.task-modal .prompt-search-icon-btn:hover {
+  background: var(--foreground);
+  color: var(--background);
+  border-color: var(--foreground);
+}
+
+/* ===== TaskModal: Ref Grid (override for modal context) ===== */
+.task-modal .ref-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* ===== TaskModal: Ref Item (mention mode wrapper) ===== */
+.task-modal .ref-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: grab;
+}
+
+.task-modal .ref-item.dragging {
+  opacity: 0.4;
+}
+
+.task-modal .ref-item.drag-over {
+  outline: 2px dashed var(--foreground);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.task-modal .ref-item-name {
+  font-size: 10px;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  max-width: 60px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  padding: 1px 4px;
+  border-radius: 4px;
+  transition: all var(--transition-fast);
+}
+
+.task-modal .ref-item-name:hover {
+  background: var(--muted);
+  color: var(--foreground);
+}
+
+/* ===== TaskModal: Ref Item Drag Handle ===== */
+.task-modal .ref-item-drag-handle {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.5);
+  color: rgba(255, 255, 255, 0.7);
+  cursor: grab;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+  z-index: 2;
+}
+.task-modal .ref-item:hover .ref-item-drag-handle {
+  opacity: 1;
+}
+.task-modal .ref-item-drag-handle:active {
+  cursor: grabbing;
+}
+
+/* ===== TaskModal: Drag-Drop on ref-thumb ===== */
+.task-modal .ref-thumb[draggable="true"] {
+  cursor: grab;
+}
+
+.task-modal .ref-thumb.dragging {
+  opacity: 0.4;
+}
+
+.task-modal .ref-thumb.drag-over {
+  outline: 2px dashed var(--foreground);
+  outline-offset: 2px;
+}
+
+/* ===== TaskModal: Drag Hint ===== */
+.task-modal .ref-drag-hint {
+  font-size: 11px;
+  color: var(--muted-foreground);
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.task-modal .ref-drag-hint.hidden {
+  display: none;
+}
+
+/* ===== TaskModal: Addon in Compact Bar ===== */
+/* Grok/ChatGPT không có Character/Voice/Style (lý do gen-compact-break) → tắt break để settings
+   không bị đẩy xuống hàng thừa, giữ trên 1 line. */
+.task-modal .gen-compact-bar[data-provider="grok"] .gen-compact-break,
+.task-modal .gen-compact-bar[data-provider="chatgpt"] .gen-compact-break {
+  display: none !important;
+}
+
+.task-modal .gen-compact-bar .addon-prompt-dropdown {
+  position: relative;
+}
+
+.task-modal .gen-compact-bar .addon-prompt-popup {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: auto;
+  z-index: 100;
+  min-width: 220px;
+}
+
+/* ===== Batch Progress Bar ===== */
+.task-batch-progress,
+.wf-batch-progress {
+  padding: var(--space-2) var(--space-3);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.task-batch-progress.hidden,
+.wf-batch-progress.hidden {
+  display: none;
+}
+
+.batch-progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-1);
+  font-size: 12px;
+}
+
+.batch-progress-label {
+  color: var(--muted-foreground);
+}
+
+.batch-progress-count {
+  color: var(--foreground);
+  font-weight: 500;
+}
+
+.batch-progress-bar {
+  height: 4px;
+  background: var(--muted);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.batch-progress-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+  width: 0%;
+}
+
+/* ===== Light Theme Overrides ===== */
+.theme-light .task-search-input-wrapper:focus-within {
+  border-color: var(--primary, #3d6ff5);
+}
+
+/* ===== Fix 1: Task ref mode='none' → ẩn toàn bộ UI upload/preview/count =====
+   Đồng bộ với GenTab `.ref-mode-disabled` trong sidebar.css. Container =
+   #taskRefImagesGroup. Selectors match toolbar (.ref-toolbar), preview grid
+   (#taskRefImagesPreview), drag hint, count row. Mention helper nằm ngoài
+   group nên toggle riêng qua JS (_updateRefModeUI). */
+/* Ẩn các UI con của .ref-toolbar TRỪ .ref-mode-wrapper (chứa select) — để user vẫn đổi được mode */
+.task-ref-mode-disabled .ref-toolbar > *:not(.ref-mode-wrapper),
+.task-ref-mode-disabled #taskRefImagesPreview,
+.task-ref-mode-disabled .ref-drag-hint,
+.task-ref-mode-disabled .ref-count-row {
+  display: none !important;
+}
+
+/* ===== Provider tab pill — Default compact đã đồng bộ TaskModal trong sidebar.css =====
+   Override không còn cần thiết (kept comment cho lịch sử) */
+
+/* ===== Task Card Skeleton ===== */
+.task-card.skeleton {
+  pointer-events: none;
+  background: var(--secondary);
+  border: 1px solid var(--surface);
+}
+
+.task-card.skeleton .skeleton-checkbox {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.task-card.skeleton .skeleton-status {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+}
+
+.task-card.skeleton .skeleton-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.task-card.skeleton .skeleton-name {
+  height: 14px;
+  width: 70%;
+}
+
+.task-card.skeleton .skeleton-prompt {
+  height: 12px;
+  width: 90%;
+}
+
+.task-card.skeleton .skeleton-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.task-card.skeleton .skeleton-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius);
+}
+
+/* ===== RESPONSIVE OVERRIDES ===== */
+@media (max-width: 480px) {
+  .multi-task-container { width: 100% !important; padding: 10px; }
+  .multi-task-grid { grid-template-columns: 1fr; }
+  .task-card { flex-direction: column; align-items: flex-start; }
+  .task-actions { margin-top: 10px; width: 100%; justify-content: flex-end; }
+}
+@media (min-width: 769px) {
+  .multi-task-grid { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+}

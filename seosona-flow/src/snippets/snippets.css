@@ -1,0 +1,433 @@
+/* ===== Snippets Panel ===== */
+
+.snippets-panel {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+/* ─── Header (collapsible toggle) ─────────────────────── */
+
+.snippets-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-3);
+  background: var(--surface);
+  cursor: pointer;
+  user-select: none;
+  transition: background var(--transition-fast);
+}
+
+.snippets-header:hover {
+  background: var(--surface-elevated);
+}
+
+.snippets-header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.snippets-header-left label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--foreground);
+  cursor: pointer;
+}
+
+.snippets-header-left svg {
+  color: var(--foreground, #ffffff);
+  flex-shrink: 0;
+}
+
+.snippets-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: var(--primary-light);
+  color: var(--primary, #ffffff);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.snippets-chevron {
+  color: var(--muted-foreground);
+  transition: transform var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.snippets-chevron.expanded {
+  transform: rotate(180deg);
+}
+
+/* ─── Body ────────────────────────────────────────────── */
+
+.snippets-body {
+  padding: var(--space-2) var(--space-3);
+  border-top: 1px solid var(--border);
+}
+
+.snippets-body.hidden {
+  display: none !important;
+}
+
+.snippets-actions {
+  margin-bottom: var(--space-2);
+}
+
+.snippets-actions .btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+}
+
+/* ─── Filter bar (search + category) ──────────────────── */
+
+.snippets-filterbar {
+  display: flex;
+  gap: var(--space-1);
+  margin-bottom: var(--space-2);
+  align-items: center;
+}
+.snippets-filterbar.hidden { display: none; }
+.snippets-search-wrap {
+  position: relative;
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+}
+.snippets-search-wrap svg {
+  position: absolute;
+  left: 8px;
+  color: var(--muted-foreground);
+  pointer-events: none;
+}
+.snippets-search-wrap input {
+  width: 100%;
+  padding: 5px 8px 5px 26px;
+  border: 1px solid var(--border, rgba(255,255,255,0.12));
+  border-radius: 6px;
+  background: var(--input-bg, rgba(255,255,255,0.04));
+  color: var(--foreground);
+  font-size: 12px;
+  outline: none;
+}
+.snippets-search-wrap input:focus { border-color: var(--primary, #3d6ff5); }
+.snippets-cat-filter {
+  flex: 0 0 auto;
+  max-width: 42%;
+  padding: 5px 6px;
+  border: 1px solid var(--border, rgba(255,255,255,0.12));
+  border-radius: 6px;
+  background: var(--input-bg, rgba(255,255,255,0.04));
+  color: var(--foreground);
+  font-size: 12px;
+  outline: none;
+  cursor: pointer;
+}
+.snippets-cat-filter:focus { border-color: var(--primary, #3d6ff5); }
+
+/* ─── Snippet List ────────────────────────────────────── */
+
+.snippets-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.snippets-list.hidden {
+  display: none !important;
+}
+
+.snippet-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--background);
+  transition: all var(--transition-fast);
+}
+
+.snippet-item:hover {
+  border-color: var(--border-light);
+  background: var(--surface);
+}
+
+.snippet-item:hover .snippet-item-actions {
+  opacity: 1;
+}
+
+/* ─── Item Body ───────────────────────────────────────── */
+
+.snippet-item-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.snippet-item-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.snippet-item-content {
+  font-size: 11px;
+  color: var(--muted-foreground);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+.snippet-item-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-top: 2px;
+}
+
+.snippet-category-badge {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  background: var(--primary-light);
+  color: var(--primary, #ffffff);
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.snippet-var-badge {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  background: var(--warning-light);
+  color: var(--warning);
+  font-size: 10px;
+  font-weight: 500;
+}
+
+/* ─── Item Actions (show on hover) ────────────────────── */
+
+.snippet-item-actions {
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.snippet-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  padding: 0;
+}
+
+.snippet-action-btn:hover {
+  background: var(--muted);
+  color: var(--foreground);
+}
+
+.snippet-insert-btn:hover {
+  color: var(--primary, #ffffff);
+  background: var(--primary-light);
+}
+
+.snippet-edit-btn:hover {
+  color: var(--info);
+  background: var(--primary-muted);
+}
+
+.snippet-delete-btn:hover {
+  color: var(--destructive);
+  background: var(--destructive-light);
+}
+
+/* ─── Empty state ─────────────────────────────────────── */
+
+.snippets-empty {
+  text-align: center;
+  padding: var(--space-3);
+}
+
+.snippets-empty.hidden {
+  display: none !important;
+}
+
+.snippets-empty p {
+  font-size: 11px;
+  color: var(--muted-foreground);
+  line-height: 1.5;
+}
+
+/* ─── Dialog Overlay ──────────────────────────────────── */
+
+.snippet-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.snippet-dialog {
+  width: 380px;
+  max-width: 90vw;
+  max-height: 80vh;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ─── Dialog Header ───────────────────────────────────── */
+
+.snippet-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border);
+}
+
+.snippet-dialog-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.snippet-dialog-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  padding: 0;
+}
+
+.snippet-dialog-close:hover {
+  background: var(--muted);
+  color: var(--foreground);
+}
+
+/* ─── Dialog Preview ──────────────────────────────────── */
+
+.snippet-dialog-preview {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.snippet-dialog-preview-label {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-1);
+}
+
+.snippet-dialog-preview-text {
+  font-size: 12px;
+  color: var(--foreground);
+  line-height: 1.5;
+  max-height: 80px;
+  overflow-y: auto;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+/* ─── Dialog Fields ───────────────────────────────────── */
+
+.snippet-dialog-fields {
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  overflow-y: auto;
+  flex: 1;
+}
+
+.snippet-dialog-field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--foreground);
+  margin-bottom: var(--space-1);
+}
+
+.snippet-dialog-field .input-group {
+  margin-bottom: 0;
+}
+
+.snippet-dialog-field textarea {
+  width: 100%;
+  padding: var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--input);
+  color: var(--foreground);
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.5;
+  resize: vertical;
+  transition: border-color var(--transition-fast);
+}
+
+.snippet-dialog-field textarea:focus {
+  outline: none;
+  border-color: var(--primary, #ffffff);
+}
+
+.snippet-hint {
+  font-weight: 400;
+  color: var(--muted-foreground);
+  font-size: 10px;
+}
+
+/* ─── Dialog Footer ───────────────────────────────────── */
+
+.snippet-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--border);
+}

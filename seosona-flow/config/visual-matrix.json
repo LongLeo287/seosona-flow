@@ -1,0 +1,17 @@
+{
+  "schema": "seosona.ux.visual-matrix.config.v1",
+  "viewports": [
+    { "id": "sidebar-narrow", "width": 360, "height": 720, "note": "min docked sidebar width" },
+    { "id": "sidebar-wide", "width": 480, "height": 900, "note": "expanded sidebar" },
+    { "id": "popup", "width": 800, "height": 600, "note": "popup window page" },
+    { "id": "editor", "width": 1280, "height": 800, "note": "workflow/angles editor" }
+  ],
+  "locales": ["en", "vi"],
+  "criticalFlows": [
+    { "id": "sidebar-boot", "page": "pages/sidebar.html", "root": "#flow-auto-sidebar-root", "offlineVerified": true },
+    { "id": "settings-open", "page": "pages/settings.html", "root": "body", "offlineVerified": true },
+    { "id": "workflow-editor", "page": "pages/workflow-editor.html", "root": "body", "offlineVerified": false },
+    { "id": "angles-editor", "page": "pages/angles-editor.html", "root": "body", "offlineVerified": false },
+    { "id": "effects-editor", "page": "pages/effects-editor.html", "root": "body", "offlineVerified": false }
+  ]
+}

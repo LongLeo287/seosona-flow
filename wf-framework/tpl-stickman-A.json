@@ -1,0 +1,424 @@
+{
+ "id": 900016,
+ "name": "Stickman Faceless Explainer - Giai doan A (asset-first)",
+ "slug": "stickman-faceless-explainer-giai-doan-a-asset-first",
+ "description": "",
+ "thumbnail_url": null,
+ "video_url": null,
+ "category_id": 2,
+ "nodes": [
+  {
+   "id": "node_1780000000001_9e3817e8",
+   "type": "note",
+   "position": {
+    "x": 80,
+    "y": 80
+   },
+   "data": {
+    "node_name": "Huong dan + 2 che do voice",
+    "label": "Ghi chú",
+    "enabled": true,
+    "slug": "note",
+    "slug_auto": true,
+    "note_text": "STICKMAN FACELESS EXPLAINER - GIAI DOAN A (asset-first)\nDựa trên audit report v2 (30/07/2026).\n\n== 2 CHẾ ĐỘ VOICE - CHỌN 1 ==\n[A] VOICE TỪ FLOW (mặc định, bật sẵn)\n    Mở node \"11. Gen BLOCK video (VO Flow)\" -> chọn GIỌNG ở voice picker.\n    (Giọng lấy từ tài khoản Flow của bạn - bấm Resync Voices ở Settings nếu danh sách trống.)\n    Prompt đã có dòng NARRATION nên Veo đọc lời đó. Nhân vật KHÔNG mở miệng (không lip-sync).\n    -> Ra video ĐÃ CÓ tiếng, dùng luôn.\n\n[B] VIDEO CÂM -> lồng tiếng ở SEOSONA Video AI V2\n    Tắt nhánh A (node 11, 12 bỏ tick Bật) và BẬT nhánh B (node 13, 14, 15).\n    Nhánh B tự xoá dòng NARRATION -> video câm. vo_line nằm trong script_manifest\n    (output node 3) - copy sang V2 để TTS rồi ghép + Whisper phụ đề.\n\n== LUẬT ĐÃ CÀI (VERIFIED trong audit) ==\nV-03 block 10s = 5 hard cut ~2s | V-04 không lip-sync (narrator voice-over)\nV-05 tối đa 7 ref, thứ tự location -> character -> prop\nV-07 block đủ vo_line/location/through_line_state/shots/assets_used\nV-08 không quá 2 block liên tiếp cùng location\n\nCÁCH DÙNG: sửa node BRIEF (chủ đề/thời lượng) -> chạy. Asset sinh trước, làm ref cho block video."
+   }
+  },
+  {
+   "id": "node_1780000000002_3c702fd0",
+   "type": "text",
+   "position": {
+    "x": 80,
+    "y": 240
+   },
+   "data": {
+    "node_name": "1. BRIEF",
+    "label": "Text",
+    "enabled": true,
+    "slug": "text",
+    "slug_auto": true,
+    "prompt": "CHỦ ĐỀ: (điền chủ đề, vd: vì sao ta hay tự trách bản thân)\nTHỜI LƯỢNG: 60 giây\nTỈ LỆ: 9:16\nNGÔN NGỮ THOẠI: Tiếng Việt\nGIỌNG: nam trầm, chậm, ấm"
+   }
+  },
+  {
+   "id": "node_1780000000003_daa847b8",
+   "type": "prompt",
+   "position": {
+    "x": 400,
+    "y": 80
+   },
+   "data": {
+    "node_name": "2. Script Planner (AI)",
+    "label": "AI Agent",
+    "enabled": true,
+    "slug": "prompt",
+    "slug_auto": true,
+    "prompt": "Bạn là script planner cho video faceless explainer phong cách Stickman Cartoon.\nINPUT: brief phía trên.\nXUẤT: script_manifest dạng JSON THUẦN (không markdown, không giải thích).\n\nLUẬT BẮT BUỘC:\n- Chia thành N block, mỗi block = 10 giây. N = round(thời lượng / 10).\n- Mỗi block có ĐÚNG 5 shot, mỗi shot ~2 giây (hard cut).\n- Mỗi block có 1 câu narrator (vo_line) tiếng Việt đọc vừa ~10 giây: 22-28 chữ.\n  (KHÔNG bê chuẩn 30-34 từ tiếng Anh sang tiếng Việt.)\n- KHÔNG quá 2 block liên tiếp dùng cùng location.\n- Có through_line: 1 vật/motif xuyên suốt; mỗi block ghi through_line_state.\n- Nhân vật KHÔNG mở miệng nói (không lip-sync). Lời chỉ là narrator voice-over.\n- Tổng asset duy nhất toàn video <= 7.\n\nSCHEMA:\n{\"topic\":\"\",\"channel_type\":\"explainer\",\"style\":\"stickman_cartoon\",\"language\":\"vi\",\"through_line\":\"\",\n\"arc\":[\"setup\",\"turn\",\"resolve\"],\n\"blocks\":[{\"id\":\"block01\",\"location\":\"\",\"through_line_state\":\"\",\"vo_line\":\"\",\n\"shots\":[\"\",\"\",\"\",\"\",\"\"],\"assets_used\":[\"location:...\",\"character:...\",\"prop:...\"]}],\n\"sources\":[]}\n\nChỉ xuất JSON.",
+    "use_ai": true,
+    "provider": "chatgpt",
+    "timeout_sec": 180
+   }
+  },
+  {
+   "id": "node_1780000000004_78e05fa0",
+   "type": "prompt",
+   "position": {
+    "x": 720,
+    "y": 80
+   },
+   "data": {
+    "node_name": "3. Script Validator (AI)",
+    "label": "AI Agent",
+    "enabled": true,
+    "slug": "prompt",
+    "slug_auto": true,
+    "prompt": "Bạn là script validator. INPUT: script_manifest JSON phía trên.\nKIỂM và TỰ SỬA cho đạt, rồi xuất lại JSON THUẦN đã sửa (không giải thích, không markdown):\n1. Mỗi block có ĐÚNG 5 shot - thiếu thì thêm, thừa thì gộp.\n2. KHÔNG quá 2 block liên tiếp cùng location - vi phạm thì đổi location block thứ 3.\n3. vo_line không rỗng, dài 22-28 chữ tiếng Việt.\n4. through_line_state và assets_used không rỗng ở MỌI block.\n5. Tổng asset duy nhất toàn video <= 7 - vượt thì gộp/bỏ asset ít quan trọng.\n6. assets_used xếp theo ĐÚNG THỨ TỰ: location -> character -> prop.\nChỉ xuất JSON đã sửa.",
+    "use_ai": true,
+    "provider": "chatgpt",
+    "timeout_sec": 180
+   }
+  },
+  {
+   "id": "node_1780000000005_17187788",
+   "type": "prompt",
+   "position": {
+    "x": 1040,
+    "y": 80
+   },
+   "data": {
+    "node_name": "4. Asset Planner (AI)",
+    "label": "AI Agent",
+    "enabled": true,
+    "slug": "prompt",
+    "slug_auto": true,
+    "prompt": "INPUT: script_manifest JSON đã validate phía trên.\nXUẤT: danh sách prompt tạo ẢNH asset. Mỗi asset cách nhau bằng một dòng chỉ có ---\n\nTHỨ TỰ BẮT BUỘC (không đảo): tất cả location trước -> rồi character -> rồi prop. TỐI ĐA 7 asset.\nMỗi prompt là 1 đoạn tiếng Anh, tả thứ NHÌN THẤY ĐƯỢC (không cảm xúc trừu tượng, không ẩn dụ):\n- location: khung cảnh TRỐNG, không có nhân vật, chừa khoảng trống giữa khung để ghép nhân vật sau.\n- character: character sheet 1 nhân vật DUY NHẤT, toàn thân, chính diện, tư thế trung tính, nền phẳng.\n- prop: 1 vật thể duy nhất, chính giữa, nền phẳng.\nMọi prompt PHẢI kết thúc bằng ĐÚNG 2 dòng sau (chép nguyên văn, không sửa chữ):\nflat background, centered subject, no text, no watermark, no panel border\nSTYLE: minimalist hand-drawn stickman cartoon; thin slightly wobbly black ink outline; flat color fill with no gradient on characters; egg-shaped head; two small dot eyes; single simple curved mouth line; thin stick limbs; flat muted navy-blue background; soft cinematic side light from one side; one soft ground shadow; wide negative space; clean uncluttered composition.\n\nChỉ xuất các prompt và dấu ---",
+    "use_ai": true,
+    "provider": "chatgpt",
+    "timeout_sec": 180
+   }
+  },
+  {
+   "id": "node_1780000000006_b5508f70",
+   "type": "prompt_sequence",
+   "position": {
+    "x": 1360,
+    "y": 80
+   },
+   "data": {
+    "node_name": "5. Tach tung asset",
+    "label": "Prompt Sequence",
+    "enabled": true,
+    "slug": "prompt_sequence",
+    "slug_auto": true,
+    "split_mode": "separator",
+    "split_separator": "---",
+    "max_scenes": 7
+   }
+  },
+  {
+   "id": "node_1780000000007_5388a758",
+   "type": "generate",
+   "position": {
+    "x": 1680,
+    "y": 80
+   },
+   "data": {
+    "node_name": "6. Gen ASSET (anh)",
+    "label": "Tạo ảnh/video",
+    "enabled": true,
+    "slug": "generate",
+    "slug_auto": true,
+    "prompt": "",
+    "media_type": "Image",
+    "model": "Nano Banana 2",
+    "ratio": "9:16",
+    "quantity": 1,
+    "gen_type": "flow",
+    "auto_download": false
+   }
+  },
+  {
+   "id": "node_1780000000008_f1c0bf40",
+   "type": "download",
+   "position": {
+    "x": 2000,
+    "y": 80
+   },
+   "data": {
+    "node_name": "7. Luu assets",
+    "label": "Download",
+    "enabled": true,
+    "slug": "download",
+    "slug_auto": true
+   }
+  },
+  {
+   "id": "node_1780000000009_8ff8d728",
+   "type": "prompt",
+   "position": {
+    "x": 1040,
+    "y": 240
+   },
+   "data": {
+    "node_name": "8. Block Prompt Builder (AI)",
+    "label": "AI Agent",
+    "enabled": true,
+    "slug": "prompt",
+    "slug_auto": true,
+    "prompt": "INPUT: script_manifest JSON đã validate phía trên.\nXUẤT: với MỖI block 1 prompt video. Các block cách nhau bằng một dòng chỉ có ---\n\nCấu trúc mỗi prompt (giữ đúng thứ tự):\n1) Một câu mở: location + nhân vật + through-line đang ở trạng thái nào.\n2) ĐÚNG 5 dòng shot có mốc thời gian: 0.0-2.0s / 2.0-4.0s / 4.0-6.0s / 6.0-8.0s / 8.0-10.0s.\n   Mỗi dòng: 1 hành động QUAN SÁT ĐƯỢC + đúng 1 chuyển động máy (không chồng nhiều move).\n   Chuyển động bắt đầu NGAY từ khung hình đầu - không giữ ảnh tĩnh rồi mới động.\n3) Một dòng cuối đúng định dạng sau, chép nguyên vo_line của block:\nNARRATION (voice-over, Vietnamese): \"<vo_line>\"\n4) Một dòng STYLE, chép NGUYÊN VĂN:\nSTYLE: minimalist hand-drawn stickman cartoon; thin slightly wobbly black ink outline; flat color fill with no gradient on characters; egg-shaped head; two small dot eyes; single simple curved mouth line; thin stick limbs; flat muted navy-blue background; soft cinematic side light from one side; one soft ground shadow; wide negative space; clean uncluttered composition.\n5) Rồi kết thúc bằng đúng câu này:\n\"Narration is voice-over only - the character never speaks and never moves its mouth. No lip-sync, no mouth articulation, no on-screen text, no subtitles, no captions, no watermark, no storyboard panels, no split screen, no grid - single full-screen scene.\"\n\nChỉ xuất các prompt và dấu ---",
+    "use_ai": true,
+    "provider": "chatgpt",
+    "timeout_sec": 180
+   }
+  },
+  {
+   "id": "node_1780000000010_2e30ef10",
+   "type": "prompt_sequence",
+   "position": {
+    "x": 1360,
+    "y": 240
+   },
+   "data": {
+    "node_name": "9. Tach tung block",
+    "label": "Prompt Sequence",
+    "enabled": true,
+    "slug": "prompt_sequence",
+    "slug_auto": true,
+    "split_mode": "separator",
+    "split_separator": "---",
+    "max_scenes": 12
+   }
+  },
+  {
+   "id": "node_1780000000011_cc6906f8",
+   "type": "loop",
+   "position": {
+    "x": 1680,
+    "y": 240
+   },
+   "data": {
+    "node_name": "10. Lap tung block",
+    "label": "Loop / Batch",
+    "enabled": true,
+    "slug": "loop",
+    "slug_auto": true,
+    "max_items": 12
+   }
+  },
+  {
+   "id": "node_1780000000012_6aa11ee0",
+   "type": "generate",
+   "position": {
+    "x": 2000,
+    "y": 240
+   },
+   "data": {
+    "node_name": "11. Gen BLOCK video (VO Flow)",
+    "label": "Tạo ảnh/video",
+    "enabled": true,
+    "slug": "generate",
+    "slug_auto": true,
+    "prompt": "",
+    "media_type": "Video",
+    "model": "Veo 3.1 - Fast",
+    "ratio": "9:16",
+    "quantity": 1,
+    "gen_type": "flow",
+    "auto_download": false,
+    "video_duration": "10s",
+    "voice_slug": "",
+    "voice_search_value": ""
+   }
+  },
+  {
+   "id": "node_1780000000013_08d936c8",
+   "type": "download",
+   "position": {
+    "x": 2320,
+    "y": 80
+   },
+   "data": {
+    "node_name": "12. Luu block (co VO)",
+    "label": "Download",
+    "enabled": true,
+    "slug": "download",
+    "slug_auto": true
+   }
+  },
+  {
+   "id": "node_1780000000014_a7114eb0",
+   "type": "prompt",
+   "position": {
+    "x": 2000,
+    "y": 400
+   },
+   "data": {
+    "node_name": "13. Bo NARRATION -> cam (AI)",
+    "label": "AI Agent",
+    "enabled": false,
+    "slug": "prompt",
+    "slug_auto": true,
+    "prompt": "INPUT: prompt video phía trên (đang có dòng NARRATION).\nNHIỆM VỤ: chuyển thành bản CÂM để lồng tiếng ngoài (SEOSONA Video AI V2).\n1. XOÁ hoàn toàn dòng bắt đầu bằng: NARRATION (voice-over, Vietnamese):\n2. Giữ NGUYÊN phần còn lại (câu mở + 5 dòng shot + style).\n3. Thay câu kết cuối bằng đúng câu này:\n\"Silent video with no audio. No dialogue, no voice-over, no narration, no lip-sync, no mouth movement, no on-screen text, no subtitles, no captions, no watermark, no storyboard panels, no split screen, no grid - single full-screen scene.\"\nChỉ xuất prompt đã sửa, không giải thích.",
+    "use_ai": true,
+    "provider": "chatgpt",
+    "timeout_sec": 120
+   }
+  },
+  {
+   "id": "node_1780000000015_45496698",
+   "type": "generate",
+   "position": {
+    "x": 2320,
+    "y": 240
+   },
+   "data": {
+    "node_name": "14. Gen BLOCK video (CAM -> V2)",
+    "label": "Tạo ảnh/video",
+    "enabled": false,
+    "slug": "generate",
+    "slug_auto": true,
+    "prompt": "",
+    "media_type": "Video",
+    "model": "Veo 3.1 - Fast",
+    "ratio": "9:16",
+    "quantity": 1,
+    "gen_type": "flow",
+    "auto_download": false,
+    "video_duration": "10s"
+   }
+  },
+  {
+   "id": "node_1780000000016_e3817e80",
+   "type": "download",
+   "position": {
+    "x": 2640,
+    "y": 80
+   },
+   "data": {
+    "node_name": "15. Luu block cam",
+    "label": "Download",
+    "enabled": false,
+    "slug": "download",
+    "slug_auto": true
+   }
+  }
+ ],
+ "edges": [
+  {
+   "id": "edge_2fd0_output_1_47b8_input_1",
+   "source": "node_1780000000002_3c702fd0",
+   "target": "node_1780000000003_daa847b8",
+   "sourceHandle": "output_1",
+   "targetHandle": "input_1"
+  },
+  {
+   "id": "edge_47b8_output_1_5fa0_input_1",
+   "source": "node_1780000000003_daa847b8",
+   "target": "node_1780000000004_78e05fa0",
+   "sourceHandle": "output_1",
+   "targetHandle": "input_1"
+  },
+  {
+   "id": "edge_5fa0_output_1_7788_input_1",
+   "source": "node_1780000000004_78e05fa0",
+   "target": "node_1780000000005_17187788",
+   "sourceHandle": "output_1",
+   "targetHandle": "input_1"
+  },
+  {
+   "id": "edge_7788_output_1_8f70_input_1",
+   "source": "node_1780000000005_17187788",
+   "target": "node_1780000000006_b5508f70",
+   "sourceHandle": "output_1",
+   "targetHandle": "input_1"
+  },
+  {
+   "id": "edge_8f70_output_1_a758_input_2",
+   "source": "node_1780000000006_b5508f70",
+   "target": "node_1780000000007_5388a758",
+   "sourceHandle": "output_1",
+   "targetHandle": "input_2"
+  },
+  {
+   "id": "edge_a758_output_1_bf40_input_1",
+   "source": "node_1780000000007_5388a758",
+   "target": "node_1780000000008_f1c0bf40",
+   "sourceHandle": "output_1",
+   "targetHandle": "input_1"
+  },
+  {
+   "id": "edge_5fa0_output_1_d728_input_1",
+   "source": "node_1780000000004_78e05fa0",
+   "target": "node_1780000000009_8ff8d728",
+   "sourceHandle": "output_1",
+   "targetHandle": "input_1"
+  },
+  {
+   "id": "edge_d728_output_1_ef10_input_1",
+   "source": "node_1780000000009_8ff8d728",
+   "target": "node_1780000000010_2e30ef10",
+   "sourceHandle": "output_1",
+   "targetHandle": "input_1"
+  },
+  {
+   "id": "edge_ef10_output_1_06f8_input_1",
+   "source": "node_1780000000010_2e30ef10",
+   "target": "node_1780000000011_cc6906f8",
+   "sourceHandle": "output_1",
+   "targetHandle": "input_1"
+  },
+  {
+   "id": "edge_06f8_output_1_1ee0_input_2",
+   "source": "node_1780000000011_cc6906f8",
+   "target": "node_1780000000012_6aa11ee0",
+   "sourceHandle": "output_1",
+   "targetHandle": "input_2"
+  },
+  {
+   "id": "edge_a758_output_1_1ee0_input_1",
+   "source": "node_1780000000007_5388a758",
+   "target": "node_1780000000012_6aa11ee0",
+   "sourceHandle": "output_1",
+   "targetHandle": "input_1"
+  },
+  {
+   "id": "edge_1ee0_output_1_36c8_input_1",
+   "source": "node_1780000000012_6aa11ee0",
+   "target": "node_1780000000013_08d936c8",
+   "sourceHandle": "output_1",
+   "targetHandle": "input_1"
+  },
+  {
+   "id": "edge_06f8_output_1_4eb0_input_1",
+   "source": "node_1780000000011_cc6906f8",
+   "target": "node_1780000000014_a7114eb0",
+   "sourceHandle": "output_1",
+   "targetHandle": "input_1"
+  },
+  {
+   "id": "edge_4eb0_output_1_6698_input_2",
+   "source": "node_1780000000014_a7114eb0",
+   "target": "node_1780000000015_45496698",
+   "sourceHandle": "output_1",
+   "targetHandle": "input_2"
+  },
+  {
+   "id": "edge_a758_output_1_6698_input_1",
+   "source": "node_1780000000007_5388a758",
+   "target": "node_1780000000015_45496698",
+   "sourceHandle": "output_1",
+   "targetHandle": "input_1"
+  },
+  {
+   "id": "edge_6698_output_1_7e80_input_1",
+   "source": "node_1780000000015_45496698",
+   "target": "node_1780000000016_e3817e80",
+   "sourceHandle": "output_1",
+   "targetHandle": "input_1"
+  }
+ ],
+ "settings": {},
+ "node_count": 16,
+ "is_active": true,
+ "visibility": "private",
+ "is_public": false
+}

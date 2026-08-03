@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Effects - SEOSONA Flow</title>
+  <link rel="stylesheet" href="../styles/sidebar.css">
+  <link rel="stylesheet" href="../src/shared/custom-dialog.css">
+  <link rel="stylesheet" href="../src/shared/image-picker.css">
+  <link rel="stylesheet" href="../src/history/history-tab.css">
+  <link rel="stylesheet" href="../src/effects/effects-editor.css">
+</head>
+<body class="dark-theme">
+  <div id="effectsEditorRoot"></div>
+
+  <!-- Core dependencies -->
+  <!-- Owned suppression: phải nạp TRƯỚC mọi module (catch im lặng gọi SEOSONA_swallow). -->
+  <script src="../src/core/ErrorCatalog.js"></script>
+  <script src="../src/core/ApiClient.js"></script>
+  <script src="../src/core/RuntimeMode.js"></script>
+  <script src="../src/core/utils.js"></script>
+  <script src="../src/core/IdGenerator.js"></script>
+  <script src="../src/core/EventBus.js"></script>
+  <!-- I18n -->
+  <script src="../src/i18n/vi.js"></script>
+  <script src="../src/i18n/en.js"></script>
+  <script src="../src/core/I18n.js"></script>
+  <script src="../src/core/ApiBaseConfig.js"></script>
+  <script src="../src/core/LocalStorage.js"></script>
+    <script src="../src/core/FeatureGate.js"></script>
+  <script src="../src/core/SystemConfig.js"></script>
+  <script src="../src/core/ValidationRules.js"></script>
+  <script src="../src/core/RequestSigner.js"></script>
+  <script src="../src/core/ProviderConfigManager.js"></script>
+  <script src="../src/core/ModelRegistry.js"></script>
+  <script src="../src/core/ExecutionGate.js"></script>
+  <script src="../src/core/errors/QuotaErrorHandler.js"></script>
+  <script src="../src/core/RequestCoalescer.js"></script>
+  <script src="../src/core/ApiStorage.js"></script>
+  <script src="../src/core/StorageManager.js"></script>
+  <script src="../src/core/SseBroadcastManager.js"></script>
+  <script src="../src/core/SseClient.js"></script>
+  <script src="../src/core/ExecutionLock.js"></script>
+  <script src="../src/core/BlobUrlManager.js"></script>
+  <script src="../src/core/ThumbnailCache.js"></script>
+  <script src="../src/core/PendingUploadStore.js"></script>
+  <script src="../src/core/TileCache.js"></script>
+  <script src="../src/core/TileResolver.js"></script>
+  <script src="../src/core/AlbumStore.js"></script>
+  <script src="../src/core/ImageStore.js"></script>
+  <script src="../src/core/FileUploader.js"></script>
+  <script src="../src/core/MediaRegistry.js"></script>
+  <script src="../src/core/MessageBridge.js"></script>
+  <script src="../src/core/ImmediateUploader.js"></script>
+  <script src="../src/core/BackendSync.js"></script>
+  <script src="../src/settings/StorageSettings.js"></script>
+
+  <!-- Pipeline queue (if enabled) -->
+  <script src="../src/core/QueueItem.js"></script>
+  <script src="../src/core/Job.js"></script>
+  <script src="../src/core/EditorExecutor.js"></script>
+  <script src="../src/core/TileMonitor.js"></script>
+  <script src="../src/core/PromptQueue.js"></script>
+
+  <!-- Shared components -->
+  <script src="../src/shared/SmartTooltip.js"></script>
+  <script src="../src/shared/CustomDialog.js"></script>
+  <script src="../src/shared/ImagePickerModal.js"></script>
+  <script src="../src/shared/DownloadHelper.js"></script>
+
+  <!-- Effects feature -->
+  <script src="../src/effects/EffectsExecution.js"></script>
+  <script src="../src/effects/EffectsEditor.js"></script>
+  <script src="../scripts/effects-editor-init.js"></script>
+</body>
+</html>

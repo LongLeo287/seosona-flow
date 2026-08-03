@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Motion Recipes — SEOSONA Flow</title>
+  <style>
+    :root { color-scheme: dark; --bg:#131315; --card:#1b1b1e; --card2:#232327; --line:rgba(255,255,255,.09); --txt:#e9eaec; --mut:#9498a1; --acc:#3d6ff5; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--bg); color:var(--txt); font-family:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+    .wrap { max-width:1040px; margin:0 auto; padding:22px 18px 60px; }
+    .head { display:flex; align-items:center; gap:12px; }
+    .head .spark { width:34px; height:34px; border-radius:9px; background:linear-gradient(135deg,var(--acc),#0e4099); display:flex; align-items:center; justify-content:center; font-size:18px; }
+    h1 { font-size:19px; font-weight:700; margin:0; }
+    .sub { color:var(--mut); font-size:13px; margin:2px 0 16px; }
+    .filters { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+    .filters button { background:var(--card2); border:1px solid var(--line); color:var(--txt); border-radius:20px; padding:6px 14px; font-size:12.5px; cursor:pointer; font-family:inherit; }
+    .filters button.on { background:var(--acc); border-color:var(--acc); color:#fff; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:14px; }
+    .rc { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px; }
+    .rc .stage { height:80px; display:flex; align-items:center; justify-content:center; background:var(--card2); border-radius:9px; margin-bottom:10px; overflow:hidden; }
+    .rc .box { width:44px; height:44px; border-radius:10px; background:linear-gradient(135deg,var(--acc),#19d07b); }
+    .rc .name { font-size:13px; font-weight:600; }
+    .rc .meta { font-size:11px; color:var(--mut); margin:2px 0 8px; }
+    .rc .foot { display:flex; gap:6px; }
+    .rc .foot button { flex:1; background:rgba(255,255,255,.08); border:none; color:var(--txt); border-radius:8px; padding:6px; font-size:11.5px; cursor:pointer; font-family:inherit; }
+    .count { font-size:12px; color:var(--mut); margin-left:8px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="head"><span class="spark">🎬</span><h1>Motion Recipes</h1><span class="count" id="count"></span></div>
+    <p class="sub">Thư viện hiệu ứng chuyển động CSS — xem trước, copy CSS dùng cho landing/UI. Mỗi recipe có "gu" (intent/avoid/restraint), tôn trọng prefers-reduced-motion.</p>
+    <div class="filters" id="filters"></div>
+    <div class="grid" id="grid"></div>
+  </div>
+  <!-- Owned suppression: phải nạp TRƯỚC mọi module (catch im lặng gọi SEOSONA_swallow). -->
+  <script src="../src/core/ErrorCatalog.js"></script>
+  <script src="../src/core/MotionRecipes.js"></script>
+  <script src="../scripts/motion-preview.js"></script>
+</body>
+</html>

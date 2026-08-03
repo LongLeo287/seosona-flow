@@ -1,0 +1,15 @@
+# Chuẩn hoá xuống dòng: lưu LF trong repo, checkout theo OS.
+# Tránh việc clone trên Mac/Linux thấy toàn bộ file "đã bị sửa" chỉ vì CRLF.
+* text=auto eol=lf
+
+# Nhị phân — không đụng vào.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.zip binary
+*.crx binary

@@ -1,0 +1,253 @@
+{
+ "name": "Stickman Faceless Explainer - Giai doan A (asset-first)",
+ "category_id": 2,
+ "nodes": [
+  {
+   "type": "note",
+   "data": {
+    "node_name": "Huong dan + 2 che do voice",
+    "note_text": "STICKMAN FACELESS EXPLAINER - GIAI DOAN A (asset-first)\nDựa trên audit report v2 (30/07/2026).\n\n== 2 CHẾ ĐỘ VOICE - CHỌN 1 ==\n[A] VOICE TỪ FLOW (mặc định, bật sẵn)\n    Mở node \"11. Gen BLOCK video (VO Flow)\" -> chọn GIỌNG ở voice picker.\n    (Giọng lấy từ tài khoản Flow của bạn - bấm Resync Voices ở Settings nếu danh sách trống.)\n    Prompt đã có dòng NARRATION nên Veo đọc lời đó. Nhân vật KHÔNG mở miệng (không lip-sync).\n    -> Ra video ĐÃ CÓ tiếng, dùng luôn.\n\n[B] VIDEO CÂM -> lồng tiếng ở SEOSONA Video AI V2\n    Tắt nhánh A (node 11, 12 bỏ tick Bật) và BẬT nhánh B (node 13, 14, 15).\n    Nhánh B tự xoá dòng NARRATION -> video câm. vo_line nằm trong script_manifest\n    (output node 3) - copy sang V2 để TTS rồi ghép + Whisper phụ đề.\n\n== LUẬT ĐÃ CÀI (VERIFIED trong audit) ==\nV-03 block 10s = 5 hard cut ~2s | V-04 không lip-sync (narrator voice-over)\nV-05 tối đa 7 ref, thứ tự location -> character -> prop\nV-07 block đủ vo_line/location/through_line_state/shots/assets_used\nV-08 không quá 2 block liên tiếp cùng location\n\nCÁCH DÙNG: sửa node BRIEF (chủ đề/thời lượng) -> chạy. Asset sinh trước, làm ref cho block video."
+   }
+  },
+  {
+   "type": "text",
+   "data": {
+    "node_name": "1. BRIEF",
+    "prompt": "CHỦ ĐỀ: (điền chủ đề, vd: vì sao ta hay tự trách bản thân)\nTHỜI LƯỢNG: 60 giây\nTỈ LỆ: 9:16\nNGÔN NGỮ THOẠI: Tiếng Việt\nGIỌNG: nam trầm, chậm, ấm"
+   }
+  },
+  {
+   "type": "prompt",
+   "data": {
+    "node_name": "2. Script Planner (AI)",
+    "prompt": "Bạn là script planner cho video faceless explainer phong cách Stickman Cartoon.\nINPUT: brief phía trên.\nXUẤT: script_manifest dạng JSON THUẦN (không markdown, không giải thích).\n\nLUẬT BẮT BUỘC:\n- Chia thành N block, mỗi block = 10 giây. N = round(thời lượng / 10).\n- Mỗi block có ĐÚNG 5 shot, mỗi shot ~2 giây (hard cut).\n- Mỗi block có 1 câu narrator (vo_line) tiếng Việt đọc vừa ~10 giây: 22-28 chữ.\n  (KHÔNG bê chuẩn 30-34 từ tiếng Anh sang tiếng Việt.)\n- KHÔNG quá 2 block liên tiếp dùng cùng location.\n- Có through_line: 1 vật/motif xuyên suốt; mỗi block ghi through_line_state.\n- Nhân vật KHÔNG mở miệng nói (không lip-sync). Lời chỉ là narrator voice-over.\n- Tổng asset duy nhất toàn video <= 7.\n\nSCHEMA:\n{\"topic\":\"\",\"channel_type\":\"explainer\",\"style\":\"stickman_cartoon\",\"language\":\"vi\",\"through_line\":\"\",\n\"arc\":[\"setup\",\"turn\",\"resolve\"],\n\"blocks\":[{\"id\":\"block01\",\"location\":\"\",\"through_line_state\":\"\",\"vo_line\":\"\",\n\"shots\":[\"\",\"\",\"\",\"\",\"\"],\"assets_used\":[\"location:...\",\"character:...\",\"prop:...\"]}],\n\"sources\":[]}\n\nChỉ xuất JSON.",
+    "use_ai": true,
+    "provider": "chatgpt",
+    "timeout_sec": 180
+   }
+  },
+  {
+   "type": "prompt",
+   "data": {
+    "node_name": "3. Script Validator (AI)",
+    "prompt": "Bạn là script validator. INPUT: script_manifest JSON phía trên.\nKIỂM và TỰ SỬA cho đạt, rồi xuất lại JSON THUẦN đã sửa (không giải thích, không markdown):\n1. Mỗi block có ĐÚNG 5 shot - thiếu thì thêm, thừa thì gộp.\n2. KHÔNG quá 2 block liên tiếp cùng location - vi phạm thì đổi location block thứ 3.\n3. vo_line không rỗng, dài 22-28 chữ tiếng Việt.\n4. through_line_state và assets_used không rỗng ở MỌI block.\n5. Tổng asset duy nhất toàn video <= 7 - vượt thì gộp/bỏ asset ít quan trọng.\n6. assets_used xếp theo ĐÚNG THỨ TỰ: location -> character -> prop.\nChỉ xuất JSON đã sửa.",
+    "use_ai": true,
+    "provider": "chatgpt",
+    "timeout_sec": 180
+   }
+  },
+  {
+   "type": "prompt",
+   "data": {
+    "node_name": "4. Asset Planner (AI)",
+    "prompt": "INPUT: script_manifest JSON đã validate phía trên.\nXUẤT: danh sách prompt tạo ẢNH asset. Mỗi asset cách nhau bằng một dòng chỉ có ---\n\nTHỨ TỰ BẮT BUỘC (không đảo): tất cả location trước -> rồi character -> rồi prop. TỐI ĐA 7 asset.\nMỗi prompt là 1 đoạn tiếng Anh, tả thứ NHÌN THẤY ĐƯỢC (không cảm xúc trừu tượng, không ẩn dụ):\n- location: khung cảnh TRỐNG, không có nhân vật, chừa khoảng trống giữa khung để ghép nhân vật sau.\n- character: character sheet 1 nhân vật DUY NHẤT, toàn thân, chính diện, tư thế trung tính, nền phẳng.\n- prop: 1 vật thể duy nhất, chính giữa, nền phẳng.\nMọi prompt PHẢI kết thúc bằng ĐÚNG 2 dòng sau (chép nguyên văn, không sửa chữ):\nflat background, centered subject, no text, no watermark, no panel border\nSTYLE: minimalist hand-drawn stickman cartoon; thin slightly wobbly black ink outline; flat color fill with no gradient on characters; egg-shaped head; two small dot eyes; single simple curved mouth line; thin stick limbs; flat muted navy-blue background; soft cinematic side light from one side; one soft ground shadow; wide negative space; clean uncluttered composition.\n\nChỉ xuất các prompt và dấu ---",
+    "use_ai": true,
+    "provider": "chatgpt",
+    "timeout_sec": 180
+   }
+  },
+  {
+   "type": "prompt_sequence",
+   "data": {
+    "node_name": "5. Tach tung asset",
+    "split_mode": "separator",
+    "split_separator": "---",
+    "max_scenes": 7
+   }
+  },
+  {
+   "type": "generate",
+   "data": {
+    "node_name": "6. Gen ASSET (anh)",
+    "media_type": "Image",
+    "model": "Nano Banana 2",
+    "ratio": "9:16",
+    "quantity": 1,
+    "gen_type": "flow",
+    "enabled": true
+   }
+  },
+  {
+   "type": "download",
+   "data": {
+    "node_name": "7. Luu assets"
+   }
+  },
+  {
+   "type": "prompt",
+   "data": {
+    "node_name": "8. Block Prompt Builder (AI)",
+    "prompt": "INPUT: script_manifest JSON đã validate phía trên.\nXUẤT: với MỖI block 1 prompt video. Các block cách nhau bằng một dòng chỉ có ---\n\nCấu trúc mỗi prompt (giữ đúng thứ tự):\n1) Một câu mở: location + nhân vật + through-line đang ở trạng thái nào.\n2) ĐÚNG 5 dòng shot có mốc thời gian: 0.0-2.0s / 2.0-4.0s / 4.0-6.0s / 6.0-8.0s / 8.0-10.0s.\n   Mỗi dòng: 1 hành động QUAN SÁT ĐƯỢC + đúng 1 chuyển động máy (không chồng nhiều move).\n   Chuyển động bắt đầu NGAY từ khung hình đầu - không giữ ảnh tĩnh rồi mới động.\n3) Một dòng cuối đúng định dạng sau, chép nguyên vo_line của block:\nNARRATION (voice-over, Vietnamese): \"<vo_line>\"\n4) Một dòng STYLE, chép NGUYÊN VĂN:\nSTYLE: minimalist hand-drawn stickman cartoon; thin slightly wobbly black ink outline; flat color fill with no gradient on characters; egg-shaped head; two small dot eyes; single simple curved mouth line; thin stick limbs; flat muted navy-blue background; soft cinematic side light from one side; one soft ground shadow; wide negative space; clean uncluttered composition.\n5) Rồi kết thúc bằng đúng câu này:\n\"Narration is voice-over only - the character never speaks and never moves its mouth. No lip-sync, no mouth articulation, no on-screen text, no subtitles, no captions, no watermark, no storyboard panels, no split screen, no grid - single full-screen scene.\"\n\nChỉ xuất các prompt và dấu ---",
+    "use_ai": true,
+    "provider": "chatgpt",
+    "timeout_sec": 180
+   }
+  },
+  {
+   "type": "prompt_sequence",
+   "data": {
+    "node_name": "9. Tach tung block",
+    "split_mode": "separator",
+    "split_separator": "---",
+    "max_scenes": 12
+   }
+  },
+  {
+   "type": "loop",
+   "data": {
+    "node_name": "10. Lap tung block",
+    "max_items": 12
+   }
+  },
+  {
+   "type": "generate",
+   "data": {
+    "node_name": "11. Gen BLOCK video (VO Flow)",
+    "media_type": "Video",
+    "model": "Veo 3.1 - Fast",
+    "ratio": "9:16",
+    "quantity": 1,
+    "video_duration": "10s",
+    "gen_type": "flow",
+    "enabled": true,
+    "voice_slug": "",
+    "voice_search_value": ""
+   }
+  },
+  {
+   "type": "download",
+   "data": {
+    "node_name": "12. Luu block (co VO)"
+   }
+  },
+  {
+   "type": "prompt",
+   "data": {
+    "node_name": "13. Bo NARRATION -> cam (AI)",
+    "prompt": "INPUT: prompt video phía trên (đang có dòng NARRATION).\nNHIỆM VỤ: chuyển thành bản CÂM để lồng tiếng ngoài (SEOSONA Video AI V2).\n1. XOÁ hoàn toàn dòng bắt đầu bằng: NARRATION (voice-over, Vietnamese):\n2. Giữ NGUYÊN phần còn lại (câu mở + 5 dòng shot + style).\n3. Thay câu kết cuối bằng đúng câu này:\n\"Silent video with no audio. No dialogue, no voice-over, no narration, no lip-sync, no mouth movement, no on-screen text, no subtitles, no captions, no watermark, no storyboard panels, no split screen, no grid - single full-screen scene.\"\nChỉ xuất prompt đã sửa, không giải thích.",
+    "use_ai": true,
+    "provider": "chatgpt",
+    "timeout_sec": 120,
+    "enabled": false
+   }
+  },
+  {
+   "type": "generate",
+   "data": {
+    "node_name": "14. Gen BLOCK video (CAM -> V2)",
+    "media_type": "Video",
+    "model": "Veo 3.1 - Fast",
+    "ratio": "9:16",
+    "quantity": 1,
+    "video_duration": "10s",
+    "gen_type": "flow",
+    "enabled": false
+   }
+  },
+  {
+   "type": "download",
+   "data": {
+    "node_name": "15. Luu block cam",
+    "enabled": false
+   }
+  }
+ ],
+ "edges": [
+  [
+   1,
+   1,
+   2,
+   1
+  ],
+  [
+   2,
+   1,
+   3,
+   1
+  ],
+  [
+   3,
+   1,
+   4,
+   1
+  ],
+  [
+   4,
+   1,
+   5,
+   1
+  ],
+  [
+   5,
+   1,
+   6,
+   2
+  ],
+  [
+   6,
+   1,
+   7,
+   1
+  ],
+  [
+   3,
+   1,
+   8,
+   1
+  ],
+  [
+   8,
+   1,
+   9,
+   1
+  ],
+  [
+   9,
+   1,
+   10,
+   1
+  ],
+  [
+   10,
+   1,
+   11,
+   2
+  ],
+  [
+   6,
+   1,
+   11,
+   1
+  ],
+  [
+   11,
+   1,
+   12,
+   1
+  ],
+  [
+   10,
+   1,
+   13,
+   1
+  ],
+  [
+   13,
+   1,
+   14,
+   2
+  ],
+  [
+   6,
+   1,
+   14,
+   1
+  ],
+  [
+   14,
+   1,
+   15,
+   1
+  ]
+ ]
+}

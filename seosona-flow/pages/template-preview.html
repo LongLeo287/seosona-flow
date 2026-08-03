@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Template Preview - SEOSONA Flow</title>
+  <!-- LIGHTWEIGHT preview: chỉ render diagram read-only. KHÔNG load execution stack / SSE / providers
+       (82 script của workflow-editor.html) → tránh GPU/memory tích lũy khi mở preview nhiều lần. -->
+  <link rel="stylesheet" href="../styles/sidebar.css">
+  <link rel="stylesheet" href="../lib/drawflow.min.css">
+  <link rel="stylesheet" href="../src/workflow/workflow.css">
+  <style>
+    html, body { width: 100%; height: 100%; margin: 0; padding: 0; background: var(--background, #1c1c1f); color: var(--foreground, #e8e8ea); overflow: hidden; }
+    .tp-root { display: flex; flex-direction: column; height: 100vh; }
+    .tp-header { display: flex; align-items: center; gap: 12px; padding: 10px 16px; flex-shrink: 0; }
+    .tp-title { font-size: 14px; font-weight: 600; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tp-meta { font-size: 12px; color: var(--muted-foreground, #9a9aa0); display: inline-flex; align-items: center; gap: 5px; }
+    .tp-meta svg { opacity: .8; flex-shrink: 0; }
+    .tp-btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; font-weight: 600; }
+    .tp-btn-use { background: var(--primary,#3d6ff5); color: #fff; }
+    .tp-btn-use:hover { filter: brightness(1.05); }
+    .tp-btn-use:disabled { opacity: .6; cursor: default; }
+    .tp-btn-close { background: transparent; color: var(--muted-foreground, #9a9aa0); padding: 7px; border-radius: 8px; }
+    .tp-btn-close:hover { background: var(--muted, #2a2a2e); color: var(--foreground, #e8e8ea); }
+    .tp-btn-video { background: var(--muted, #2a2a2e); color: var(--foreground, #e8e8ea); }
+    .tp-btn-video:hover { filter: brightness(1.1); }
+    .tp-canvas { flex: 1; position: relative; min-height: 0; }
+    #diagramContainer { width: 100%; height: 100%; }
+    /* DiagramCanvas {isReadOnly} tự add .wf-canvas-readonly → ẩn control edit (giữ), NHƯNG kill
+       ::before gradient overlay (GPU compositing layer thừa — nghi phạm tích lũy GPU khi mở nhiều lần). */
+    .wf-canvas-readonly::before { display: none !important; }
+    /* Thumb GIỮ pointer-events:none (kế thừa từ node readonly) → click/drag vùng ảnh = PAN diagram.
+       CHỈ nút zoom (.df-preview-zoom) clickable + LUÔN hiện (readonly ko hover được thumb để show). */
+    .wf-canvas-readonly .df-preview-zoom { opacity: 1; pointer-events: auto; cursor: zoom-in; }
+    /* Lightbox xem ảnh node phóng to */
+    .tp-lightbox { position: fixed; inset: 0; z-index: 999999; background: rgba(0,0,0,.85); display: none; align-items: center; justify-content: center; cursor: zoom-out; }
+    .tp-lightbox.show { display: flex; }
+    .tp-lightbox img { max-width: 92vw; max-height: 92vh; border-radius: 8px; box-shadow: 0 8px 40px rgba(0,0,0,.5); }
+    .tp-lightbox-close { position: absolute; top: 16px; right: 20px; background: rgba(255,255,255,.12); border: none; color: #fff; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 20px; line-height: 1; }
+    /* Loading overlay (giống workflow-editor) — gỡ bởi template-preview-init.js sau khi diagram render */
+    .tp-loading { position: fixed; inset: 0; z-index: 999998; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; background: #161616; transition: opacity .3s ease; }
+    .tp-loading.tp-loading-out { opacity: 0; pointer-events: none; }
+    .tp-loading__spinner { width: 42px; height: 42px; border: 3px solid rgba(255,255,255,.12); border-top-color: var(--primary, #3d6ff5); border-radius: 50%; animation: tp-spin .8s linear infinite; }
+    .tp-loading__text { font-size: 13px; font-weight: 500; letter-spacing: .2px; color: var(--muted-foreground, #9a9aa2); }
+    @keyframes tp-spin { to { transform: rotate(360deg); } }
+    /* Lazy thumbnail shimmer — ảnh server load chậm → skeleton cho tới khi load xong.
+       LƯU Ý: .df-preview-thumb là DIV wrapper (chứa <img>) → fade IMG, KHÔNG fade div.
+       Opacity buộc theo class CONTAINER (.df-node-preview.tp-thumb-loading) — markLoaded gỡ class. */
+    .df-node-preview.tp-thumb-loading { position: relative; }
+    .df-node-preview.tp-thumb-loading .df-preview-thumb img { opacity: 0; }
+    .df-node-preview .df-preview-thumb img { transition: opacity .35s ease; }
+    .df-node-preview.tp-thumb-loading::after { content: ''; position: absolute; inset: 0; background: linear-gradient(100deg, rgba(255,255,255,.03) 30%, rgba(255,255,255,.09) 50%, rgba(255,255,255,.03) 70%); background-size: 200% 100%; animation: tp-shimmer 1.3s ease-in-out infinite; pointer-events: none; z-index: 1; }
+    @keyframes tp-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+  </style>
+</head>
+<body>
+<!-- Loading overlay (gỡ bởi template-preview-init.js sau khi diagram render) -->
+<div id="tpLoading" class="tp-loading">
+  <div class="tp-loading__spinner"></div>
+  <div class="tp-loading__text" id="tpLoadingText">Loading workflow…</div>
+</div>
+<div class="tp-root">
+  <div class="tp-header">
+    <span class="tp-title" id="tpTitle">Template</span>
+    <span class="tp-meta" id="tpMeta"></span>
+    <button class="tp-btn tp-btn-use" id="tpUseBtn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+      <span id="tpUseLabel">Dùng template</span>
+    </button>
+    <button class="tp-btn tp-btn-close" id="tpCloseBtn" title="Đóng" aria-label="Đóng">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="tp-canvas">
+    <div id="diagramContainer"></div>
+  </div>
+</div>
+<div class="tp-lightbox" id="tpLightbox">
+  <button class="tp-lightbox-close" id="tpLightboxClose" aria-label="Đóng">×</button>
+  <img id="tpLightboxImg" alt="preview">
+</div>
+
+<!-- Minimal deps: i18n (fallback offline) + config + render -->
+<!-- Owned suppression: phải nạp TRƯỚC mọi module (catch im lặng gọi SEOSONA_swallow). -->
+<script src="../src/core/ErrorCatalog.js"></script>
+<script src="../src/core/ApiClient.js"></script>
+  <script src="../src/core/RuntimeMode.js"></script>
+  <script src="../src/i18n/vi.js"></script>
+  <script src="../src/i18n/en.js"></script>
+<script src="../src/core/utils.js"></script>
+<script src="../src/core/IdGenerator.js"></script>
+<script src="../src/core/EventBus.js"></script>
+<!-- i18n server-only (KHÔNG bundle src/i18n/* — bị exclude khi đóng gói). I18n.init() đọc cache/fetch. -->
+<script src="../src/core/I18n.js"></script>
+<script src="../src/core/ApiBaseConfig.js"></script>
+<script src="../src/core/RequestSigner.js"></script>
+<script src="../src/core/ProviderConfigManager.js"></script>
+<script src="../src/core/ModelRegistry.js"></script>
+<!-- ValidationRules: NodeTemplates.charCountBadge cần prompt_max_length dynamic (server), không thì fallback 5000 -->
+<script src="../src/core/ValidationRules.js"></script>
+<script src="../lib/drawflow.min.js"></script>
+<script src="../src/workflow/NodeTemplates.js"></script>
+<script src="../src/workflow/DiagramCanvas.js"></script>
+<script src="../scripts/template-preview-init.js"></script>
+</body>
+</html>

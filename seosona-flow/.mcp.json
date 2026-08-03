@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "seosona-knowledge": {
+      "command": "python",
+      "args": ["C:/Users/Admin/.seosona/1_CORE/scripts/mcp_knowledge_server.py"],
+      "description": "Shared SEOSONA knowledge base (MotherBrain OS 3_MEMORY/knowledge_items, incl. all UAP-harvested KIs). Tool: knowledge_search(query, limit) -> {backend, results:[{title, portablePath, score}]}. This satellite queries the central brain so KIs routed to SEOSONA Flow are actually visible here at runtime."
+    }
+  }
+}

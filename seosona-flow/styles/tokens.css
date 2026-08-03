@@ -1,0 +1,92 @@
+/* SEOSONA Flow — Design Tokens (Phase 8 / P8.T4, AUD-024).
+ * Canonical `--sf-*` design-token SPEC: color, spacing, radius, shadow, z-index,
+ * typography. Light-first + dark via prefers-color-scheme. Pairs meet WCAG AA —
+ * see docs/ux/design-tokens.md. Brand type Be Vietnam Pro (bundled woff2).
+ *
+ * ⚠️ STATUS (audit 2026-07-23): NOT LINKED in any HTML page yet. The LIVE runtime
+ * uses a SEPARATE inline scale (unprefixed `--*`) in styles/sidebar.css:36-131.
+ * This file is validated by scripts/quality/check-tokens.mjs + tests/visual/
+ * tokens.test.mjs (existence/categories only) but its `--sf-*` vars currently
+ * resolve to nothing at runtime — the ~19 `var(--sf-*, fallback)` refs in
+ * sidebar.css/workflow.css render via their FALLBACK literals.
+ *
+ * → Until this file is linked (Tier-3 design-system work: link BEFORE sidebar.css
+ *   then migrate `--*`→`--sf-*`), component CSS should use the LIVE `--*` tokens,
+ *   NOT `--sf-*`. Do NOT hardcode raw literals; reference the live variables.
+ */
+:root {
+  /* Foundation */
+  --sf-color-black: #0b0b0d;
+  --sf-color-white: #ffffff;
+  --sf-color-ink: #14151a;          /* body text on white (AA: 15.8:1) */
+  --sf-color-ink-muted: #565a66;    /* secondary text on white (AA: 5.9:1) */
+  --sf-color-surface: #ffffff;
+  --sf-color-surface-alt: #f5f6f8;
+  --sf-color-border: #d9dbe1;
+  --sf-color-inverse-ink: #f5f6f8;  /* text on black (AA: 15.8:1) */
+
+  /* Brand + semantic — SEOSONA brand: blue #0e4099 + emerald #19d07b (from logo) */
+  --sf-color-accent: #0e4099;       /* brand blue, on white AA: 8.6:1 */
+  --sf-color-accent-ink: #ffffff;   /* text on accent */
+  --sf-color-success: #0f9e63;      /* brand emerald (dark variant for AA on white) */
+  --sf-color-warning: #8a5a00;
+  --sf-color-danger: #b3261e;
+  --sf-color-focus-ring: #0e4099;
+
+  /* Spacing scale (4px base) */
+  --sf-space-1: 4px;
+  --sf-space-2: 8px;
+  --sf-space-3: 12px;
+  --sf-space-4: 16px;
+  --sf-space-5: 24px;
+  --sf-space-6: 32px;
+  --sf-space-8: 48px;
+
+  /* Radius */
+  --sf-radius-sm: 4px;
+  --sf-radius-md: 8px;
+  --sf-radius-lg: 14px;
+  --sf-radius-pill: 999px;
+
+  /* Shadow */
+  --sf-shadow-1: 0 1px 2px rgba(11, 11, 13, 0.08);
+  --sf-shadow-2: 0 4px 16px rgba(11, 11, 13, 0.12);
+
+  /* Z-index scale */
+  --sf-z-base: 1;
+  --sf-z-dropdown: 100;
+  --sf-z-sticky: 200;
+  --sf-z-overlay: 900;
+  --sf-z-modal: 1000;
+  --sf-z-toast: 1100;
+
+  /* Typography */
+  --sf-font-ui: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --sf-font-editorial: "Lora", Georgia, "Times New Roman", serif;
+  --sf-font-size-xs: 12px;
+  --sf-font-size-sm: 13px;
+  --sf-font-size-md: 14px;
+  --sf-font-size-lg: 16px;
+  --sf-font-size-xl: 20px;
+  --sf-font-weight-regular: 400;
+  --sf-font-weight-medium: 500;
+  --sf-font-weight-bold: 600;
+  --sf-line-tight: 1.25;
+  --sf-line-normal: 1.5;
+
+  /* Focus */
+  --sf-focus-ring-width: 2px;
+  --sf-focus-ring-offset: 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --sf-color-surface: #14151a;
+    --sf-color-surface-alt: #1d1f26;
+    --sf-color-ink: #f5f6f8;
+    --sf-color-ink-muted: #a6abb8;
+    --sf-color-border: #2d2f38;
+    --sf-color-accent: #3d6ff5;      /* brighter brand blue for dark AA */
+    --sf-color-accent-ink: #0b0b0d;
+  }
+}

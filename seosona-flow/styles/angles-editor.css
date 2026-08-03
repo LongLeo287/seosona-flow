@@ -1,0 +1,897 @@
+/**
+ * Angles Editor Styles
+ * 2-column layout: LEFT (results grid) + RIGHT (control panel 340px)
+ * Dark theme using sidebar.css CSS variables
+ */
+
+/* ===== Full Viewport Container ===== */
+.angles-editor {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  background: var(--background, #1c1c1f);
+  color: var(--foreground, #e8e8ea);
+  overflow: hidden;
+}
+
+/* ===== Header Bar ===== */
+.angles-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3, 12px) var(--space-4, 16px);
+  border-bottom: 1px solid var(--border, rgba(255,255,255,0.08));
+  background: var(--surface, #252529);
+  flex-shrink: 0;
+}
+
+.angles-header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 8px);
+}
+
+.angles-header-left h1 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--foreground, #e8e8ea);
+}
+
+.angles-header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 8px);
+}
+
+/* ===== Quota Display ===== */
+.angles-quota-display {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-right: 8px;
+  padding-right: 12px;
+  border-right: 1px solid var(--border, rgba(255,255,255,0.08));
+}
+
+.angles-quota-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--muted-foreground, #8b8b92);
+}
+
+.angles-quota-item svg {
+  opacity: 0.6;
+}
+
+.angles-quota-label {
+  font-size: 11px;
+  color: var(--muted-foreground, #8b8b92);
+}
+
+.angles-quota-value {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--foreground, #e4e4e7);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.angles-quota-sep {
+  color: var(--muted-foreground, #8b8b92);
+  opacity: 0.5;
+  font-size: 10px;
+}
+
+.angles-quota-item.angles-quota-warning {
+  color: var(--warning, #f59e0b);
+}
+
+.angles-quota-item.angles-quota-warning svg {
+  stroke: var(--warning, #f59e0b);
+  opacity: 1;
+}
+
+.angles-quota-item.angles-quota-exhausted {
+  color: var(--destructive, #ef4444);
+}
+
+.angles-quota-item.angles-quota-exhausted svg {
+  stroke: var(--destructive, #ef4444);
+  opacity: 1;
+}
+
+/* ===== Content (flex row) ===== */
+.angles-content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ===== Results Panel (Left) ===== */
+.angles-results {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4, 16px);
+  min-width: 0;
+}
+
+.angles-results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--space-3, 12px);
+}
+
+/* ===== Empty State ===== */
+.angles-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 300px;
+  gap: var(--space-3, 12px);
+  color: var(--muted-foreground, #8b8b92);
+  background-image:
+    radial-gradient(70% 50% at 50% 50%, rgb(33 33 33 / 85%) 0%, var(--background) 100%),
+    url(/icons/grid-bkg.png);
+  background-size: auto, 24px 24px;
+  background-position: 55% 55%;
+}
+
+.angles-empty-state p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* ===== Result Card ===== */
+.angles-result-card {
+  position: relative;
+  border-radius: var(--radius, 8px);
+  overflow: hidden;
+  background: var(--surface, #252529);
+  border: 1px solid var(--border, rgba(255,255,255,0.08));
+  cursor: pointer;
+  transition: border-color var(--transition-fast, 150ms ease);
+}
+
+.angles-result-card:hover {
+  border-color: var(--border-light, rgba(255,255,255,0.14));
+}
+
+.angles-result-thumb {
+  overflow: hidden;
+  max-height: 400px;
+}
+
+.angles-result-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.angles-result-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-elevated, #2e2e33);
+  color: var(--muted-foreground, #8b8b92);
+}
+
+/* Loading skeleton card */
+.angles-loading-card {
+  pointer-events: none;
+}
+
+.angles-result-skeleton {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(
+    110deg,
+    var(--surface-elevated, #2e2e33) 30%,
+    var(--surface, #353539) 50%,
+    var(--surface-elevated, #2e2e33) 70%
+  );
+  background-size: 200% 100%;
+  animation: angles-shimmer 1.5s ease-in-out infinite;
+  color: var(--muted-foreground, #8b8b92);
+  font-size: 12px;
+}
+
+@keyframes angles-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.angles-result-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-1, 4px) var(--space-2, 8px);
+  background: linear-gradient(transparent, rgba(0,0,0,0.7));
+  opacity: 0;
+  transition: opacity 150ms ease;
+}
+
+.angles-result-card:hover .angles-result-overlay {
+  opacity: 1;
+}
+
+.angles-result-label {
+  color: #fff;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.angles-result-download {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.15);
+  border: none;
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 150ms ease;
+}
+
+.angles-result-download:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+.angles-result-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.angles-result-delete {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(220, 38, 38, 0.2);
+  border: none;
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 150ms ease;
+}
+
+.angles-result-delete:hover {
+  background: rgba(220, 38, 38, 0.5);
+}
+
+/* ===== Generating indicator (legacy, kept for fallback) ===== */
+.angles-generating-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6, 24px);
+  gap: var(--space-3, 12px);
+  color: var(--muted-foreground, #8b8b92);
+}
+
+.angles-generating-indicator span {
+  font-size: 13px;
+}
+
+/* ===== Control Panel (Right, 340px) ===== */
+.angles-control {
+  position: relative;
+  width: 340px;
+  flex-shrink: 0;
+  overflow-y: auto;
+  border-left: 1px solid var(--border, rgba(255,255,255,0.08));
+  background: var(--background, #1c1c1f);
+  padding: var(--space-4, 16px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4, 16px);
+}
+
+/* ===== Section ===== */
+.angles-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 8px);
+}
+
+.angles-section-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted-foreground, #8b8b92);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ===== Ratio Pills ===== */
+.angles-ratio-pills {
+  display: flex;
+  gap: 4px;
+}
+
+.angles-ratio-pill {
+  flex: 1;
+  padding: 5px 0;
+  border: 1px solid var(--border, rgba(255,255,255,0.08));
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted-foreground, #8b8b92);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 150ms ease;
+  text-align: center;
+}
+
+.angles-ratio-pill:hover {
+  border-color: var(--border-light, rgba(255,255,255,0.14));
+  color: var(--foreground, #e4e4e7);
+}
+
+.angles-ratio-pill.active {
+  background: #ffffff;
+  color: #1a1a1e;
+  border-color: #ffffff;
+  font-weight: 600;
+}
+
+/* ===== Upload Zone ===== */
+.angles-upload-zone {
+  position: relative;
+  border: 2px dashed var(--border-light, rgba(255,255,255,0.14));
+  border-radius: var(--radius, 8px);
+  background: var(--surface, #252529);
+  min-height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color var(--transition-fast, 150ms ease),
+              background var(--transition-fast, 150ms ease);
+}
+
+/* Compact upload zone */
+.angles-upload-zone.angles-upload-compact {
+  min-height: 72px;
+}
+.angles-upload-compact .angles-upload-placeholder {
+  flex-direction: row;
+  padding: var(--space-2, 8px) var(--space-3, 12px);
+  gap: var(--space-2, 8px);
+}
+.angles-upload-compact .angles-upload-preview img {
+  max-height: 100px;
+}
+
+.angles-upload-zone:hover,
+.angles-upload-zone.dragover {
+  border-color: var(--foreground, #e8e8ea);
+  background: var(--surface-elevated, #2e2e33);
+}
+
+.angles-upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2, 8px);
+  color: var(--muted-foreground, #8b8b92);
+  padding: var(--space-4, 16px);
+  text-align: center;
+}
+
+.angles-upload-placeholder span {
+  font-size: 13px;
+}
+
+/* ===== Upload Preview ===== */
+.angles-upload-preview {
+  width: 100%;
+  position: relative;
+  overflow: visible;
+}
+
+.angles-upload-preview img {
+  width: 100%;
+  max-height: 200px;
+  object-fit: contain;
+  border-radius: var(--radius-sm, 6px);
+  display: block;
+}
+
+/* ===== Upload Actions Wrapper ===== */
+.angles-upload-actions {
+  position: absolute;
+  top: var(--space-2, 8px);
+  right: var(--space-2, 8px);
+  display: flex;
+  gap: 6px;
+  z-index: 10;
+}
+
+.angles-upload-actions .angles-upload-change,
+.angles-upload-actions .angles-upload-remove {
+  position: static;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.6);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--transition-fast, 150ms ease);
+}
+
+.angles-upload-actions .angles-upload-change:hover,
+.angles-upload-actions .angles-upload-remove:hover {
+  background: rgba(0,0,0,0.8);
+}
+
+.angles-upload-remove:hover {
+  background: rgba(220,38,38,0.8) !important;
+  border-color: rgba(248,113,113,0.4);
+}
+
+/* ===== 3D Camera Visualizer ===== */
+.angles-3d-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-2, 8px) 0 var(--space-1, 4px);
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--radius, 8px);
+  margin-bottom: var(--space-2, 8px);
+}
+
+.angles-orbit-hint {
+  font-size: 11px;
+  color: var(--muted-foreground, #8b8b92);
+  margin-bottom: 2px;
+}
+
+#anglesOrbitCanvas {
+  cursor: grab;
+  border-radius: var(--radius, 8px);
+}
+
+#anglesOrbitCanvas:active {
+  cursor: grabbing;
+}
+
+/* Sliders row (compact) */
+.angles-sliders-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 8px);
+}
+
+/* ===== Slider Group ===== */
+.angles-slider-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.angles-slider-group + .angles-slider-group {
+  margin-top: 0;
+}
+
+.angles-slider-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--foreground, #e8e8ea);
+}
+
+.angles-slider-value {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted-foreground, #8b8b92);
+  font-family: var(--font-mono, monospace);
+  min-width: 40px;
+  text-align: right;
+}
+
+/* ===== Custom Range Slider ===== */
+.angles-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border, #2a2a2e);
+  outline: none;
+  margin: var(--space-1, 4px) 0;
+}
+
+.angles-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+  border: 2px solid var(--surface, #252529);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.angles-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+  border: 2px solid var(--surface, #252529);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.angles-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+/* ===== Upload overlay & disabled state ===== */
+.angles-controls-disabled {
+  position: relative;
+}
+
+.angles-controls-disabled select,
+.angles-controls-disabled input[type="range"],
+.angles-controls-disabled button:not(#anglesChangeImage),
+.angles-controls-disabled canvas {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.angles-upload-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(28, 28, 31, 0.7);
+  border-radius: var(--radius, 8px);
+  backdrop-filter: blur(2px);
+}
+
+.angles-upload-overlay-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: var(--surface, #252529);
+  border-radius: var(--radius, 8px);
+  font-size: 13px;
+  color: var(--foreground, #e8e8ea);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.angles-spinner {
+  animation: angles-spin 0.8s linear infinite;
+}
+
+@keyframes angles-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Album STALE uploading state — overlay trên ref image preview */
+.angles-ref-uploading {
+  position: relative;
+}
+.angles-ref-uploading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, rgba(61, 111, 245,0.10) 0%, rgba(255,255,255,0.15) 40%, rgba(61, 111, 245,0.10) 60%);
+  background-size: 200% 100%;
+  animation: angles-upload-sweep 1.5s ease-in-out infinite;
+  z-index: 2;
+  border-radius: 8px;
+  pointer-events: none;
+}
+/* Ẩn action buttons khi đang upload */
+.angles-ref-uploading .angles-upload-actions {
+  display: none !important;
+}
+@keyframes angles-upload-sweep {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ===== Preset Select (pill-shaped) ===== */
+.angles-preset-select {
+  width: 100%;
+  padding: 8px 32px 8px 12px;
+  border-radius: var(--radius-pill, 20px);
+  background: var(--surface, #252529);
+  color: var(--foreground, #e8e8ea);
+  border: 1px solid var(--border-light, rgba(255,255,255,0.14));
+  font-size: 13px;
+  font-family: var(--font-sans, system-ui, sans-serif);
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  outline: none;
+  transition: border-color var(--transition-fast, 150ms ease);
+}
+
+.angles-preset-select:hover,
+.angles-preset-select:focus {
+  border-color: var(--foreground, #e8e8ea);
+}
+
+/* Select group inherits arrow from sidebar.css .select-group pattern */
+.angles-section .input-group.select-group {
+  position: relative;
+}
+
+.angles-section .input-group.select-group .select-arrow {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--muted-foreground, #8b8b92);
+}
+
+/* ===== Prompt Preview ===== */
+.angles-prompt-preview {
+  width: 100%;
+  min-height: 80px;
+  padding: var(--space-2, 8px) var(--space-3, 12px);
+  background: var(--surface, #252529);
+  color: var(--muted-foreground, #8b8b92);
+  border: 1px solid var(--border, rgba(255,255,255,0.08));
+  border-radius: var(--radius, 8px);
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  line-height: 1.5;
+  resize: vertical;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.angles-prompt-preview:focus {
+  border-color: var(--border-light, rgba(255,255,255,0.14));
+}
+
+/* ===== Generate Button - Neon Lime ===== */
+.angles-generate-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2, 8px);
+  padding: 10px 20px;
+  border-radius: var(--radius-pill, 20px);
+  background: var(--primary, #3d6ff5);
+  color: var(--primary-foreground, #1a1a1e);
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font-sans, system-ui, sans-serif);
+  cursor: pointer;
+  transition: all 150ms ease;
+  outline: none;
+  box-shadow: 0 0 16px var(--primary-light, rgba(61, 111, 245,0.25)), 0 0 4px var(--primary-muted, rgba(61, 111, 245,0.15));
+}
+
+.angles-generate-btn svg {
+  color: var(--primary-foreground, #1a1a1e);
+}
+
+.angles-generate-btn:hover:not(:disabled) {
+  background: var(--primary-hover, #2e5ae0);
+  box-shadow: 0 0 24px var(--primary-light, rgba(61, 111, 245,0.35)), 0 0 8px var(--primary-muted, rgba(61, 111, 245,0.2));
+}
+
+.angles-generate-btn:active:not(:disabled) {
+  transform: scale(0.97);
+  box-shadow: 0 0 12px var(--primary-light, rgba(61, 111, 245,0.2));
+}
+
+.angles-generate-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.angles-generate-btn.is-generating {
+  opacity: 0.7;
+  cursor: wait;
+  box-shadow: none;
+}
+
+/* ===== Prompt Toggle ===== */
+.angles-toggle-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+}
+
+.angles-toggle-chevron {
+  color: var(--muted-foreground, #8b8b92);
+  transition: transform 150ms ease;
+}
+
+.angles-toggle-header.open .angles-toggle-chevron {
+  transform: rotate(180deg);
+}
+
+.angles-toggle-content {
+  margin-top: var(--space-2, 8px);
+}
+
+/* ===== Ratio pill icon ===== */
+.angles-ratio-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.angles-ratio-pill svg {
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+.angles-ratio-pill.active svg {
+  opacity: 1;
+}
+
+/* ===== Camera label generating animation ===== */
+.angles-section-label.is-generating svg {
+  animation: angles-glow-pulse 1.2s ease-in-out infinite;
+  filter: drop-shadow(0 0 4px rgba(61, 111, 245,0.6));
+  color: var(--primary, #3d6ff5);
+}
+@keyframes angles-glow-pulse {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(61, 111, 245,0.3)); opacity: 0.7; }
+  50% { filter: drop-shadow(0 0 10px rgba(61, 111, 245,0.8)); opacity: 1; }
+}
+
+/* ===== 3D Container generating glow (camera cube) ===== */
+.angles-3d-container.is-generating {
+  animation: angles-container-glow 1.5s ease-in-out infinite;
+  border: 1px solid rgba(61, 111, 245,0.2);
+}
+.angles-3d-container.is-generating canvas {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+@keyframes angles-container-glow {
+  0%, 100% { box-shadow: inset 0 0 12px rgba(61, 111, 245,0.05), 0 0 8px rgba(61, 111, 245,0.1); }
+  50% { box-shadow: inset 0 0 20px rgba(61, 111, 245,0.15), 0 0 16px rgba(61, 111, 245,0.25); }
+}
+
+/* ===== Generate section ===== */
+.angles-section-generate {
+  padding-top: var(--space-2, 8px);
+}
+
+/* ===== Utility ===== */
+.hidden {
+  display: none !important;
+}
+
+/* ===== Scrollbar ===== */
+.angles-results::-webkit-scrollbar,
+.angles-control::-webkit-scrollbar {
+  width: 6px;
+}
+
+.angles-results::-webkit-scrollbar-track,
+.angles-control::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.angles-results::-webkit-scrollbar-thumb,
+.angles-control::-webkit-scrollbar-thumb {
+  background: var(--border, rgba(255,255,255,0.08));
+  border-radius: 3px;
+}
+
+.angles-results::-webkit-scrollbar-thumb:hover,
+.angles-control::-webkit-scrollbar-thumb:hover {
+  background: var(--border-light, rgba(255,255,255,0.14));
+}
+
+/* ===== Light Theme Overrides ===== */
+
+/* Active ratio pill: use primary blue bg instead of white (which blends with light bg) */
+.theme-light .angles-ratio-pill.active {
+  background: var(--primary, #3d6ff5);
+  color: var(--primary-foreground, #ffffff);
+  border-color: var(--primary, #3d6ff5);
+}
+
+/* Generate button: primary blue with appropriate glow */
+.theme-light .angles-generate-btn {
+  box-shadow: 0 0 16px rgba(61, 111, 245, 0.25), 0 0 4px rgba(61, 111, 245, 0.15);
+}
+.theme-light .angles-generate-btn:hover:not(:disabled) {
+  box-shadow: 0 0 24px rgba(61, 111, 245, 0.35), 0 0 8px rgba(61, 111, 245, 0.2);
+}
+.theme-light .angles-generate-btn:active:not(:disabled) {
+  box-shadow: 0 0 12px rgba(61, 111, 245, 0.2);
+}
+
+/* Camera label generating glow: use primary blue instead of neon lime */
+.theme-light .angles-section-label.is-generating svg {
+  filter: drop-shadow(0 0 6px rgba(61, 111, 245, 0.6));
+  animation: angles-glow-pulse-light 1.2s ease-in-out infinite;
+}
+@keyframes angles-glow-pulse-light {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(61, 111, 245, 0.3)); opacity: 0.7; }
+  50% { filter: drop-shadow(0 0 10px rgba(61, 111, 245, 0.8)); opacity: 1; }
+}
+
+/* 3D container generating glow: use primary blue */
+.theme-light .angles-3d-container.is-generating {
+  border: 1px solid rgba(61, 111, 245, 0.2);
+  animation: angles-container-glow-light 1.5s ease-in-out infinite;
+}
+@keyframes angles-container-glow-light {
+  0%, 100% { box-shadow: inset 0 0 12px rgba(61, 111, 245, 0.05), 0 0 8px rgba(61, 111, 245, 0.1); }
+  50% { box-shadow: inset 0 0 20px rgba(61, 111, 245, 0.15), 0 0 16px rgba(61, 111, 245, 0.25); }
+}
+
+/* Result card overlay gradient keeps dark (always on image) — no change needed */
+
+/* 3D container background */
+.theme-light .angles-3d-container {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* Upload overlay background */
+.theme-light .angles-upload-overlay {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+/* Upload overlay content shadow */
+.theme-light .angles-upload-overlay-content {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Slider thumb visibility */
+.theme-light .angles-slider::-webkit-slider-thumb {
+  background: var(--foreground, #0f172a);
+  border-color: var(--background, #ffffff);
+}
+.theme-light .angles-slider::-moz-range-thumb {
+  background: var(--foreground, #0f172a);
+  border-color: var(--background, #ffffff);
+}

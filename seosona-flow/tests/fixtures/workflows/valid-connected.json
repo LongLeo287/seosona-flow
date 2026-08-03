@@ -1,0 +1,1 @@
+{ "id": 2, "name": "Connected", "nodes": [ { "id": "a", "type": "image", "position": { "x": 0, "y": 0 }, "data": {} }, { "id": "b", "type": "generate", "position": { "x": 10, "y": 10 }, "data": {} } ], "edges": [ { "id": "e1", "source": "a", "target": "b", "sourceHandle": "output_1", "targetHandle": "input_1" } ] }

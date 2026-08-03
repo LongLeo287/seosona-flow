@@ -1,0 +1,1 @@
+{ "id": 102, "name": "Fail Then Retry", "schemaVersion": 1, "_replay": { "outcome": "fail-retry-complete" }, "nodes": [ { "id": "a", "type": "generate", "position": {"x":0,"y":0}, "data": { "quantity": 1 } } ], "edges": [] }

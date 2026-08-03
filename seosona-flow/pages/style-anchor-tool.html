@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Style Anchor — SEOSONA Flow</title>
+  <style>
+    :root { color-scheme: dark; --bg:#131315; --card:#1b1b1e; --card2:#232327; --line:rgba(255,255,255,.09); --txt:#e9eaec; --mut:#9498a1; --acc:#3d6ff5; --ok:#19d07b; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--bg); color:var(--txt); font-family:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+    .wrap { max-width:900px; margin:0 auto; padding:22px 18px 60px; }
+    .head { display:flex; align-items:center; gap:12px; }
+    .head .spark { width:34px; height:34px; border-radius:9px; background:linear-gradient(135deg,var(--acc),#0e4099); display:flex; align-items:center; justify-content:center; font-size:18px; }
+    h1 { font-size:19px; font-weight:700; margin:0; }
+    .sub { color:var(--mut); font-size:13px; margin:2px 0 18px; }
+    .grid { display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+    @media (max-width:720px){ .grid{ grid-template-columns:1fr; } }
+    .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px; }
+    h2 { font-size:14px; margin:0 0 10px; }
+    label { display:block; font-size:12px; color:var(--mut); margin:10px 0 5px; }
+    input[type=text], textarea, select { width:100%; background:var(--card2); border:1px solid var(--line); border-radius:9px; color:var(--txt); padding:8px 10px; font-size:13px; font-family:inherit; }
+    textarea { resize:vertical; min-height:90px; }
+    .btn { border:none; border-radius:10px; padding:9px 14px; font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; }
+    .btn-primary { background:linear-gradient(135deg,var(--acc),#0e4099); color:#fff; }
+    .btn-ghost { background:rgba(255,255,255,.08); color:var(--txt); }
+    .row { display:flex; gap:8px; margin-top:12px; }
+    .anchor-item { display:flex; align-items:center; gap:8px; padding:8px 10px; background:var(--card2); border:1px solid var(--line); border-radius:9px; margin-bottom:7px; font-size:13px; cursor:pointer; }
+    .anchor-item.sel { border-color:var(--acc); }
+    .anchor-item .kind { font-size:10px; color:var(--mut); background:rgba(255,255,255,.06); padding:1px 6px; border-radius:5px; }
+    .anchor-item .rm { margin-left:auto; color:var(--mut); background:none; border:none; cursor:pointer; font-size:15px; }
+    .out { white-space:pre-wrap; background:var(--card2); border:1px solid var(--line); border-radius:9px; padding:10px; font-size:12.5px; min-height:80px; margin-top:8px; }
+    .hint { font-size:11.5px; color:var(--mut); margin-top:8px; line-height:1.5; }
+    .empty { color:var(--mut); font-size:13px; padding:14px; text-align:center; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="head"><span class="spark">🎭</span><h1>Style Anchor</h1></div>
+    <p class="sub">Định nghĩa khối STYLE/CHARACTER một lần → tái dùng NGUYÊN VĂN vào mọi prompt để giữ nhất quán nhân vật/phong cách khi gen loạt.</p>
+    <div class="grid">
+      <div class="card">
+        <h2>Tạo / lưu anchor</h2>
+        <label for="aName">Tên</label>
+        <input type="text" id="aName" placeholder="vd: nhan-vat-koc-A">
+        <label for="aKind">Loại</label>
+        <select id="aKind"><option value="style">Style (phong cách)</option><option value="character">Character (nhân vật)</option><option value="brand">Brand</option></select>
+        <label for="aBlock">Khối (mô tả bất biến)</label>
+        <textarea id="aBlock" placeholder="torn-paper collage&#10;swiss-modern palette&#10;soft rim light"></textarea>
+        <div class="row"><button class="btn btn-primary" id="aSave">Lưu anchor</button></div>
+        <h2 style="margin-top:18px;">Anchor đã lưu</h2>
+        <div id="aList"><div class="empty">Chưa có anchor.</div></div>
+      </div>
+      <div class="card">
+        <h2>Áp vào prompt</h2>
+        <label for="pIn">Prompt gốc</label>
+        <textarea id="pIn" placeholder="a cat on a rooftop at sunset"></textarea>
+        <label for="pLabel">Nhãn khối</label>
+        <select id="pLabel"><option value="STYLE">STYLE</option><option value="CHARACTER">CHARACTER</option><option value="BRAND">BRAND</option></select>
+        <div class="row">
+          <button class="btn btn-primary" id="pInject">Chèn anchor đã chọn</button>
+          <button class="btn btn-ghost" id="pCopy">Copy</button>
+        </div>
+        <div class="out" id="pOut">(chọn 1 anchor bên trái + bấm Chèn)</div>
+        <p class="hint">Batch: dùng <b>StyleAnchor.applyToMany</b> trong workflow để chèn khối vào N prompt cùng lúc.</p>
+      </div>
+    </div>
+  </div>
+  <!-- Owned suppression: phải nạp TRƯỚC mọi module (catch im lặng gọi SEOSONA_swallow). -->
+  <script src="../src/core/ErrorCatalog.js"></script>
+  <script src="../src/core/StyleAnchor.js"></script>
+  <script src="../scripts/style-anchor-tool.js"></script>
+</body>
+</html>

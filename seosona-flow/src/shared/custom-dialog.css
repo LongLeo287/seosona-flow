@@ -1,0 +1,200 @@
+/* ===== CustomDialog ===== */
+.cdialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 10000010;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: cdialog-fade-in 150ms ease-out;
+}
+
+@keyframes cdialog-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes cdialog-slide-in {
+  from { opacity: 0; transform: scale(0.95) translateY(-8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.cdialog-box {
+  background: var(--background, #1c1c1f);
+  border: 1px solid var(--border, #1e3050);
+  border-radius: 12px;
+  width: 90%;
+  max-width: 550px !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+  animation: cdialog-slide-in 200ms ease-out;
+  overflow: hidden;
+}
+
+.cdialog-box input {
+  background: var(--input) !important;
+}
+
+.cdialog-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px 0;
+}
+
+/* Close icon (X) — Phase 5: modal Tiếp tục/Chạy lại + các modal showClose */
+.cdialog-close:hover {
+  opacity: 1 !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.cdialog-icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cdialog-icon.cdialog-info {
+  background: var(--muted);
+  color: var(--info, #64748b);
+}
+
+.cdialog-icon.cdialog-warning {
+  background: hsla(38, 92%, 50%, 0.12);
+  color: hsl(38, 92%, 50%);
+}
+
+.cdialog-icon.cdialog-error {
+  background: hsla(0, 84%, 60%, 0.12);
+  color: hsl(0, 84%, 60%);
+}
+
+.cdialog-icon.cdialog-success {
+  background: hsla(142, 71%, 45%, 0.12);
+  color: hsl(142, 71%, 45%);
+}
+
+.cdialog-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--foreground, #f8fafc);
+}
+
+.cdialog-body {
+  padding: 12px 20px 20px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted-foreground, #8b8b92);
+  white-space: pre-line;
+}
+
+.cdialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 20px;
+  border-top: 1px solid var(--border, #1e3050);
+  background: var(--background, #252529);
+}
+
+.cdialog-btn {
+  padding: 7px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 150ms;
+  outline: none;
+}
+
+.cdialog-btn:focus-visible {
+  box-shadow: 0 0 0 2px var(--ring, rgba(255,255,255,0.3));
+}
+
+.cdialog-btn-secondary {
+  background: var(--secondary, #252529);
+  color: var(--foreground, #f8fafc);
+  border-color: var(--border, #1e3050);
+}
+
+.cdialog-btn-secondary:hover {
+  background: var(--border, #2e2e33);
+}
+
+.cdialog-btn-primary {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-color: var(--primary);
+}
+
+.cdialog-btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+/* Prompt input */
+.cdialog-input {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 13px;
+  color: var(--foreground, #f8fafc);
+  background: var(--input, #2a2a2e);
+  border: 1px solid var(--border, #1e3050);
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 150ms;
+}
+
+.cdialog-input:focus {
+  border-color: var(--border-focus, rgba(255, 255, 255, 0.3));
+}
+
+.cdialog-input::placeholder {
+  color: var(--muted-foreground, #8b8b92);
+}
+
+/* ===== Compact Delete Confirm Dialog ===== */
+.cdialog-compact {
+  max-width: 380px !important;
+}
+
+.cdialog-compact .cdialog-body {
+  padding: 8px 20px 16px;
+}
+
+.cdialog-compact .cdialog-item-name {
+  font-weight: 600;
+  color: var(--foreground, #f8fafc);
+  margin-bottom: 6px;
+  word-break: break-word;
+}
+
+.cdialog-compact .cdialog-message {
+  font-size: 12px;
+  color: var(--muted-foreground, #8b8b92);
+}
+
+.cdialog-btn-danger {
+  background: hsl(0, 84%, 55%);
+  color: #fff;
+  border-color: hsl(0, 84%, 55%);
+}
+
+.cdialog-btn-danger:hover {
+  background: hsl(0, 84%, 48%);
+  border-color: hsl(0, 84%, 48%);
+}
+
+/* ===== Light Theme Overrides ===== */
+.theme-light .cdialog-btn:focus-visible {
+  box-shadow: 0 0 0 2px var(--ring, rgba(61, 111, 245,0.5));
+}
+
+.theme-light .cdialog-input:focus {
+  border-color: var(--primary, #3d6ff5);
+}

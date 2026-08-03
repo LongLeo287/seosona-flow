@@ -1,0 +1,1 @@
+{ "id": 103, "name": "Cancel Midway", "schemaVersion": 1, "_replay": { "outcome": "cancel" }, "nodes": [ { "id": "a", "type": "prompt", "position": {"x":0,"y":0}, "data": { "prompt": "x" } }, { "id": "b", "type": "image", "position": {"x":10,"y":0}, "data": {} } ], "edges": [ { "id": "e", "source": "a", "target": "b" } ] }

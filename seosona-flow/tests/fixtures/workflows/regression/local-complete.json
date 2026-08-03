@@ -1,0 +1,1 @@
+{ "id": 101, "name": "Local Complete", "schemaVersion": 1, "_replay": { "outcome": "complete" }, "nodes": [ { "id": "a", "type": "prompt", "position": {"x":0,"y":0}, "data": { "prompt": "hello" } }, { "id": "b", "type": "image", "position": {"x":10,"y":0}, "data": { "quantity": 1 } } ], "edges": [ { "id": "e", "source": "a", "target": "b" } ] }

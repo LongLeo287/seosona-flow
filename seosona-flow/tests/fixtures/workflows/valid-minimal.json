@@ -1,0 +1,1 @@
+{ "id": 1, "name": "Minimal", "nodes": [ { "id": "n1", "type": "image", "position": { "x": 0, "y": 0 }, "data": {} } ], "edges": [] }
