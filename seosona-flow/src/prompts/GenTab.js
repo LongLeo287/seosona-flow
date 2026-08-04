@@ -6356,7 +6356,7 @@ class GenTab {
         <div class="per-prompt-frame-pair" data-prompt-index="${idx}">
           <div class="per-prompt-frame-header">
             <span class="per-prompt-frame-index">${idx + 1}</span>
-            <span class="per-prompt-frame-prompt-preview" title="${this._escapeHtml(preview)}">${this._escapeHtml(preview)}</span>
+            <span class="per-prompt-frame-prompt-preview" title="${this._escapeAttr(preview)}">${this._escapeHtml(preview)}</span>
           </div>
           <div class="per-prompt-frame-slots">
             <div class="frame-slot" data-prompt-idx="${idx}" data-frame-num="1">
@@ -6381,9 +6381,12 @@ class GenTab {
     container.addEventListener('click', GenTab._handlePerPromptFrameClick);
   }
 
-  static _escapeHtml(str) {
-    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-  }
+  // SF-021: bản thứ hai của _escapeHtml đã được GỠ khỏi đây.
+  // Nó nằm sau bản ở ~5086 nên JavaScript cho nó đè lên, và nó gọi thẳng str.replace() mà không
+  // chống null — trong khi bản bị đè có `text || ''`. Nên _escapeHtml(item.error) ở danh sách
+  // prompt lỗi sẽ NÉM TypeError mỗi khi error không có giá trị. Tài liệu audit xếp việc này là
+  // P3 "khai báo trùng"; thực tế là một lỗi làm vỡ giao diện. Nay chỉ còn một bản, có chống null,
+  // và bản đó escape cả '>' vì dùng textContent.
 
   static _buildFrameThumbHtml(promptIdx, frameNum, fileId, thumbnail) {
     const isPending = fileId.startsWith('upload_');

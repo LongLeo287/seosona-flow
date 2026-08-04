@@ -1601,7 +1601,12 @@ class FeatureGate {
    * @param {string} module - Tên module: 'gen', 'tasks', 'workflows', 'angles'
    * @returns {boolean}
    */
-  isModuleEnabled(module) { return true;
+  isModuleEnabled(module) {
+    // SF-006: trước đây viết `return true;` rồi để hai dòng kiểm tra entitlement nằm chết phía
+    // sau — ESLint có báo no-unreachable nhưng warning không làm đỏ cổng nên nó sống sót.
+    // Bản chất KHÔNG phải lỗi: SEOSONA Flow là local-first, mọi module đều mở. Nay viết đúng ý
+    // định đó thay vì giấu nó sau mã không chạy được, để người đọc sau không tưởng là bỏ sót.
+    if (this._isLocal ? this._isLocal() : true) return true;
     const key = `${module}_enabled`;
     return this.canUse(key);
   }

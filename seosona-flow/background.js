@@ -289,6 +289,9 @@ function _isEnrollmentValid(e) {
 
 async function _doEnrollment() {
   try {
+    // Chốt lần hai ngay tại nơi TẠO vân tay. Chốt ở hàm gọi là đủ cho hôm nay, nhưng đây là
+    // hàm thực sự chạm dữ liệu thiết bị — ai đó thêm đường gọi mới mà quên chốt thì vẫn an toàn.
+    if (self.SEOSONA_LOCAL_MODE !== false) return null;
     const fp = await _getOrCreateDeviceFingerprint();
     const apiBase = getApiBaseUrl();
     const extVersion = chrome.runtime.getManifest()?.version || 'unknown';
@@ -358,6 +361,14 @@ async function _doEnrollment() {
 }
 
 async function _ensureEnrollment(force = false) {
+  // SF-001 — LOCAL MODE THÌ KHÔNG GHI DANH.
+  // README hứa local mode là 100% offline, nhưng _fetchProviderConfigs/_fetchApiConfigs có chốt
+  // còn enrollment thì không — mà onInstalled và onStartup đều gọi vào đây. Nghĩa là lần cài đặt
+  // và mỗi lần khởi động vẫn gửi VÂN TAY THIẾT BỊ + phiên bản extension lên backend. Lời hứa
+  // privacy sai ngay ở đường đầu tiên chạy.
+  // Cùng một điều kiện với các chốt khác trong file: mặc định (undefined) = local.
+  if (self.SEOSONA_LOCAL_MODE !== false) return null;
+
   // Reuse pending attempt nếu đang enroll (chống race khi multiple apiRequest concurrent)
   if (_enrollmentPromise) return _enrollmentPromise;
 
