@@ -4193,9 +4193,8 @@ async function downloadTileMedia(tileId, promptText, taskName, fileName, resolut
     const settings = await getDownloadSettings();
     res = settings.resolution;
   }
-  // GIỮ 'original' (full size). Chỉ default '1k' khi res chưa set.
-  // 'original' → native menu dùng 4K (max Flow render); nếu native fail → legacy fetch =s0 (gốc CDN).
-  if (!res) res = '1k';
+  // GIỮ 'original' (full size) — mức đó có đường đi riêng qua nút ⋮ bên dưới.
+  if (!res) res = globalThis.DownloadPrefs?.DEFAULTS.image || '1k';
 
   // U-2.2: file_id lookup trước (persistent, chính xác nhất)
   if (flowFileId) {
@@ -4214,13 +4213,11 @@ async function downloadTileMedia(tileId, promptText, taskName, fileName, resolut
     return false;
   }
 
-  // Auto-detect video tile và dùng video resolution nếu có
-  if (videoResolution) {
-    const tileEl = _getTileById(tileId);
-    if (tileEl && _q('tile_video', tileEl)) {
-      res = videoResolution;
-    }
-  }
+  // Phải biết là ảnh hay video TRƯỚC khi chốt mức: '1k/2k/4k' và '720p/1080p/4k' là hai thang
+  // khác nhau, lẫn thang là chọn nhầm dòng trong menu.
+  const _tileEl0 = _getTileById(tileId);
+  const _isVideoTile = !!(_tileEl0 && _q('tile_video', _tileEl0));
+  if (videoResolution && _isVideoTile) res = videoResolution;
 
   // Ưu tiên Flow native menu cho CẢ image và video
   // Image: right-click <img> → "Tải xuống" → 1K/2K/4K
@@ -4240,8 +4237,22 @@ async function downloadTileMedia(tileId, promptText, taskName, fileName, resolut
     }
   }
 
-  // Native menu không có nhãn 'original' → dùng 4K (bản render lớn nhất Flow cấp).
-  const nativeRes = res === 'original' ? '4k' : res;
+  // Chốt mức tại ĐÂY — phễu chung — thay vì để mỗi nhánh tự quyết.
+  //
+  // Hai đường cũ đều leo lên 4K: 'original' rơi xuống 4K, và nhãn lạ cũng rơi về đầu chuỗi
+  // (cũng là 4K). Trên tài khoản Ultra, 4K video ghi rõ "· 50 tín dụng" — tức code tự tiêu tiền
+  // của người dùng để lấy một thứ họ không xin. Nay cả hai đều lùi về BẢN GỐC.
+  const _DP = globalThis.DownloadPrefs;
+  let nativeRes;
+  if (res === 'original') {
+    nativeRes = _DP ? _DP.original(_isVideoTile) : (_isVideoTile ? '720p' : '1k');
+  } else if (_DP) {
+    const _r = _DP.resolve(res, _isVideoTile);
+    if (_r.downgraded) sendLog(_DP.downgradeReason(_r.wanted, _isVideoTile), 'warn');
+    nativeRes = _r.resolution;
+  } else {
+    nativeRes = res;
+  }
   console.log(`[SEOSONA Flow] downloadTileMedia: attempting Flow menu for ${tileId.substring(0, 20)}, res=${res} (native=${nativeRes})`);
   const menuSuccess = await downloadViaFlowMenu(tileId, nativeRes, fileName, promptText, taskName, index);
   if (menuSuccess) {

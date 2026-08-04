@@ -1033,8 +1033,8 @@ class TaskModal {
               ${(() => {
                 // Get auto_download settings: edit mode uses task values, create mode uses af_settings defaults
                 const autoDownloadOn = isEdit ? this.task.auto_download : (this._afSettings?.autoDownload || false);
-                const dlRes = isEdit ? (this.task.download_resolution || '1k') : (this._afSettings?.downloadResolution || '1k');
-                const videoDlRes = isEdit ? (this.task.video_download_resolution || '720p') : (this._afSettings?.videoDownloadResolution || '720p');
+                const dlRes = isEdit ? (this.task.download_resolution || (globalThis.DownloadPrefs?.DEFAULTS.image || '1k')) : (this._afSettings?.downloadResolution || '1k');
+                const videoDlRes = isEdit ? (this.task.video_download_resolution || (globalThis.DownloadPrefs?.DEFAULTS.video || '720p')) : (this._afSettings?.videoDownloadResolution || '720p');
                 const mediaType = isEdit ? this.task.media_type : 'Image';
                 const canUseAutoDownload = window.featureGate?.canUse('auto_download');
                 return `
@@ -4464,8 +4464,8 @@ class TaskModal {
           });
         } else if (window.MessageBridge) {
           const resolution = isVideoTask
-            ? (this.task.video_download_resolution || '720p')
-            : (this.task.download_resolution || '1k');
+            ? (this.task.video_download_resolution || (globalThis.DownloadPrefs?.DEFAULTS.video || '720p'))
+            : (this.task.download_resolution || (globalThis.DownloadPrefs?.DEFAULTS.image || '1k'));
           window.MessageBridge.downloadTileMedia(fileId, null, this.task.task_name || 'task', fileName, resolution).catch(function (_e) { globalThis.SEOSONA_swallow?.('TaskModal#_downloadExternalUrl', _e); });
         }
       });

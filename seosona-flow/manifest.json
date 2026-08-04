@@ -33,6 +33,7 @@
         "src/core/FlowCredits.js",
         "src/core/FlowCreditsScanner.js",
         "src/core/MediaCache.js",
+        "src/core/DownloadPrefs.js",
         "content_scripts/content.js"
       ],
       "matches": [

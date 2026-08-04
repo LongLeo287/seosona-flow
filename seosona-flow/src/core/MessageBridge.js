@@ -700,8 +700,18 @@ class MessageBridge {
    * @param {string} [resolution] - '1k' | '2k'
    * @param {string} [flowFileId] - persistent file_id from /edit/{file_id} (Phase U)
    */
-  static async downloadTileMedia(tileId, promptText, taskName, fileName, resolution, flowFileId) {
-    return this.sendToContentScript('downloadTileMedia', { tileId, promptText, taskName, fileName, resolution, flowFileId: flowFileId || null });
+  static async downloadTileMedia(tileId, promptText, taskName, fileName, resolution, flowFileId, index, videoResolution) {
+    // index + videoResolution TỪNG BỊ BỎ QUÊN ở đây: phía content đọc message.index và
+    // message.videoResolution, còn hàm này chưa bao giờ gửi. Hệ quả là MỌI lượt tải khởi từ
+    // sidebar (TaskList · TaskModal · WorkflowEditor · AngleExecution · WorkflowExecutor) đều
+    // mất mức phân giải VIDEO và mất biến [Index] trong tên file — trong khi lượt tải khởi từ
+    // trang Flow thì có đủ. Đúng kiểu hai đường tải chạy hai luật.
+    return this.sendToContentScript('downloadTileMedia', {
+      tileId, promptText, taskName, fileName, resolution,
+      flowFileId: flowFileId || null,
+      index: index != null ? index : null,
+      videoResolution: videoResolution || null,
+    });
   }
 
   /**

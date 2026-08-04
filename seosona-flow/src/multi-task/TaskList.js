@@ -1511,8 +1511,8 @@ class TaskList {
 
     // Flow path (default)
     const resolution = isVideoTask
-      ? (task.video_download_resolution || '720p')
-      : (task.download_resolution || '1k');
+      ? (task.video_download_resolution || (globalThis.DownloadPrefs?.DEFAULTS.video || '720p'))
+      : (task.download_resolution || (globalThis.DownloadPrefs?.DEFAULTS.image || '1k'));
 
     for (const fileId of fileIds) {
       try {

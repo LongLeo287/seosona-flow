@@ -5383,8 +5383,8 @@ QUY TẮC:
           });
         } else if (typeof MessageBridge !== 'undefined') {
           const resolution = isVideo
-            ? (data.video_download_resolution || '720p')
-            : (data.download_resolution || '1k');
+            ? (data.video_download_resolution || (globalThis.DownloadPrefs?.DEFAULTS.video || '720p'))
+            : (data.download_resolution || (globalThis.DownloadPrefs?.DEFAULTS.image || '1k'));
           MessageBridge.downloadTileMedia(fileId, label, this.workflow?.wf_name || null, fileName, resolution);
         }
       });
@@ -11869,8 +11869,8 @@ QUY TẮC:
     const isVideo = data.media_type === 'Video' || data.gen_type === 'Video'
       || this._isNodeVideoFromCache(fileIds);
     const resolution = isVideo
-      ? (data.video_download_resolution || '720p')
-      : (data.download_resolution || '1k');
+      ? (data.video_download_resolution || (globalThis.DownloadPrefs?.DEFAULTS.video || '720p'))
+      : (data.download_resolution || (globalThis.DownloadPrefs?.DEFAULTS.image || '1k'));
 
     if (source === 'original') {
       // Tải tiles có provider URL gốc (chatgpt/grok — chất lượng 100%, không re-encode).

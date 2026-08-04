@@ -495,13 +495,13 @@
     if (nodeType === 'download') {
       const folderName = data.download_folder || '';
       const fileTemplate = data.download_file_template || '';
-      const downloadRes = data.download_resolution || '1k';
+      const downloadRes = data.download_resolution || (globalThis.DownloadPrefs?.DEFAULTS.image || '1k');
       // Bug 39 fix (2026-05-19): Download node nhận input từ upstream — có thể image
       // hoặc video. Runtime (WorkflowExecutor:3237-3240) auto-detect upstream type +
       // pick `video_download_resolution` cho video, `download_resolution` cho image.
       // Trước fix UI chỉ render 1 dropdown image → user không chọn được video resolution
       // → runtime luôn fallback '720p' (không thể 1080p/4K).
-      const videoDownloadRes = data.video_download_resolution || '720p';
+      const videoDownloadRes = data.video_download_resolution || (globalThis.DownloadPrefs?.DEFAULTS.video || '720p');
       const collectAll = data.download_collect_all === true || data.download_collect_all === '1' || data.download_collect_all === 1;
       const canUseDownload = window.featureGate?.canUse('auto_download') ?? false;
       return `${nameField}

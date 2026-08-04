@@ -5835,8 +5835,8 @@
           // Truyền 2 fields riêng — content.js downloadTileMedia line 1369 dùng videoDownloadResolution
           // override khi tile có <video>. Trước smart map vào 1 field → videoDownloadResolution mặc định '720p'
           // → override 1080p → 720p sai. Phải truyền cả 2 cho cả image + video task.
-          downloadResolution: task.download_resolution || '1k',
-          videoDownloadResolution: task.video_download_resolution || '720p',
+          downloadResolution: task.download_resolution || (globalThis.DownloadPrefs?.DEFAULTS.image || '1k'),
+          videoDownloadResolution: task.video_download_resolution || (globalThis.DownloadPrefs?.DEFAULTS.video || '720p'),
           refImageMode: legacyRefMode,
           refPerPrompt,
           refFileIdsPerPrompt,
@@ -5916,8 +5916,8 @@
           // Check feature gate: nếu không có quyền, force autoDownload = false
           autoDownload: (window.featureGate?.canUse('auto_download') ?? false) && !!task.auto_download,
           // Truyền 2 fields riêng — đồng nhất với MessageBridge.runAutoPrompt path ở trên.
-          downloadResolution: task.download_resolution || '1k',
-          videoDownloadResolution: task.video_download_resolution || '720p',
+          downloadResolution: task.download_resolution || (globalThis.DownloadPrefs?.DEFAULTS.image || '1k'),
+          videoDownloadResolution: task.video_download_resolution || (globalThis.DownloadPrefs?.DEFAULTS.video || '720p'),
           refImageMode: legacyRefMode2,
           refPerPrompt: legacyRefPerPrompt2,
           refFileIdsPerPrompt: refFileIdsPerPrompt2,

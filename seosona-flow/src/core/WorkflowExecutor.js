@@ -2499,8 +2499,8 @@
           const isVideo = node.media_type === 'Video' ||
             (node.node_type === 'grok' && node.grok_mode === 'video');
           const res = isVideo
-            ? (node.video_download_resolution || '720p')
-            : (node.download_resolution || '1k');
+            ? (node.video_download_resolution || (globalThis.DownloadPrefs?.DEFAULTS.video || '720p'))
+            : (node.download_resolution || (globalThis.DownloadPrefs?.DEFAULTS.image || '1k'));
           // Bug fix: truyền workflow name làm subfolder để download theo cấu trúc folder setting
           const taskName = node.download_folder || workflow?.wf_name || this.currentWorkflow?.wf_name || null;
           await this._downloadTiles(result.fileIds, node.prompt || node.node_name, res, result.fileNames, taskName);
@@ -2936,8 +2936,8 @@
           const isVideo = node.media_type === 'Video' ||
             (node.node_type === 'grok' && node.grok_mode === 'video');
           const res = isVideo
-            ? (node.video_download_resolution || '720p')
-            : (node.download_resolution || '1k');
+            ? (node.video_download_resolution || (globalThis.DownloadPrefs?.DEFAULTS.video || '720p'))
+            : (node.download_resolution || (globalThis.DownloadPrefs?.DEFAULTS.image || '1k'));
           // Bug fix: truyền workflow name làm subfolder để download theo cấu trúc folder setting
           const taskName = node.download_folder || workflow?.wf_name || this.currentWorkflow?.wf_name || null;
           emitLog( { nodeId: node.node_id, message: `Tải ${result.fileIds.length} file [${res.toUpperCase()}]...`, type: 'info' });
@@ -6175,8 +6175,8 @@
       // Detect video: check upstream node media_type hoặc node config
       const hasVideoUpstream = this._hasVideoUpstreamNode(node, workflow);
       const resolution = hasVideoUpstream
-        ? (node.video_download_resolution || '720p')
-        : (node.download_resolution || '1k');
+        ? (node.video_download_resolution || (globalThis.DownloadPrefs?.DEFAULTS.video || '720p'))
+        : (node.download_resolution || (globalThis.DownloadPrefs?.DEFAULTS.image || '1k'));
 
       emitLog(`Tải ${inputFileIds.length} file (${resolution.toUpperCase()})...`);
       let downloaded = 0;
