@@ -72,6 +72,37 @@ test('negative: unknown save-as menu id is not treated as a supported format', (
   assert.equal(M.formatFromMenuId('seosonaflow-save-image-as-gif'), null);
 });
 
+test('regression: Magnific overlays expose page-context PNG, JPEG and WEBP save actions', () => {
+  const M = loadMenu();
+  assert.ok(M, 'ContextMenuModel module is available');
+
+  const items = M.buildItems('vi');
+  const parent = items.find((x) => x.id === 'seosonaflow-save-image-as-magnific');
+  const children = items.filter((x) => x.parentId === 'seosonaflow-save-image-as-magnific');
+  const patterns = ['https://magnific.com/*', 'https://*.magnific.com/*'];
+
+  assert.deepEqual(JSON.parse(JSON.stringify(parent)), {
+    id: 'seosonaflow-save-image-as-magnific',
+    parentId: 'seosonaflow-i2p-parent',
+    title: 'Lưu ảnh dưới dạng',
+    contexts: ['page'],
+    documentUrlPatterns: patterns,
+  });
+  assert.deepEqual(JSON.parse(JSON.stringify(children.map((x) => [x.id, x.title, x.contexts, x.documentUrlPatterns]))), [
+    ['seosonaflow-save-image-as-magnific-png', 'PNG', ['page'], patterns],
+    ['seosonaflow-save-image-as-magnific-jpeg', 'JPEG', ['page'], patterns],
+    ['seosonaflow-save-image-as-magnific-webp', 'WEBP', ['page'], patterns],
+  ]);
+  assert.deepEqual(
+    JSON.parse(JSON.stringify(children.map((x) => M.formatFromMenuId(x.id)))),
+    [
+      { id: 'seosonaflow-save-image-as-magnific-png', title: 'PNG', format: 'png', mimeType: 'image/png' },
+      { id: 'seosonaflow-save-image-as-magnific-jpeg', title: 'JPEG', format: 'jpeg', mimeType: 'image/jpeg' },
+      { id: 'seosonaflow-save-image-as-magnific-webp', title: 'WEBP', format: 'webp', mimeType: 'image/webp' },
+    ],
+  );
+});
+
 test('regression: manifest uses the short SEOSONA Flow name', () => {
   const manifest = JSON.parse(readFileSync(join(repoRoot(), 'seosona-flow/manifest.json'), 'utf8'));
 

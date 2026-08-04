@@ -12,10 +12,17 @@
   var UPLOAD_ID = 'seosonaflow-i2p-upload-page';
   var SEND_GEN_ID = 'seosonaflow-i2p-send-gen';
   var SAVE_AS_PARENT_ID = 'seosonaflow-save-image-as';
+  var MAGNIFIC_SAVE_AS_PARENT_ID = 'seosonaflow-save-image-as-magnific';
+  var MAGNIFIC_SITE_PATTERNS = ['https://magnific.com/*', 'https://*.magnific.com/*'];
   var SAVE_FORMATS = [
     { id: 'seosonaflow-save-image-as-png', title: 'PNG', format: 'png', mimeType: 'image/png' },
     { id: 'seosonaflow-save-image-as-jpeg', title: 'JPEG', format: 'jpeg', mimeType: 'image/jpeg' },
     { id: 'seosonaflow-save-image-as-webp', title: 'WEBP', format: 'webp', mimeType: 'image/webp' },
+  ];
+  var MAGNIFIC_SAVE_FORMATS = [
+    { id: 'seosonaflow-save-image-as-magnific-png', title: 'PNG', format: 'png', mimeType: 'image/png' },
+    { id: 'seosonaflow-save-image-as-magnific-jpeg', title: 'JPEG', format: 'jpeg', mimeType: 'image/jpeg' },
+    { id: 'seosonaflow-save-image-as-magnific-webp', title: 'WEBP', format: 'webp', mimeType: 'image/webp' },
   ];
 
   var LABELS = {
@@ -66,6 +73,9 @@
       { id: SEND_GEN_ID, parentId: PARENT_ID, title: t.sendGen, contexts: ['image', 'link'], documentUrlPatterns: SITE_PATTERNS },
       { id: UPLOAD_ID, parentId: PARENT_ID, title: t.upload, contexts: ALL_CTX, documentUrlPatterns: SITE_PATTERNS },
       { id: SAVE_AS_PARENT_ID, parentId: PARENT_ID, title: t.saveAs, contexts: ['image', 'link'], documentUrlPatterns: SITE_PATTERNS },
+      // Magnific places page-context overlays above search/detail images. Register a page-only mirror
+      // on that domain so the existing cursor resolver can still find the browser-visible image.
+      { id: MAGNIFIC_SAVE_AS_PARENT_ID, parentId: PARENT_ID, title: t.saveAs, contexts: ['page'], documentUrlPatterns: MAGNIFIC_SITE_PATTERNS },
     ];
     for (var i = 0; i < SAVE_FORMATS.length; i++) {
       var f = SAVE_FORMATS[i];
@@ -79,12 +89,27 @@
         documentUrlPatterns: SITE_PATTERNS,
       });
     }
+    for (var j = 0; j < MAGNIFIC_SAVE_FORMATS.length; j++) {
+      var mf = MAGNIFIC_SAVE_FORMATS[j];
+      items.push({
+        id: mf.id,
+        parentId: MAGNIFIC_SAVE_AS_PARENT_ID,
+        title: mf.title,
+        format: mf.format,
+        mimeType: mf.mimeType,
+        contexts: ['page'],
+        documentUrlPatterns: MAGNIFIC_SITE_PATTERNS,
+      });
+    }
     return items;
   }
 
   function formatFromMenuId(menuId) {
     for (var i = 0; i < SAVE_FORMATS.length; i++) {
       if (SAVE_FORMATS[i].id === menuId) return SAVE_FORMATS[i];
+    }
+    for (var j = 0; j < MAGNIFIC_SAVE_FORMATS.length; j++) {
+      if (MAGNIFIC_SAVE_FORMATS[j].id === menuId) return MAGNIFIC_SAVE_FORMATS[j];
     }
     return null;
   }

@@ -4200,6 +4200,48 @@
       return await (window.scrubbedDownloadUrl?.(url, log) ?? url);
     }
 
+    /**
+     * Lọc ô hỏng, và THỬ CỨU trước khi bỏ.
+     *
+     * Cách cứu là bấm NÚT THỬ LẠI CỦA CHÍNH FLOW trên ô đó, không phải gửi lại prompt: gửi
+     * lại prompt tốn thêm credit, mà nếu bị chặn vì nội dung thì lần nào cũng chặn.
+     *
+     * Ô nào cứu không được thì LOẠI khỏi danh sách trả về — để nó lọt xuống node Download là
+     * sinh file .htm rác. Nhưng phải BÁO RÕ số ô mất, đừng lặng lẽ trả ít hơn: người dùng đặt
+     * 6 ảnh mà nhận 5 thì cần biết vì sao.
+     *
+     * @returns {Promise<string[]>} chỉ những ô có media thật
+     */
+    async _rescueFailedTiles(tileIds, log) {
+      const ids = (tileIds || []).filter(Boolean);
+      if (!ids.length || !window.MessageBridge?.sendToContentScript) return ids;
+      const status = async (id) => {
+        try {
+          const r = await window.MessageBridge.sendToContentScript('detectTileStatus', { tileId: id });
+          return r?.status || 'failed';
+        } catch (_e) { return 'success'; }   // hỏi không được → coi như ổn, đừng vứt ô có thể tốt
+      };
+      const good = [], bad = [];
+      for (const id of ids) ((await status(id)) === 'failed' ? bad : good).push(id);
+      if (!bad.length) return good;
+
+      log?.(`${bad.length} ô gen hỏng — thử lại bằng nút của Flow…`, 'warn');
+      let saved = [];
+      try {
+        const r = await window.MessageBridge.sendToContentScript('retryFailedTilesViaButton', {
+          failedTileIds: bad, timeout: this.settings?.tileTimeout || 120000,
+        });
+        saved = (r && r.succeeded) || [];
+      } catch (e) {
+        log?.(`Không thử lại được: ${e?.message || e}`, 'warn');
+      }
+      const lost = bad.length - saved.length;
+      if (lost > 0) {
+        log?.(`${lost} ô vẫn hỏng sau khi thử lại — bỏ qua, KHÔNG tải. Nếu Flow báo vi phạm chính sách thì phải sửa prompt, thử lại bao nhiêu lần cũng vậy.`, 'warn');
+      }
+      return good.concat(saved);
+    }
+
     /** Giới hạn tốc độ lấy từ config (api_rate_limits) — có mặc định an toàn nếu thiếu. */
     _rateLimits() {
       return window.ProviderConfigManager?.getRateLimitsSync?.('flow') || {};
@@ -6068,6 +6110,11 @@
         this._submittedNodes?.delete(node.node_id);
       }
       console.log(`[WorkflowExecutor] _waitForNewTiles RETURNED ${newTileIds.length} tiles:`, newTileIds.slice(0, 5));
+      // PHÂN LOẠI rồi CỨU ô hỏng — trước đây workflow bỏ hẳn bước này. Toàn bộ máy móc đã có
+      // sẵn trong content.js và TileMonitor dùng nó cho tab Gen, nhưng WorkflowExecutor gọi
+      // ĐÚNG 0 LẦN. Hệ quả: ô bị Flow chặn vẫn đi thẳng xuống node Download, Flow trả trang
+      // HTML lỗi, và ta lưu thành file .htm mở không được.
+      newTileIds = await this._rescueFailedTiles(newTileIds, nodeLog);
       allNewTileIds.push(...newTileIds);
       nodeLog(`Nhận ${newTileIds.length} kết quả mới`, 'success');
       if (newTileIds.length > 0) emitNodePhase(node.node_id, 'downloading');
