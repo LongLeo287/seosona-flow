@@ -4166,6 +4166,26 @@ function applyResolutionToUrl(url, resolution) {
  * @param {string} [fileName] - file_name UUID để cross-project validation
  * @param {string} [resolution] - '1k', '2k', '4k' cho ảnh; '720p', '1080p', '4k' cho video
  */
+/**
+ * Ô này có phải ô HỎNG không (Flow chặn nội dung / gen thất bại)?
+ *
+ * Ô hỏng KHÔNG có media. Bấm menu tải trên nó thì Flow trả về TRANG HTML lỗi, và ta lưu
+ * nguyên trang đó thành file `.htm` — người dùng thấy 4 dòng "Không truy cập được trang"
+ * trong nhật ký tải xuống mà không hiểu vì sao. Phải chặn TỪ ĐẦU, đừng để tới bước lưu file.
+ *
+ * Nhận biết theo NỘI DUNG hiển thị chứ không theo class: class của Flow đổi liên tục, còn
+ * câu báo lỗi thì ổn định hơn nhiều.
+ */
+function _isFailedTile(tile) {
+  if (!tile) return false;
+  if (tile.querySelector('video, img[src]')) return false;      // có media thật → không hỏng
+  const t = (tile.textContent || '').toLowerCase();
+  return t.indexOf('violate our policies') >= 0
+    || t.indexOf('vi phạm') >= 0
+    || /failed/.test(t)
+    || t.indexOf('thất bại') >= 0;
+}
+
 async function downloadTileMedia(tileId, promptText, taskName, fileName, resolution, flowFileId, index, videoResolution) {
   // Lấy resolution từ param hoặc settings
   let res = resolution;
@@ -4180,6 +4200,12 @@ async function downloadTileMedia(tileId, promptText, taskName, fileName, resolut
   // U-2.2: file_id lookup trước (persistent, chính xác nhất)
   if (flowFileId) {
     const tile = findTileByFileId(flowFileId);
+    if (_isFailedTile(tile)) {
+      // Nói rõ LÝ DO chứ không im lặng trả false — người dùng cần biết prompt nào bị chặn
+      // để sửa chữ, chứ thử lại y nguyên thì Google vẫn chặn và chỉ tốn credit.
+      sendLog('Ô này gen thất bại (Flow chặn nội dung) — bỏ qua, không tải. Sửa prompt rồi gen lại.', 'warn');
+      return false;
+    }
     if (tile) tileId = tile.dataset.tileId;
   }
 
@@ -4306,6 +4332,12 @@ async function _downloadTileMediaLegacy(tileId, promptText, taskName, fileName, 
     console.log(`[SEOSONA Flow] _downloadTileMediaLegacy: downloading via chrome.downloads: ${mediaSrc.substring(0, 100)}...`);
 
     // Dùng chrome.downloads API qua background.js — reliable, handles Google CDN auth/cookies
+    // Chốt chặn 2: URL trỏ tới trang HTML nghĩa là media chưa sẵn sàng hoặc đã hỏng. Lưu nó
+    // thành file là ra .htm rác — thà không có file còn hơn có file mở không được.
+    if (/\.html?(\?|$)/i.test(mediaSrc) || /^data:text\/html/i.test(mediaSrc)) {
+      sendLog('Nguồn tải là trang HTML, không phải media — bỏ qua để khỏi lưu file rác.', 'warn');
+      return false;
+    }
     const _dlUrl = await (window.scrubbedDownloadUrl?.(mediaSrc) ?? mediaSrc);
     const response = await new Promise((resolve) => {
       chrome.runtime.sendMessage({
