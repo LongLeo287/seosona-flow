@@ -60,7 +60,17 @@
       '.bpg-empty{color:var(--muted-foreground,#9a9aa2);text-align:center;padding:30px 16px;font-size:12px}',
       '.bpg-toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,12px);background:#1c1c22;color:#fff;border:1px solid rgba(255,255,255,.14);padding:8px 14px;border-radius:8px;font-size:12px;z-index:9999;opacity:0;transition:opacity .2s,transform .2s;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:90vw}',
       '.bpg-toast.show{opacity:1;transform:translate(-50%,0)}',
-      '.bpg-toast.warn{border-color:rgba(245,197,24,.4)}'
+      '.bpg-toast.warn{border-color:rgba(245,197,24,.4)}',
+      // Thẻ công thức cú máy: dùng-khi / năng lượng / thời lượng / bẫy thường gặp.
+      '.bpg-card-spec{display:flex;flex-direction:column;gap:4px;margin:0;padding:6px 8px;border-radius:6px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}',
+      '.bpg-spec-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}',
+      '.bpg-spec-pill{font-size:10px;padding:2px 6px;border-radius:4px;background:rgba(255,255,255,.06);color:#c8cbd4;white-space:nowrap}',
+      '.bpg-spec-pill.e-lang{background:rgba(122,160,255,.14);color:#9fb8ff}',
+      '.bpg-spec-pill.e-vua{background:rgba(25,208,123,.14);color:#5fd6a4}',
+      '.bpg-spec-pill.e-manh{background:rgba(245,158,11,.16);color:#f0b45e}',
+      '.bpg-spec-line{font-size:11px;line-height:1.4;color:#b9bcc6;margin:0}',
+      '.bpg-spec-line b{color:#d4d4d8;font-weight:600}',
+      '.bpg-spec-line.pit{color:#e6b877}'
     ].join('\n');
     document.head.appendChild(s);
   }
@@ -174,7 +184,10 @@
       if (tier && p.tier !== tier) return false;
       if (kind && (p.kind || 'prompt') !== kind) return false;
       if (!q) return true;
-      var hay = (p.title + ' ' + p.content + ' ' + (p.tags || []).join(' ')).toLowerCase();
+      // Gộp cả "dùng khi" của thẻ cú máy vào chuỗi tìm: người ta tìm theo TÌNH HUỐNG
+      // ("mở màn", "chuyển cảnh") chứ hiếm khi nhớ đúng tên cú.
+      var hay = (p.title + ' ' + p.content + ' ' + (p.tags || []).join(' ') +
+        ' ' + ((p.card && p.card.purpose) || '')).toLowerCase();
       return hay.indexOf(q) >= 0;
     });
   };
@@ -204,11 +217,27 @@
         img = '<img class="bpg-thumb" src="' + esc(chrome.runtime.getURL(p.image_local)) + '" loading="lazy" alt="">';
       }
     } catch (_) { globalThis.SEOSONA_swallow?.('BundledPromptGallery#_card', _); }
+    // Thẻ công thức cú máy mang thêm 4 trường hướng dẫn. Chúng KHÔNG đi vào prompt gửi cho model —
+    // đây là chỉ dẫn cho người dùng: dùng khi nào, dài bao lâu, và cú này hay hỏng ở đâu.
+    var spec = '';
+    var cd = p.card;
+    if (cd && (cd.purpose || cd.pitfall)) {
+      var eKey = { 'Lặng': 'e-lang', 'Vừa': 'e-vua', 'Mạnh': 'e-manh' }[cd.energy] || '';
+      spec = '<div class="bpg-card-spec">' +
+        '<div class="bpg-spec-row">' +
+        (cd.energy ? '<span class="bpg-spec-pill ' + eKey + '" title="Mức năng lượng">⚡ ' + esc(cd.energy) + '</span>' : '') +
+        (cd.duration ? '<span class="bpg-spec-pill" title="Thời lượng gợi ý">⏱ ' + esc(cd.duration) + '</span>' : '') +
+        '</div>' +
+        (cd.purpose ? '<p class="bpg-spec-line"><b>Dùng khi:</b> ' + esc(cd.purpose) + '</p>' : '') +
+        (cd.pitfall ? '<p class="bpg-spec-line pit"><b>Hay hỏng:</b> ' + esc(cd.pitfall) + '</p>' : '') +
+        '</div>';
+    }
     // Remove the separate variables row to match modern compact layout where vars are highlighted in text.
     return '<div class="bpg-card' + (img ? ' has-thumb' : '') + '">' +
       img +
       '<div class="bpg-top"><h4>' + esc(p.title) + '</h4><span class="bpg-kind ' + kind + '">' + esc(kind) + '</span></div>' +
       '<p class="bpg-desc">' + esc(p.content) + '</p>' +
+      spec +
       slotsHint +
       '<div class="bpg-meta">' + tier + tags + '</div>' +
       '<div class="bpg-actions">' +

@@ -45,13 +45,25 @@ nhưng chặt chẽ hơn.
 
 ## Nhóm B — ADAPT: ý tưởng tốt, phải đổi hình dạng
 
-### `Vincentwei1021/video-shotcraft` — 104 thẻ công thức cú máy
-Skill biến agent thành xưởng motion design với Remotion. **104 shot recipe + 161 xem trước
-chuyển động.**
+### `Vincentwei1021/video-shotcraft` — thẻ công thức, nhưng KHÔNG phải cú máy
 
-Phần Remotion không dùng được (React/Node, ta chạy trong trình duyệt). Nhưng **kho công thức
-cú máy** thì chuyển thành prompt-pack được ngay — ta đã có `video-prompt-scaffold` 7 phần, bổ
-sung 104 công thức là làm dày hẳn.
+**Sửa lại 2026-08-04.** Bản đầu tôi ghi "104 thẻ công thức cú máy" và xếp là "cơ học, ít rủi
+ro" — **sai**. Tôi suy từ chữ "shot" mà không mở `references/shots/` ra đọc.
+
+104 "shot" của họ là **hoạt cảnh motion-design cho Remotion**: `deck-deal-flyin`,
+`row-embed`, `grid-wave-flip`, `wireframe-draw-on` — làm thẻ UI bay vào, lưới lật, khung dây
+vẽ dần, kèm TSX với thông số easing. Đó là hoạt hoạ giao diện bằng React, **không phải cú máy
+điện ảnh**. Không có một dòng nào chuyển thẳng sang prompt sinh video được.
+
+Cái chuyển được là **lược đồ thẻ**: mỗi công thức có *mục đích · mức năng lượng · thời lượng
+gợi ý · tham số · bẫy thường gặp*. Khung đó tốt thật, và là thứ prompt của ta đang thiếu —
+prompt ta chỉ có chữ để gửi cho model, không nói dùng khi nào và hay hỏng ở đâu.
+
+**Đã làm:** 40 thẻ `🎬 Shot Recipes` theo lược đồ đó, phủ 10 nhóm chức năng (mở màn · giới
+thiệu chủ thể · bộc lộ · nhấn chi tiết · phản ứng · bám theo · chuyển cảnh · cao trào · không
+khí · kết), nội dung là điện ảnh thật do ta viết. Gallery hiện thêm ⚡ năng lượng, ⏱ thời
+lượng, "Dùng khi", "Hay hỏng". 6 test khoá lược đồ, trong đó có một test bảo đảm 4 trường
+hướng dẫn KHÔNG lọt vào chữ gửi cho model.
 
 ### `Emily2040/seedance-2.0` — đạo diễn theo Ý ĐỒ, không trang trí khung hình
 Đọc **chức năng kịch** của cảnh (bước ngoặt, điểm nhìn, quyền lực, hàm ý), chốt **một ý đồ**,
