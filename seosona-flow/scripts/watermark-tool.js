@@ -293,7 +293,13 @@
       S.blob = r.blob; S.ext = 'mp4';
       var st = r.stats || {};
       setStatus('ok', 'Xong — MP4, ' + (st.frames || 0) + ' khung trong ' + Math.round((st.ms || 0) / 1000) + 's');
-      if (metaEl) metaEl.textContent = 'dấu ' + (st.mark || '?') + ' · khớp ' + (st.score != null ? Math.round(st.score * 100) + '%' : '?');
+      // Hiện bitrate: 'file nhỏ đi' là câu hỏi đầu tiên người dùng đặt ra, và không có số thì
+      // họ chỉ đoán. So được với nguồn thì biết ngay là bình thường hay mất chất lượng.
+      var kbps = st.bitrate ? Math.round(st.bitrate / 1000) + ' kbps' : null;
+      if (metaEl) metaEl.textContent = 'dấu ' + (st.mark || '?')
+        + ' · khớp ' + (st.score != null ? Math.round(st.score * 100) + '%' : '?')
+        + (kbps ? ' · ' + kbps : '')
+        + (f && f.size && r.blob ? ' · ' + (r.blob.size / f.size).toFixed(2) + '× dung lượng gốc' : '');
       dlBtn.disabled = false; dlBtn.textContent = 'Tải xuống (MP4)';
       return true;
     } catch (e) {

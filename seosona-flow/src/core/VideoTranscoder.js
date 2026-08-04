@@ -112,10 +112,15 @@
       // nguồn nhẹ mà ta encode cao thì file phình vô ích; nguồn nặng mà ta encode thấp thì
       // MẤT CHẤT LƯỢNG — đúng thứ người dùng không tha thứ ở công cụ xoá watermark.
       // Thứ tự: người gọi chỉ định → đo từ nguồn → công thức (đường lùi cuối).
+      // Đo trên NHIỀU gói và cộng biên an toàn.
+      // Video mã hoá biến thiên (VBR) thường tĩnh ở đoạn đầu, nên lấy mẫu ít gói là ước lượng
+      // THẤP HƠN trung bình thật → encode lại nhẹ hơn nguồn, và chỗ chuyển động mạnh mất chi
+      // tiết trước tiên. Người dùng thấy 'file nhỏ đi' và nghi ngờ — nghi ngờ đúng.
+      // Biên +15%: thà file nhỉnh hơn vài phần trăm còn hơn mất chi tiết ở cảnh động.
       var srcBitrate = null;
       try {
-        var ps = await vTrack.computePacketStats(100);
-        srcBitrate = (ps && ps.averageBitrate) || null;
+        var ps = await vTrack.computePacketStats(600);
+        srcBitrate = (ps && ps.averageBitrate) ? Math.round(ps.averageBitrate * 1.15) : null;
       } catch (e) {
         console.warn('[VideoTranscoder] không đo được bitrate nguồn:', e && e.message);
       }
