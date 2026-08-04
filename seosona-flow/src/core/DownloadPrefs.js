@@ -24,7 +24,11 @@
   'use strict';
 
   // Khoá trong chrome.storage.local. Đặt tên ở đây để không ai gõ tay chuỗi khoá nữa.
-  var KEYS = { image: 'download_resolution', video: 'video_download_resolution' };
+  var KEYS = {
+    image: 'download_resolution',
+    video: 'video_download_resolution',
+    allowUpscale: 'downloadAllowUpscale',
+  };
 
   // Mặc định = bản gốc của từng loại. Đổi mặc định thì sửa ĐÚNG hai dòng này.
   var DEFAULTS = { image: '1k', video: '720p' };
@@ -50,12 +54,19 @@
    * @param {boolean} isVideo
    * @returns {{resolution:string, downgraded:boolean, wanted:string}}
    */
-  function resolve(wanted, isVideo) {
+  function resolve(wanted, isVideo, allowUpscale) {
     var want = String(wanted || '').toLowerCase() || DEFAULTS[_mode(isVideo)];
-    if (isUpscale(want, isVideo)) {
-      return { resolution: original(isVideo), downgraded: true, wanted: want };
-    }
-    return { resolution: want, downgraded: false, wanted: want };
+    if (!isUpscale(want, isVideo)) return { resolution: want, downgraded: false, upscale: false, wanted: want };
+    // Người dùng đã BẬT phóng to thì tôn trọng lựa chọn — chỉ báo trước là sẽ lâu.
+    if (allowUpscale) return { resolution: want, downgraded: false, upscale: true, wanted: want };
+    return { resolution: original(isVideo), downgraded: true, upscale: false, wanted: want };
+  }
+
+  /** Câu báo trước khi đi đường phóng to — người dùng cần biết vì sao lâu. */
+  function upscaleNotice(wanted, isVideo) {
+    var extra = (isVideo && String(wanted).toLowerCase() === '4k') ? ' Cú này TỐN TÍN DỤNG.' : '';
+    return 'Đang xin bản ' + String(wanted).toUpperCase() + ' — Flow phải phóng to trước nên file về ' +
+      'chậm hơn bình thường (chờ tối đa 5 phút).' + extra;
   }
 
   /** Câu giải thích khi phải hạ mức — dùng chung để mọi nơi nói giống nhau. */
@@ -73,5 +84,6 @@
     original: original,
     resolve: resolve,
     downgradeReason: downgradeReason,
+    upscaleNotice: upscaleNotice,
   };
 })(typeof self !== 'undefined' ? self : (typeof window !== 'undefined' ? window : this));

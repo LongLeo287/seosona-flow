@@ -4034,7 +4034,9 @@ function getDownloadSettings() {
         folder: s.downloadFolder || 'seosonaflow_output',
         template: s.fileNameTemplate || '[Date]_[Project]_[Prompt]_[Index]',
         project: s.fileNameProject || '',
-        resolution: s.downloadResolution || '1k'
+        resolution: s.downloadResolution || (globalThis.DownloadPrefs?.DEFAULTS.image || '1k'),
+        videoResolution: s.videoDownloadResolution || (globalThis.DownloadPrefs?.DEFAULTS.video || '720p'),
+        allowUpscale: s.downloadAllowUpscale === true
       });
     });
   });
@@ -4243,18 +4245,22 @@ async function downloadTileMedia(tileId, promptText, taskName, fileName, resolut
   // (cũng là 4K). Trên tài khoản Ultra, 4K video ghi rõ "· 50 tín dụng" — tức code tự tiêu tiền
   // của người dùng để lấy một thứ họ không xin. Nay cả hai đều lùi về BẢN GỐC.
   const _DP = globalThis.DownloadPrefs;
+  const _allowUpscale = (await getDownloadSettings()).allowUpscale;
   let nativeRes;
+  let wantUpscale = false;
   if (res === 'original') {
     nativeRes = _DP ? _DP.original(_isVideoTile) : (_isVideoTile ? '720p' : '1k');
   } else if (_DP) {
-    const _r = _DP.resolve(res, _isVideoTile);
+    const _r = _DP.resolve(res, _isVideoTile, _allowUpscale);
     if (_r.downgraded) sendLog(_DP.downgradeReason(_r.wanted, _isVideoTile), 'warn');
+    if (_r.upscale) sendLog(_DP.upscaleNotice(_r.wanted, _isVideoTile), 'info');
     nativeRes = _r.resolution;
+    wantUpscale = !!_r.upscale;
   } else {
     nativeRes = res;
   }
   console.log(`[SEOSONA Flow] downloadTileMedia: attempting Flow menu for ${tileId.substring(0, 20)}, res=${res} (native=${nativeRes})`);
-  const menuSuccess = await downloadViaFlowMenu(tileId, nativeRes, fileName, promptText, taskName, index);
+  const menuSuccess = await downloadViaFlowMenu(tileId, nativeRes, fileName, promptText, taskName, index, wantUpscale);
   if (menuSuccess) {
     console.log(`[SEOSONA Flow] downloadTileMedia: Flow menu SUCCESS for ${tileId.substring(0, 20)}`);
     return true;
@@ -4557,7 +4563,7 @@ async function downloadViaFullSizeMenu(tile, fileName, promptText, taskName, ind
   }
 }
 
-async function downloadViaFlowMenu(tileId, resolution, fileName, promptText, taskName, index) {
+async function downloadViaFlowMenu(tileId, resolution, fileName, promptText, taskName, index, allowUpscale) {
   // Retry logic: tile từ Grok/ChatGPT có thể chưa bridge xong khi Download node chạy
   // Wait + retry tối đa 5 lần, mỗi lần cách 1 giây
   const MAX_TILE_RETRIES = 5;
@@ -4858,7 +4864,7 @@ async function downloadViaFlowMenu(tileId, resolution, fileName, promptText, tas
     //     về trang thông báo và lưu ra .htm — đúng triệu chứng đang gặp;
     //   - với video nó còn TRỪ TÍN DỤNG.
     // Muốn ảnh 2K/4K thật thì dùng nút phóng to riêng, không mượn nút Tải.
-    if (targetItem && _isUpscaledItem(targetItem.textContent) && _original.length) {
+    if (!allowUpscale && targetItem && _isUpscaledItem(targetItem.textContent) && _original.length) {
       const orig = _original[0];
       sendLog(`${resLabel} trên tài khoản này là bản PHÓNG TO (không tải thẳng được) — tải ` +
         `"${(orig.textContent || '').trim().split(/\s+/)[0]}" bản gốc thay thế.`, 'warn');

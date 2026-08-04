@@ -17,6 +17,7 @@
     queueEnabled: false,
     // autoReloadEnabled/Threshold REMOVED 2026-07-26 — promoted to system_settings (Chunk Mode)
     autoDownload: false,
+    downloadAllowUpscale: false,
     retryOnFail: true,
     downloadFolder: 'seosonaflow_output',
     fileNameProject: '',
@@ -98,6 +99,7 @@
     // Auto Reload REMOVED 2026-07-26 — promoted to system_settings (Chunk Mode admin-only)
 
     els.autoDownload = $('#autoDownloadToggle');
+    els.downloadAllowUpscale = $('#downloadAllowUpscale');
     els.autoRetry = $('#autoRetryToggle');
     els.autoWmVideo = $('#autoWmVideoToggle');
     els.scrubMeta = $('#scrubMetaToggle');
@@ -286,6 +288,7 @@
 
     // Download
     if (els.autoDownload) els.autoDownload.checked = s.autoDownload;
+    if (els.downloadAllowUpscale) els.downloadAllowUpscale.checked = s.downloadAllowUpscale === true;
     if (els.autoRetry) els.autoRetry.checked = s.retryOnFail !== false;
     if (els.scrubMeta) els.scrubMeta.checked = s.scrubMetadata !== false;
     if (els.autoWmVideo) els.autoWmVideo.checked = s.autoRemoveVideoWatermark !== false;
@@ -443,6 +446,7 @@
       queueEnabled: els.queueEnabled?.checked || false,
       // autoReloadEnabled/Threshold REMOVED 2026-07-26 — promoted to system_settings (Chunk Mode)
       autoDownload: els.autoDownload?.checked || false,
+      downloadAllowUpscale: els.downloadAllowUpscale?.checked || false,
       retryOnFail: els.autoRetry ? els.autoRetry.checked : true,
       scrubMetadata: els.scrubMeta ? els.scrubMeta.checked : true,
       autoRemoveVideoWatermark: els.autoWmVideo ? els.autoWmVideo.checked : true,

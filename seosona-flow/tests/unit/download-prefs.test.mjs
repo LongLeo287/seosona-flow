@@ -54,6 +54,42 @@ test('regression: câu giải thích nêu rõ tín dụng đúng ca video 4K', (
   assert.match(DP.downgradeReason('2k', false), /PHÓNG TO/);
 });
 
+// Người dùng chọn "ảnh 2K, video 1080p" — cả hai là mức phóng to, nên phải BẬT mới đi đường đó.
+test('positive: bật cho phép phóng to thì tôn trọng đúng mức đã chọn', () => {
+  const a = DP.resolve('2k', false, true);
+  assert.equal(a.resolution, '2k');
+  assert.equal(a.downgraded, false);
+  assert.equal(a.upscale, true);
+  const b = DP.resolve('1080p', true, true);
+  assert.equal(b.resolution, '1080p');
+  assert.equal(b.upscale, true);
+});
+
+test('negative: bật phóng to KHÔNG đụng tới mức vốn đã tải thẳng được', () => {
+  const a = DP.resolve('1k', false, true);
+  assert.equal(a.resolution, '1k');
+  assert.equal(a.upscale, false, 'bản gốc thì không cần phóng to');
+  assert.equal(DP.resolve('720p', true, true).upscale, false);
+});
+
+test('boundary: câu báo trước chỉ cảnh báo tín dụng đúng ca video 4K', () => {
+  assert.match(DP.upscaleNotice('4k', true), /TỐN TÍN DỤNG/);
+  assert.ok(!/TÍN DỤNG/.test(DP.upscaleNotice('1080p', true)), 'video 1080p không tốn tín dụng');
+  assert.ok(!/TÍN DỤNG/.test(DP.upscaleNotice('2k', false)), 'ảnh 2K không tốn tín dụng');
+});
+
+test('regression: cờ cho phép phóng to mặc định TẮT ở mọi nơi', () => {
+  assert.equal(DP.resolve('2k', false).downgraded, true, 'không truyền cờ = tắt');
+  assert.equal(DP.resolve('2k', false, false).downgraded, true);
+  const html = readFileSync(join(root, 'pages/settings.html'), 'utf8');
+  assert.ok(html.includes('id="downloadAllowUpscale"'), 'có ô tick trong Cài đặt');
+  assert.ok(!/id="downloadAllowUpscale"[^>]*checked/.test(html), 'ô tick không tự bật sẵn');
+  const sp = readFileSync(join(root, 'scripts/settings-page.js'), 'utf8');
+  assert.ok(sp.includes('downloadAllowUpscale: false'), 'mặc định trong settings-page là false');
+  assert.ok(sp.includes("els.downloadAllowUpscale = $('#downloadAllowUpscale')"), 'có nối phần tử');
+  assert.ok(sp.includes('downloadAllowUpscale: els.downloadAllowUpscale?.checked'), 'có lưu lại');
+});
+
 // Mặc định từng bị chép tay ở 11 chỗ trong 6 file; sót một chỗ là hai đường tải chạy hai luật.
 test('regression: không file nào còn viết tay mặc định', () => {
   const files = ['src/core/WorkflowExecutor.js', 'src/workflow/WorkflowEditor.js',
