@@ -7,8 +7,10 @@
 
   // Storage keys that hold credentials/secrets.
   var SECRET_KEYS = [
-    'af_auth', 'af_entitlements', 'seosona_client_enrollment', 'seosona_device_fp',
-    'af_fingerprint', 'telegram_bot_token', 'mcp_bearer', 'af_bearer',
+    'af_active_session', 'af_auth', 'af_bearer', 'af_entitlements',
+    'af_fingerprint', 'entitlements', 'local_mcp_tokens', 'mcp_bearer',
+    'seosona_client_enrollment', 'seosona_device_fp', 'seosonaflow_extension_not_authorized', 'telegram_bot_token',
+    'token',
   ];
   var SECRET_FIELD_RE = /(token|secret|bearer|password|passwd|apikey|api_key|hmac|signature|client_secret|authorization|credential|private_key)/i;
 

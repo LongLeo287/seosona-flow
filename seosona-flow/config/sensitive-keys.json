@@ -1,0 +1,20 @@
+{
+  "_note": "SF-018 — nguồn chân lý DUY NHẤT cho khoá nhạy cảm. Trước đây SecretVault giữ một danh sách viết tay còn storage-inventory dùng một regex, và hai bên lệch nhau CẢ HAI CHIỀU: vault biết seosona_client_enrollment/seosona_device_fp/telegram_bot_token mà inventory không đánh dấu; inventory đánh dấu local_mcp_tokens mà vault không biết. Khoá lọt khỏi một trong hai nghĩa là có chỗ nó không được che khi ghi log, hoặc bị xuất ra file backup.",
+  "_usage": "scripts/audit/lib/storage.mjs đọc trực tiếp; src/core/SecretVault.js đồng bộ bằng `node scripts/build/sync-secret-keys.mjs`.",
+  "keys": [
+    "af_active_session",
+    "af_auth",
+    "af_bearer",
+    "af_entitlements",
+    "af_fingerprint",
+    "entitlements",
+    "local_mcp_tokens",
+    "mcp_bearer",
+    "seosona_client_enrollment",
+    "seosona_device_fp",
+    "seosonaflow_extension_not_authorized",
+    "telegram_bot_token",
+    "token"
+  ],
+  "pattern": "(auth|token|secret|bearer|entitlement|fingerprint|device_fp|enroll|session|hmac|signature|credential|password|apikey|api_key)"
+}

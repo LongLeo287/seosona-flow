@@ -194,6 +194,11 @@
       if (tok !== _token || !_state) return;
       if (!img) { _state.phase = 'error'; _state.error = t('errCapture'); render(); return; }
       _state.image = img; _state._retried = false; _state.phase = 'idle'; render();
+      // Dựng bản thu nhỏ NGAY để ô xem trước có cái để hiện. Ảnh gốc ở lại trong biến của
+      // content script (isolated world), không bao giờ vào DOM. Xem SF-002 ở ensureRoot().
+      makeThumb(img.base64, img.type).then((th) => {
+        if (tok === _token && _state) { _state.thumb = th; render(); }
+      });
       const cur = _state.status && _state.status[_state.provider];
       if (cur && cur.ready) doAnalyze(); // provider sẵn sàng → chạy luôn
     });
@@ -232,12 +237,18 @@
   function stopStatusPoll() { if (_statusPoll) { clearInterval(_statusPoll); _statusPoll = null; } }
 
   function ensureRoot() {
+    // SF-002 — shadow root phải ĐÓNG.
+    // Trước đây dùng mode:'open' và gắn thẳng vào documentElement của MỌI trang http/https. Với
+    // 'open', trang chủ chỉ cần đọc document.getElementById(ROOT_ID).shadowRoot là duyệt được
+    // toàn bộ giao diện của ta — kể cả thẻ <img> chứa ảnh người dùng vừa chọn TỪ MÁY. Đó là
+    // ranh giới sai: ảnh local phải thuộc về extension, không phải trang web đang mở.
+    // 'closed' làm host.shadowRoot trả null với trang chủ; ta vẫn giữ tham chiếu qua _shadow.
+    if (_shadow && _shadow.isConnected) return _shadow;
     let host = document.getElementById(ROOT_ID);
-    if (host && host.shadowRoot) { _shadow = host.shadowRoot; return _shadow; }
     if (host) host.remove();
     host = document.createElement('div'); host.id = ROOT_ID;
     document.documentElement.appendChild(host);
-    _shadow = host.attachShadow({ mode: 'open' });
+    _shadow = host.attachShadow({ mode: 'closed' });
     const style = document.createElement('style');
     style.textContent = `
       :host { all: initial; }
@@ -344,7 +355,12 @@
     old?.remove();
     const card = document.createElement('div'); card.className = 'card';
     const hd = document.createElement('div'); hd.className = 'hd';
-    const thumb = _state?.image ? `data:${_state.image.type || 'image/jpeg'};base64,${_state.image.base64}` : (_state?.thumb || '');
+    // SF-002 — chỉ đưa BẢN THU NHỎ vào DOM, không bao giờ đưa ảnh gốc.
+    // Bản cũ nhét nguyên `_state.image.base64` (ảnh full, có thể vài MB) vào src. Ngay cả khi
+    // shadow root đã đóng, giữ nguyên bytes gốc trong DOM của trang lạ là thừa rủi ro: chỉ cần
+    // một lỗi rò rỉ khác là mất luôn ảnh gốc thay vì một ô 96px chất lượng 0.7.
+    // _state.thumb do makeThumb() tạo (96px, JPEG 0.7) — đủ để người dùng nhận ra ảnh của mình.
+    const thumb = _state?.thumb || '';
     hd.innerHTML = `${thumb ? `<img class="thumb" src="${thumb}">` : ''}<div class="tt"><div class="lbl">SEOSONA Flow · Image → Prompt</div><div class="title">${t('title')}</div></div>`;
     const acts = document.createElement('div'); acts.className = 'acts';
     // Gated → KHÔNG render History (chặn entry point xem/reuse kết quả cũ qua "Đưa vào SEOSONA Flow").
@@ -642,6 +658,12 @@
     if (upload && !_state.image && !srcUrl) { _state.phase = 'idle'; render(); return; }
     if (!_state.image) { _state.image = await captureImage(srcUrl, maxPx); }
     if (tok !== _token || !_state) return;
+    // Cùng lý do như trên: chỉ bản thu nhỏ được phép vào DOM của trang chủ.
+    if (_state.image && !_state.thumb) {
+      const _th = await makeThumb(_state.image.base64, _state.image.type);
+      if (tok !== _token || !_state) return;
+      _state.thumb = _th;
+    }
     // Capture thất bại (CORS) → error kèm fallback upload (nút trong paintBody error).
     if (!_state.image) { _state.phase = 'error'; _state.error = t('errCapture'); render(); return; }
     _state.phase = 'idle'; render(); // render lại để có thumbnail

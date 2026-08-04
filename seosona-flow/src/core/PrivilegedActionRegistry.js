@@ -83,7 +83,14 @@
   ];
   var KNOWN = new Set(KNOWN_ACTIONS);
 
-  var enforce = false;            // default OFF — fail-open to legacy behavior
+  // SF-011 — MẶC ĐỊNH BẬT.
+  // Trước đây khởi tạo false rồi mới đọc chrome.storage bất đồng bộ để bật lên. Giữa lúc service
+  // worker khởi động và lúc callback storage chạy có một khoảng mà MỌI message đều đi lọt — và
+  // service worker MV3 bị dựng dậy liên tục nên khoảng đó lặp lại hoài, không phải chuyện một lần.
+  // Bật sẵn thì đường đọc storage chỉ còn có thể TẮT (đúng lựa chọn tường minh của người dùng ở
+  // Settings → Advanced), không còn là điều kiện để bắt đầu bảo vệ.
+  var enforce = true;
+
   var observations = [];
 
   function actionOf(msg) {

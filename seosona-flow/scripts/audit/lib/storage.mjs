@@ -55,13 +55,22 @@ function ownerOf(key) {
   if (key.startsWith('_')) return 'transient-handoff';
   return 'misc';
 }
-const SENSITIVE_RE = /(auth|token|secret|bearer|entitlement|fingerprint|session|hmac|signature|credential|password|apikey|api_key)/i;
+// SF-018 — danh sách + mẫu lấy từ config/sensitive-keys.json (nguồn chung với SecretVault).
+// Trước đây chỗ này là regex viết tay, và nó BỎ SÓT những khoá không chứa từ khoá nào khớp:
+// 'seosona_client_enrollment' (không có 'token'/'auth') và 'seosona_device_fp' ('fp' chứ không
+// phải 'fingerprint'). Cả hai đều là bí mật thật.
+const _sensCfg = JSON.parse(
+  readFileSync(join(repoRoot(), 'seosona-flow/config/sensitive-keys.json'), 'utf8'),
+);
+const SENSITIVE_KEYS = new Set(_sensCfg.keys);
+const SENSITIVE_RE = new RegExp(_sensCfg.pattern, 'i');
+const _isSensitive = (key) => SENSITIVE_KEYS.has(key) || SENSITIVE_RE.test(key);
 function sensitivityOf(key) {
-  return SENSITIVE_RE.test(key) ? 'sensitive' : 'ordinary';
+  return _isSensitive(key) ? 'sensitive' : 'ordinary';
 }
 function lifecycleOf(key) {
   if (key.startsWith('_') || /WindowId$/.test(key)) return 'transient';
-  if (SENSITIVE_RE.test(key)) return 'sensitive-persistent';
+  if (_isSensitive(key)) return 'sensitive-persistent';
   if (/(cache|last_event|stats|_results$|history|daily)/i.test(key)) return 'derived';
   return 'persistent';
 }
