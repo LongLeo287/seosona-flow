@@ -72,35 +72,22 @@ test('negative: unknown save-as menu id is not treated as a supported format', (
   assert.equal(M.formatFromMenuId('seosonaflow-save-image-as-gif'), null);
 });
 
-test('regression: Magnific overlays expose page-context PNG, JPEG and WEBP save actions', () => {
+// ĐẢO CHIỀU 2026-08-04. Bài này trước đây đòi PHẢI CÓ menu "Lưu ảnh" riêng cho magnific.com.
+// Mã đó đã gỡ: nó nhắm vào MỘT trang bán ảnh thương mại, không liên quan việc tự động hoá sinh
+// ảnh trên tài khoản AI của chính người dùng. Giữ bài test nhưng khoá chiều ngược lại, để không
+// ai lặng lẽ thêm lại mã nhắm riêng một trang bên ngoài.
+test('regression: KHÔNG còn mục menu nhắm riêng một trang bên ngoài', () => {
   const M = loadMenu();
   assert.ok(M, 'ContextMenuModel module is available');
 
   const items = M.buildItems('vi');
-  const parent = items.find((x) => x.id === 'seosonaflow-save-image-as-magnific');
-  const children = items.filter((x) => x.parentId === 'seosonaflow-save-image-as-magnific');
-  const patterns = ['https://magnific.com/*', 'https://*.magnific.com/*'];
-
-  assert.deepEqual(JSON.parse(JSON.stringify(parent)), {
-    id: 'seosonaflow-save-image-as-magnific',
-    parentId: 'seosonaflow-i2p-parent',
-    title: 'Lưu ảnh dưới dạng',
-    contexts: ['page'],
-    documentUrlPatterns: patterns,
-  });
-  assert.deepEqual(JSON.parse(JSON.stringify(children.map((x) => [x.id, x.title, x.contexts, x.documentUrlPatterns]))), [
-    ['seosonaflow-save-image-as-magnific-png', 'PNG', ['page'], patterns],
-    ['seosonaflow-save-image-as-magnific-jpeg', 'JPEG', ['page'], patterns],
-    ['seosonaflow-save-image-as-magnific-webp', 'WEBP', ['page'], patterns],
-  ]);
-  assert.deepEqual(
-    JSON.parse(JSON.stringify(children.map((x) => M.formatFromMenuId(x.id)))),
-    [
-      { id: 'seosonaflow-save-image-as-magnific-png', title: 'PNG', format: 'png', mimeType: 'image/png' },
-      { id: 'seosonaflow-save-image-as-magnific-jpeg', title: 'JPEG', format: 'jpeg', mimeType: 'image/jpeg' },
-      { id: 'seosonaflow-save-image-as-magnific-webp', title: 'WEBP', format: 'webp', mimeType: 'image/webp' },
-    ],
-  );
+  const outside = items.filter((x) => JSON.stringify(x.documentUrlPatterns || [])
+    .match(/magnific|shutterstock|freepik|pinterest/i));
+  // So bằng SỐ LƯỢNG, không deepEqual: module được nạp trong sandbox nên mảng thuộc realm khác,
+  // deepStrictEqual sẽ đỏ vì lệch prototype dù nội dung đều rỗng.
+  assert.equal(outside.length, 0, `còn mục nhắm riêng trang ngoài: ${outside.map((x) => x.id).join(', ')}`);
+  assert.equal(M.formatFromMenuId('seosonaflow-save-image-as-magnific-png'), null,
+    'id cũ không còn phân giải ra định dạng nào');
 });
 
 test('regression: manifest uses the short SEOSONA Flow name', () => {

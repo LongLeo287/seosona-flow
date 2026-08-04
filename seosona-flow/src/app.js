@@ -1932,15 +1932,8 @@
       cloneDetectedOverlay.classList.remove('hidden');
       // Set store URL từ system config (extension_url) hoặc fallback Chrome Web Store.
       // KHÔNG hiển thị chrome.runtime.id — tránh gợi ý attacker biết ID hợp lệ để giả.
-      const storeBtn = document.getElementById('seosonaflow-clone-detected-store-btn');
-      if (storeBtn && !storeBtn.href) {
-        try {
-          const cfg = window.SystemConfig?.getAppConfig?.() || {};
-          storeBtn.href = cfg.extension_url || 'https://chromewebstore.google.com/';
-        } catch (_) {
-          storeBtn.href = 'https://chromewebstore.google.com/';
-        }
-      }
+      // Nút "mở Chrome Web Store" ĐÃ GỠ: bản này cài thủ công, không có trang cửa hàng để trỏ
+      // tới, và chỉ ra một URL cửa hàng chung chung thì chẳng giúp ai.
       console.error('[App] 🛡️ Clone-detected overlay shown — extension not authorized');
     }
     function _hideCloneDetectedOverlay() {

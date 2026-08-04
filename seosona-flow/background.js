@@ -92,7 +92,7 @@ chrome.storage.onChanged.addListener((changes, area) => {
 });
 function getApiBaseUrl() { return _apiBaseUrl; }
 
-// Cổng mặc định chỉ biết localhost/127.0.0.1 và *.seosona.vn. Người dùng trỏ apiBaseUrl sang host
+// Cổng mặc định chỉ biết localhost/127.0.0.1 và vài host backend cũ. Người dùng trỏ apiBaseUrl sang host
 // khác thì cổng phải học host đó, không thì traffic backend bị xếp nhầm là 'other' và đi lọt.
 function _syncGateBackendHosts() {
   try {
@@ -1670,7 +1670,7 @@ async function openTemplatePreviewWindow(template, kind = 'template') {
 // Cầu nối website ĐÃ GỠ (2026-08-04, quyết định của chủ dự án).
 //
 // Trước đây ở đây có chrome.runtime.onMessageExternal mở 12 khả năng điều khiển extension từ
-// https://labs.seosona.vn: mở xem trước mẫu, tải media, chạy/dừng workflow, chạy node, đọc dự án
+// một web-app đi kèm mã gốc: mở xem trước mẫu, tải media, chạy/dừng workflow, chạy node, đọc dự án
 // hiện tại, liệt kê thư viện Flow, tải ảnh lên Flow, đóng cửa sổ...
 //
 // Nó CHƯA BAO GIỜ CHẠY: manifest không khai `externally_connectable`, mà thiếu khoá đó thì Chrome
@@ -2777,7 +2777,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
 
     // Relay trạng thái node sang web-app ĐÃ GỠ (2026-08-04).
-    // Trước đây mỗi sự kiện workflow được bắn sang mọi tab đang mở labs.seosona.vn — tên miền
+    // Trước đây mỗi sự kiện workflow được bắn sang mọi tab đang mở web-app đi kèm mã gốc — tên miền
     // của web-app đi kèm bản gốc, KHÔNG thuộc về người dùng bản này. Không có content script và
     // không có host permission cho tên miền đó, nên đường này chưa từng tới đích; nhưng nó vẫn
     // quét tab theo URL mỗi lần có sự kiện. Sản phẩm chạy cục bộ thì không đi hỏi tên miền lạ.

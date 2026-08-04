@@ -22,7 +22,9 @@
     const _pat = window._getMediaUrlPattern?.() || 'getMediaUrlRedirect';
     if (!url || !url.includes(_pat)) return '';
     try {
-      const urlObj = new URL(url, 'https://aitestkitchen.withgoogle.com');
+      // URL nền chỉ để phân giải đường dẫn TƯƠNG ĐỐI, không hề gửi request. Dùng đúng host của
+      // Flow thay vì một tên miền Google khác không liên quan tới sản phẩm này.
+      const urlObj = new URL(url, 'https://labs.google');
       // Pattern 1: ?name=UUID (simple)
       const name = urlObj.searchParams.get('name');
       if (name && /^[a-f0-9-]{8,}$/i.test(name)) return name;

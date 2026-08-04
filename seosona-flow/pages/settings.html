@@ -811,43 +811,12 @@
         </div>
 
         <!-- OTP code hiển thị -->
-        <div id="telegramOtpDisplay" class="hidden">
-          <div class="telegram-otp-card">
-            <p class="s-info-note" style="margin-bottom: 8px;">Send this OTP code to the bot <strong id="telegramBotName">@seosonaflow_bot</strong>:</p>
-            <div class="telegram-otp-box">
-              <span id="telegramOtpCode" class="telegram-otp-code">------</span>
-              <button class="s-btn s-btn-secondary s-btn-sm" id="telegramOtpCopyBtn" title="Copy">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                </svg>
-              </button>
-              <a id="telegramBotLink" href="https://t.me/seosonaflow_bot" target="_blank" class="s-btn s-btn-primary s-btn-sm" style="margin-left: 4px;">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                  <polyline points="15 3 21 3 21 9"></polyline>
-                  <line x1="10" y1="14" x2="21" y2="3"></line>
-                </svg>
-                Open Bot
-              </a>
-            </div>
-            <div class="telegram-otp-timer">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="12 6 12 12 16 14"></polyline>
-              </svg>
-              <span id="telegramOtpCountdown">5:00 left</span>
-            </div>
-            <p class="s-hint" style="margin-top: 8px;">Send: <code>/link <span id="telegramOtpCodeSmall">------</span></code></p>
-          </div>
-          <button class="s-btn s-btn-secondary s-btn-sm" id="telegramOtpCancelBtn" style="margin-top: 8px;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-            Hủy
-          </button>
-        </div>
+        <!-- Khối ghép nối OTP với bot Telegram của bên vận hành gốc ĐÃ GỠ (2026-08-04).
+             Nó bắt đầu bằng class="hidden" và KHÔNG có chỗ nào gỡ class đó, cũng không có lời
+             gọi nào sinh mã OTP — tức UI chết, không bao giờ hiện được. Nó lại trỏ tới một bot
+             mà người dùng bản này không sở hữu, và cách ghép nối đó cần backend xác thực mã.
+             Tính năng Telegram THẬT vẫn còn: người dùng tự nhập token bot của MÌNH ở dưới. -->
+
 
         <!-- Trạng thái đã liên kết -->
         <div id="telegramLinked" class="hidden">
@@ -865,7 +834,7 @@
               </div>
               <div class="telegram-linked-row">
                 <span class="telegram-linked-label">Bot:</span>
-                <span class="telegram-linked-value" id="telegramLinkedBot">@seosonaflow_bot</span>
+                <span class="telegram-linked-value" id="telegramLinkedBot">—</span>
               </div>
               <div class="telegram-linked-row" id="telegramBotTypeRow">
                 <span class="telegram-linked-label" data-i18n="settings.telegramBotType">Type</span>:

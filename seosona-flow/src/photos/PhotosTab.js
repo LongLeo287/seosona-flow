@@ -24,7 +24,6 @@ class PhotosTab {
     'amazon': 'https://www.amazon.com/s?ref=nb_sb_noss&k=',
     'behance': 'https://www.behance.net/search/projects?search=',
     'dribbble': 'https://dribbble.com/search/',
-    'magnific': 'https://www.magnific.com/search?q=',
     'pexels': 'https://www.pexels.com/search/',
     'shutterstock': 'https://www.shutterstock.com/search/',
     'redbubble': 'https://www.redbubble.com/shop/?query=',
