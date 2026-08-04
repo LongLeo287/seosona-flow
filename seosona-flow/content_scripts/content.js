@@ -4200,13 +4200,18 @@ async function downloadTileMedia(tileId, promptText, taskName, fileName, resolut
   // U-2.2: file_id lookup trước (persistent, chính xác nhất)
   if (flowFileId) {
     const tile = findTileByFileId(flowFileId);
-    if (_isFailedTile(tile)) {
-      // Nói rõ LÝ DO chứ không im lặng trả false — người dùng cần biết prompt nào bị chặn
-      // để sửa chữ, chứ thử lại y nguyên thì Google vẫn chặn và chỉ tốn credit.
-      sendLog('Ô này gen thất bại (Flow chặn nội dung) — bỏ qua, không tải. Sửa prompt rồi gen lại.', 'warn');
-      return false;
-    }
     if (tile) tileId = tile.dataset.tileId;
+  }
+
+  // Cổng chặn ô HỎNG — đặt SAU khi đã chốt tileId, và NGOÀI mọi nhánh.
+  // Bản trước tôi đặt nó BÊN TRONG `if (flowFileId)`, nên gọi bằng tileId là bỏ qua hoàn toàn
+  // — đúng đường mà workflow đang dùng, tức chốt chặn không chạy lần nào. Ô bị Flow chặn vẫn
+  // vào tới menu tải, Flow trả trang HTML lỗi, và ta lưu ra .htm.
+  if (_isFailedTile(_getTileById(tileId))) {
+    // Nói rõ LÝ DO chứ không im lặng trả false — người dùng cần biết prompt nào bị chặn để sửa
+    // chữ; thử lại y nguyên thì Google vẫn chặn và chỉ tốn credit.
+    sendLog('Ô này gen thất bại (Flow chặn nội dung) — bỏ qua, không tải. Sửa prompt rồi gen lại.', 'warn');
+    return false;
   }
 
   // Auto-detect video tile và dùng video resolution nếu có
@@ -4246,6 +4251,13 @@ async function downloadTileMedia(tileId, promptText, taskName, fileName, resolut
   console.log(`[SEOSONA Flow] downloadTileMedia: Flow menu FAILED for ${tileId.substring(0, 20)}, trying legacy fallback`);
 
   // Fallback: chrome.downloads API (chỉ work cho image có HTTP URL, KHÔNG work cho video blob: URL)
+  // Menu Flow hỏng mà ô KHÔNG có media thật thì đừng thử legacy: nó sẽ fetch một URL trả về
+  // trang HTML rồi lưu thành .htm. Không có file còn hơn có file mở không được.
+  const _t = _getTileById(tileId);
+  if (_t && !_t.querySelector('video[src], video source[src], img[src]')) {
+    sendLog('Ô chưa có media thật — bỏ qua để khỏi lưu file HTML rác.', 'warn');
+    return false;
+  }
   const legacySuccess = await _downloadTileMediaLegacy(tileId, promptText, taskName, fileName, res, index);
   if (legacySuccess) {
     console.log(`[SEOSONA Flow] downloadTileMedia: Legacy fallback SUCCESS for ${tileId.substring(0, 20)}`);
