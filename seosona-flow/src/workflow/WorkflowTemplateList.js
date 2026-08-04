@@ -369,7 +369,41 @@ class WorkflowTemplateList {
   /**
    * API call helper - works for both anonymous and logged-in users
    */
+  /**
+   * Nạp 1,4 MB workflow mẫu — CHỈ khi thật sự cần.
+   *
+   * Trước đây hai file này nằm trong sidebar.html nên mở sidebar là tải và phân tích cả 30
+   * mẫu, dù người dùng chỉ mở một cái hoặc không mở cái nào. Nay chèn thẻ script lúc cần.
+   *
+   * Nhớ lời hứa (promise) chứ không nhớ cờ boolean: hai chỗ gọi cùng lúc thì cùng chờ MỘT
+   * lượt tải, không tải hai lần. Tải hỏng thì xoá lời hứa để lần sau thử lại được.
+   */
+  static async ensureBundledTemplates() {
+    if (Array.isArray(window.BUNDLED_TEMPLATES) && window.BUNDLED_TEMPLATES.length) return;
+    if (WorkflowTemplateList._loadingBundled) return WorkflowTemplateList._loadingBundled;
+    const one = (src) => new Promise((res, rej) => {
+      const el = document.createElement('script');
+      el.src = chrome.runtime.getURL(src);
+      el.onload = res;
+      el.onerror = () => rej(new Error('không nạp được ' + src));
+      document.head.appendChild(el);
+    });
+    WorkflowTemplateList._loadingBundled = (async () => {
+      try {
+        // THỨ TỰ quan trọng: file Extra append vào mảng do file đầu tạo ra.
+        await one('src/workflow/BundledTemplates.js');
+        await one('src/workflow/BundledWorkflowsExtra.js');
+      } catch (e) {
+        WorkflowTemplateList._loadingBundled = null;   // cho phép thử lại
+        console.warn('[WorkflowTemplateList] nạp workflow mẫu thất bại:', e && e.message);
+        if (!Array.isArray(window.BUNDLED_TEMPLATES)) window.BUNDLED_TEMPLATES = [];
+      }
+    })();
+    return WorkflowTemplateList._loadingBundled;
+  }
+
   async _apiCall(endpoint, method = 'GET', data = null) {
+    await WorkflowTemplateList.ensureBundledTemplates();
     // === 14 TEMPLATES BYPASS ===
     if (method === 'GET' && endpoint.includes('workflow-templates') && !endpoint.includes('/rate')) {
       // If fetching categories

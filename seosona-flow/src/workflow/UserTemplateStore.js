@@ -21,8 +21,17 @@
     cfg = cfg || {};
     var area = cfg.area;
     if (!area || typeof area.get !== 'function') throw new Error('UserTemplateStore requires a storage area');
+    // BUNDLED_TEMPLATES nay nạp THEO YÊU CẦU (1,4 MB, xem ensureBundledTemplates). Nếu ai đó
+    // đọc trước lúc nạp xong thì mảng chưa có — kích nạp rồi trả về những gì đang có, để lần
+    // đọc sau đã đủ. Trả rỗng mà im lặng thì người dùng thấy kho mẫu trống rỗng không hiểu vì sao.
     var getBundled = typeof cfg.getBundled === 'function' ? cfg.getBundled
-      : function () { return (typeof window !== 'undefined' && window.BUNDLED_TEMPLATES) || []; };
+      : function () {
+        var arr = (typeof window !== 'undefined' && window.BUNDLED_TEMPLATES) || [];
+        if (!arr.length && typeof window !== 'undefined' && window.WorkflowTemplateList) {
+          try { window.WorkflowTemplateList.ensureBundledTemplates(); } catch (_e) { /* nạp sau */ }
+        }
+        return arr;
+      };
     var now = typeof cfg.now === 'function' ? cfg.now : function () { return new Date().toISOString(); };
     var _seq = 0;
     var genId = typeof cfg.genId === 'function' ? cfg.genId

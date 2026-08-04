@@ -1900,8 +1900,8 @@
 <script src="../src/workflow/WorkflowResultsTab.js"></script>
 <script src="../src/workflow/FlowDoctorTab.js"></script>
 <script src="../src/core/ConnectorHealthDot.js"></script>
-  <script src="../src/workflow/BundledTemplates.js"></script>
-  <script src="../src/workflow/BundledWorkflowsExtra.js"></script>
+  <!-- 30 workflow mẫu = 1,4 MB. Nạp sẵn là bắt MỌI lần mở sidebar trả giá cho cả ba mươi
+       trong khi người dùng mở một cái. Nay nạp theo yêu cầu — xem ensureBundledTemplates(). -->
   <!-- Kho template RIÊNG của user (af_user_templates) — tách khỏi bản mặc định bundled. -->
   <script src="../src/workflow/UserTemplateStore.js"></script>
   <script src="../src/workflow/WorkflowTemplateList.js"></script>

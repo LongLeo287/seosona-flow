@@ -318,8 +318,6 @@
       "../src/workflow/WorkflowResultsTab.js",
       "../src/workflow/FlowDoctorTab.js",
       "../src/core/ConnectorHealthDot.js",
-      "../src/workflow/BundledTemplates.js",
-      "../src/workflow/BundledWorkflowsExtra.js",
       "../src/workflow/UserTemplateStore.js",
       "../src/workflow/WorkflowTemplateList.js",
       "../src/workflow/WorkflowMediaModal.js",
