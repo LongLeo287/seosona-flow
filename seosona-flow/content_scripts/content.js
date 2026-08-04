@@ -4401,6 +4401,36 @@ async function _downloadTileMediaLegacy(tileId, promptText, taskName, fileName, 
  *
  * @returns {Promise<boolean>} true nếu đã click được "Download full size"
  */
+/**
+ * Nhận diện dòng "bản gốc" và dòng "đã phóng to" trong submenu Tải xuống.
+ *
+ * Đây là ranh giới quan trọng nhất của cả đường tải, nên để ở phạm vi dùng chung:
+ *   - "Kích thước gốc" / "Original size" = TẢI THẲNG bản render gốc.
+ *   - "Đã tăng độ phân giải" / "Upscaled" = một THAO TÁC phóng to, chạy bất đồng bộ và có thể
+ *     TRỪ TÍN DỤNG (menu Ultra ghi rõ "4K · 50 tín dụng"). Bấm vào không ra file ngay.
+ * Nút Tải phải luôn nghĩa là lấy bản gốc; phóng to là việc người dùng chủ động chọn.
+ */
+function _fullSizeTexts() {
+  var cfg = _getDynamicSelector('download_full_size_item');
+  return (cfg?.text_match?.length ? cfg.text_match : [
+    'original size', 'original', 'kích thước gốc', 'bản gốc', 'gốc',
+    '元のサイズ', '원본 크기', 'taille originale', 'tamaño original', 'ukuran asli'
+  ]).map(function (x) { return String(x).toLowerCase(); });
+}
+
+// Dòng phóng to — KHÔNG phải dòng khoá gói. Tài khoản Ultra mở khoá 4K nên không còn chữ
+// "Upgrade" để mà lọc; cái phải nhận ra là "đã tăng độ phân giải", không phải "nâng cấp".
+function _isUpscaledItem(text) {
+  var t = String(text || '').toLowerCase();
+  return t.includes('upscal') || t.includes('tăng độ phân giải') || t.includes('đã tăng');
+}
+
+// Dòng tốn tín dụng — menu Ultra ghi "· 50 tín dụng" / "· 50 credits".
+function _costsCredits(text) {
+  var t = String(text || '').toLowerCase();
+  return /\d+\s*(tín dụng|credits?)/.test(t);
+}
+
 async function downloadViaFullSizeMenu(tile, fileName, promptText, taskName, index) {
   if (!tile) return false;
   // Menu Flow là 2 TẦNG (verified screenshot 2026-07-11): ⋮ → "Download" (cấp 1, có submenu) →
@@ -4412,11 +4442,7 @@ async function downloadViaFullSizeMenu(tile, fileName, promptText, taskName, ind
     'download', 'tải xuống', 'tải về', 'ダウンロード', '다운로드', 'télécharger', 'descargar', 'unduh'
   ]).map(s => String(s).toLowerCase());
   // Text resolution "full size" trong submenu = "Original Size". Seed `download_full_size_item.text_match`.
-  const cfgItem = _getDynamicSelector('download_full_size_item');
-  const FULL_SIZE_TEXTS = (cfgItem?.text_match?.length ? cfgItem.text_match : [
-    'original size', 'original', 'kích thước gốc', 'bản gốc', 'gốc',
-    '元のサイズ', '원본 크기', 'taille originale', 'tamaño original', 'ukuran asli'
-  ]).map(s => String(s).toLowerCase());
+  const FULL_SIZE_TEXTS = _fullSizeTexts();
 
   await _acquireCtxMenuLock();
   try {
@@ -4784,10 +4810,17 @@ async function downloadViaFlowMenu(tileId, resolution, fileName, promptText, tas
     const _pickable = [...subItems].filter((it) => {
       if (it.getAttribute('aria-disabled') === 'true' || it.hasAttribute('disabled')) return false;
       const t = (it.textContent || '').toLowerCase();
-      if (t.includes('upgrade') || t.includes('nâng cấp')) return false;
-      if (t.includes('gif')) return false;   // GIF không phải bản gốc
+      if (t.includes('upgrade') || t.includes('nâng cấp')) return false;  // khoá gói (tài khoản thường)
+      if (t.includes('gif')) return false;   // "270p · Ảnh GIF động" không phải video gốc
       return (it.textContent || '').trim().length > 0;
     });
+
+    // Dòng KHÔNG tốn tín dụng. Menu Ultra mở khoá 4K nên nó không còn chữ "Upgrade" để lọc —
+    // thứ phân biệt là "· 50 tín dụng". Tự bấm vào đó là tiêu tiền của người dùng mà không hỏi.
+    const _free = _pickable.filter((it) => !_costsCredits(it.textContent));
+
+    // Dòng TẢI THẲNG (bản gốc), tách khỏi dòng phóng to.
+    const _original = _free.filter((it) => _textIncludesAny((it.textContent || '').toLowerCase(), _fullSizeTexts()));
 
     // So khớp KHÔNG phân biệt hoa thường: setting lưu '1k' còn menu ghi '1K'.
     const _startsWith = (item, label) =>
@@ -4803,15 +4836,29 @@ async function downloadViaFlowMenu(tileId, resolution, fileName, promptText, tas
     let actualResLabel = resLabel;
     for (let fi = startIdx; fi < fallbackChain.length && !targetItem; fi++) {
       const tryLabel = fallbackChain[fi];
-      for (const item of _pickable) {
+      for (const item of _free) {
         if (_startsWith(item, tryLabel)) { targetItem = item; actualResLabel = tryLabel; break; }
       }
+    }
+
+    // Mức người dùng xin lại là mức PHÓNG TO (Ultra: ảnh 2K/4K, video 1080p/4K đều ghi "đã
+    // tăng độ phân giải") thì đổi sang bản gốc và nói rõ. Lý do không phải thẩm mỹ:
+    //   - phóng to là một THAO TÁC chạy nền, bấm xong KHÔNG có file ngay; ta chờ tải rồi nhận
+    //     về trang thông báo và lưu ra .htm — đúng triệu chứng đang gặp;
+    //   - với video nó còn TRỪ TÍN DỤNG.
+    // Muốn ảnh 2K/4K thật thì dùng nút phóng to riêng, không mượn nút Tải.
+    if (targetItem && _isUpscaledItem(targetItem.textContent) && _original.length) {
+      const orig = _original[0];
+      sendLog(`${resLabel} trên tài khoản này là bản PHÓNG TO (không tải thẳng được) — tải ` +
+        `"${(orig.textContent || '').trim().split(/\s+/)[0]}" bản gốc thay thế.`, 'warn');
+      targetItem = orig;
+      actualResLabel = (orig.textContent || '').trim().split(/\s+/)[0] || resLabel;
     }
 
     // Vẫn chưa có thì ưu tiên dòng ghi "Original size" — đó là bản render gốc; các dòng
     // "Upscaled" là thao tác phóng to, đi đường khác và không phải thứ nút Tải nên trả về.
     if (!targetItem) {
-      targetItem = _pickable.find((it) => _textIncludesAny((it.textContent || '').toLowerCase(), FULL_SIZE_TEXTS)) || null;
+      targetItem = _pickable.find((it) => _textIncludesAny((it.textContent || '').toLowerCase(), _fullSizeTexts())) || null;
       if (targetItem) actualResLabel = (targetItem.textContent || '').trim().split(/\s+/)[0] || resLabel;
     }
 
@@ -4825,8 +4872,8 @@ async function downloadViaFlowMenu(tileId, resolution, fileName, promptText, tas
       console.warn(`[SEOSONA Flow] downloadViaFlowMenu: ${resLabel} not found in sub-menu. Available: [${availableItems}]`);
       // Chốt cuối vẫn phải lấy từ danh sách ĐÃ LỌC — bản cũ duyệt subItems thô nên có thể
       // rơi trúng dòng Upgrade và biến cú tải thành cú mở trang gói.
-      if (_pickable.length) {
-        targetItem = _pickable[_pickable.length - 1];   // dòng thấp nhất = an toàn nhất
+      if (_original.length || _free.length) {
+        targetItem = _original[0] || _free[_free.length - 1];   // bản gốc trước, rồi mới tới mức thấp nhất
         const firstWord = (targetItem.textContent || '').trim().split(' ')[0] || '?';
         sendLog(`${resLabel} không khả dụng, tải ${firstWord} thay thế`, 'warn');
       }
