@@ -2332,7 +2332,9 @@
           getUser: () => ({ id: 'local_user', name: 'Local User', plan_slug: 'unlimited' }),
           user: { id: 'local_user', name: 'Local User', plan_slug: 'unlimited' },
           token: 'dummy_token',
-          apiBaseUrl: 'https://api.seosona.com/api/v1',
+          // Không trỏ ra tên miền ngoài, kể cả trong đối tượng giả lập. Bản này không có backend;
+          // để một URL thật ở đây là mời gọi ai đó lỡ tay dùng nó.
+          apiBaseUrl: '',
           _apiCall: async () => ({}),
           logout: async () => {},
           showLoginModal: () => {},

@@ -1,6 +1,6 @@
 {
   "schema": "seosona.release.version.v1",
-  "version": "1.1.37",
+  "version": "1.2.0",
   "note": "Single source of truth for the product version. Advancing this requires package and migration evidence. Consumers are reconciled by scripts/release/sync-version.mjs.",
   "schemaVersions": {
     "workflow": 1,
@@ -9,6 +9,9 @@
     "consentPolicy": 1
   },
   "consumers": [
-    { "file": "manifest.json", "path": "version" }
+    {
+      "file": "manifest.json",
+      "path": "version"
+    }
   ]
 }
