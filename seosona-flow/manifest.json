@@ -180,7 +180,7 @@
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self';"
   },
-  "description": "Auto Flow - Automate ChatGPT, Grok & Google Flow for AI image/video generation. Batch prompts, smart workflows, auto 2K/4K download.",
+  "description": "SEOSONA Flow — batch prompts and visual workflows for Google Flow, ChatGPT, Grok and Gemini. Runs on your own accounts, fully local.",
   "host_permissions": [
     "https://labs.google/*",
     "*://chatgpt.com/*",
@@ -287,5 +287,6 @@
         "*://gemini.google.com/*"
       ]
     }
-  ]
+  ],
+  "homepage_url": "https://github.com/LongLeo287/seosona-flow"
 }
