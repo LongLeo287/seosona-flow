@@ -10468,7 +10468,8 @@
         // Giờ: dùng promptText trực tiếp làm basename. Path = {folder}/{subfolder}/{promptText}.{ext}.
         const sanitize = (s) => String(s || '').replace(/[\/\\:*?"<>|]/g, '_').trim();
         const safeBase = sanitize(promptText) || `${provider}-${Date.now()}-${index}`;
-        const safeFolder = sanitize(folder) || 'flow-output';
+        // Cùng hằng số với mọi đường tải khác (trước đây riêng chỗ này dự phòng 'flow-output').
+        const safeFolder = sanitize(folder) || (globalThis.FilenameBuilder?.DEFAULT_FOLDER || 'seosonaflow_output');
         const safeWfName = wfName ? sanitize(wfName).substring(0, 60) : '';
         const filename = safeWfName
           ? `${safeFolder}/${safeWfName}/${safeBase}.${ext}`

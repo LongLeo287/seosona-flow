@@ -4057,51 +4057,26 @@ function getDownloadSettings() {
  */
 // Chuyển tiếng Việt có dấu → ASCII (ả→a, đ→d, ê→e...)
 function _toAscii(str) {
-  if (!str) return str;
-  return str
-    .replace(/[đĐ]/g, c => c === 'đ' ? 'd' : 'D')
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '');
+  // Giữ lại làm lớp mỏng: FilenameBuilder là bản dùng chung, đây chỉ là lối vào cũ.
+  return globalThis.FilenameBuilder ? globalThis.FilenameBuilder.toAscii(str) : str;
 }
 
-function _buildFilename({ template, project, prompt, index, taskName, folder, ext }) {
-  const now = new Date();
-  const date = now.toISOString().slice(0, 10); // 2026-03-12
-  const time = now.toTimeString().slice(0, 8).replace(/:/g, '-'); // 14-30-25
-
-  // Sanitize inputs — convert Vietnamese diacritics to ASCII, strip special chars
-  const safeProject = _toAscii(project || '').substring(0, 30).replace(/[^a-zA-Z0-9_-]/g, '_');
-  const safePrompt = _toAscii(prompt || 'flow').substring(0, 40).replace(/[^a-zA-Z0-9_-]/g, '_');
-  const safeIndex = index ? String(index).padStart(3, '0') : '';
-
-  let filename = (template || '[Date]_[Prompt]')
-    .replace(/\[Date\]/gi, date)
-    .replace(/\[Time\]/gi, time)
-    .replace(/\[Project\]/gi, safeProject)
-    .replace(/\[Prompt\]/gi, safePrompt)
-    .replace(/\[Index\]/gi, safeIndex);
-
-  // Clean up: remove leading/trailing underscores, collapse multiple underscores
-  filename = filename.replace(/_+/g, '_').replace(/^_|_$/g, '');
-
-  if (!filename) filename = 'flow_' + Date.now();
-
-  // Build full path
-  const baseFolder = folder || 'seosonaflow_output';
-  // [Bug fix 2026-06-10] Dedupe taskName === baseFolder để tránh duplicate path.
-  // Vd user set node.download_folder = workflow.wf_name = 'seosonaflow_output' (cùng setting) →
-  // naive concat tạo 'seosonaflow_output/seosonaflow_output/file' fail zsh "no such file or directory".
-  const extension = ext || 'png';
-
-  if (taskName) {
-    const safeTaskName = _toAscii(taskName).substring(0, 30).replace(/[^a-zA-Z0-9_-]/g, '_');
-    if (safeTaskName.toLowerCase() === baseFolder.toLowerCase()) {
-      console.warn('[SEOSONA Flow] _buildFilename: taskName trùng baseFolder, skip duplicate layer:', baseFolder);
-      return `${baseFolder}/${filename}.${extension}`;
-    }
-    return `${baseFolder}/${safeTaskName}/${filename}.${extension}`;
+/**
+ * Dựng tên file từ mẫu. Phần lõi nằm ở src/core/FilenameBuilder.js — dùng chung với
+ * DownloadHelper (sidebar) và GenTab, nên ba nơi không thể lệch nhau nữa.
+ *
+ * Chú thích cũ ở đây ghi "content.js chạy trong page context, không với tới window.DownloadHelper"
+ * nên phải chép tay. Điều đó KHÔNG còn đúng: content script nạp được module dùng chung, y hệt
+ * cách DownloadPrefs đang làm.
+ */
+function _buildFilename(options) {
+  var FB = globalThis.FilenameBuilder;
+  if (!FB) {
+    // Module chưa nạp thì vẫn phải ra được một cái tên dùng tạm, đừng ném lỗi giữa lượt tải.
+    var o = options || {};
+    return (o.folder || 'seosonaflow_output') + '/flow_' + Date.now() + '.' + (o.ext || 'png');
   }
-  return `${baseFolder}/${filename}.${extension}`;
+  return FB.buildPath(options);
 }
 
 /**
@@ -4219,7 +4194,14 @@ async function downloadTileMedia(tileId, promptText, taskName, fileName, resolut
   // khác nhau, lẫn thang là chọn nhầm dòng trong menu.
   const _tileEl0 = _getTileById(tileId);
   const _isVideoTile = !!(_tileEl0 && _q('tile_video', _tileEl0));
-  if (videoResolution && _isVideoTile) res = videoResolution;
+  if (_isVideoTile) {
+    // Ô video thì PHẢI dùng thang của video. Trước đây chỉ đổi khi caller truyền videoResolution —
+    // mà rà lại thì KHÔNG caller nào truyền cả (8 chỗ gọi qua MessageBridge đều dừng ở 5-6 tham
+    // số). Nên video tải từ sidebar chạy bằng mức của ẢNH ('1k'), rồi bị hạ về 720p một cách
+    // tình cờ kèm dòng nhật ký sai ("1K là bản phóng to" — nói về video thì vô nghĩa).
+    // Nay tự đọc thiết lập video khi caller không đưa, nên đúng dù gọi từ đường nào.
+    res = videoResolution || (await getDownloadSettings()).videoResolution;
+  }
 
   // Ưu tiên Flow native menu cho CẢ image và video
   // Image: right-click <img> → "Tải xuống" → 1K/2K/4K

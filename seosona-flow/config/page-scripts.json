@@ -165,6 +165,7 @@
     "pages/sidebar.html": [
       "../src/core/ErrorCatalog.js",
       "../src/core/DownloadPrefs.js",
+      "../src/core/FilenameBuilder.js",
       "../scripts/loading-i18n.js",
       "../lib/drawflow.min.js",
       "../lib/html2canvas.min.js",

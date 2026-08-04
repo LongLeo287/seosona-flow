@@ -34,6 +34,7 @@
         "src/core/FlowCreditsScanner.js",
         "src/core/MediaCache.js",
         "src/core/DownloadPrefs.js",
+        "src/core/FilenameBuilder.js",
         "content_scripts/content.js"
       ],
       "matches": [

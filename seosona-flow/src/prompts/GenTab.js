@@ -3861,8 +3861,8 @@ class GenTab {
     const time = now.toTimeString().slice(0, 8).replace(/:/g, '-');
 
     // Strip diacritics + non-ASCII (U+0300 to U+036F = combining diacritical marks)
-    const toAscii = (s) => (s || '').replace(/[đĐ]/g, c => c === 'đ' ? 'd' : 'D')
-      .normalize('NFD').replace(/[̀-ͯ]/g, '');
+    // Dùng bản chung — trước đây đây là bản toAscii thứ ba trong repo.
+    const toAscii = (x) => (globalThis.FilenameBuilder ? globalThis.FilenameBuilder.toAscii(x) : (x || ''));
 
     const safeProject = toAscii(project || 'flow').substring(0, 30).replace(/[^a-zA-Z0-9_-]/g, '_');
     const safePrompt = toAscii(prompt || 'chatgpt').substring(0, 40).replace(/[^a-zA-Z0-9_-]/g, '_');
@@ -3878,9 +3878,12 @@ class GenTab {
     filename = filename.replace(/_+/g, '_').replace(/^_|_$/g, '');
     if (!filename) filename = 'chatgpt_' + Date.now();
 
-    // CRITICAL: Read root folder từ settings (af_settings.downloadFolder), fallback 'flow-output'.
-    // Trước đó hardcode 'flow-output' → user setting downloadFolder bị ignore cho ChatGPT/Grok.
-    const safeRootFolder = toAscii(downloadFolder || 'flow-output').replace(/[^a-zA-Z0-9_-]/g, '_') || 'flow-output';
+    // Thư mục gốc lấy từ settings (af_settings.downloadFolder).
+    // LỆCH ĐÃ SỬA: chỗ này từng dự phòng 'flow-output' trong khi mọi đường tải khác dự phòng
+    // 'seosonaflow_output'. Người dùng chưa đặt thư mục thì ảnh từ Flow và ảnh từ ChatGPT/Grok
+    // rơi vào HAI thư mục khác nhau mà không vì lý do gì. Nay cùng một hằng số.
+    const _DEF = globalThis.FilenameBuilder?.DEFAULT_FOLDER || 'seosonaflow_output';
+    const safeRootFolder = toAscii(downloadFolder || _DEF).replace(/[^a-zA-Z0-9_-]/g, '_') || _DEF;
 
     // [Bug fix 2026-06-10] Dedupe subFolder/taskName trùng baseFolder → tránh duplicate path
     // (vd user nhập subFolder = 'seosonaflow_output' = downloadFolder setting → path

@@ -39,10 +39,12 @@ test('boundary: all scripts are CSP-safe local references', () => {
 // 184 -> 185: MetadataScrubber.js (dọn metadata riêng tư ở đường tải về).
 // 186 -> 183: GỠ BundledTemplates + BundledWorkflowsExtra khỏi danh sách nạp sẵn (1,4 MB cho
 // 30 workflow mẫu mà người dùng mở một cái) — nay nạp theo yêu cầu, xem ensureBundledTemplates.
+// 184 -> 185: FilenameBuilder.js — lõi dựng tên file, gom 3 bản chép (content.js ·
+// DownloadHelper · GenTab) vốn đã LỆCH nhau ở thư mục mặc định.
 // 183 -> 184: DownloadPrefs.js — nguồn chân lý cho mức tải về, nạp ở CẢ sidebar lẫn content
 // script của Flow để hai bên không còn tự chép mặc định mỗi nơi một kiểu.
 test('negative: sidebar keeps its full ordered script list', () => {
-  assert.equal(config.pages['pages/sidebar.html'].length, 184);
+  assert.equal(config.pages['pages/sidebar.html'].length, 185);
   assert.equal(config.pages['pages/sidebar.html'][0], '../src/core/ErrorCatalog.js');
 });
 

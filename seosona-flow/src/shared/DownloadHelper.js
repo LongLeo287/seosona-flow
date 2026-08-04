@@ -11,11 +11,8 @@
  */
 // Chuyển tiếng Việt có dấu → ASCII (ả→a, đ→d, ê→e...)
 function _toAscii(str) {
-  if (!str) return str;
-  return str
-    .replace(/[đĐ]/g, c => c === 'đ' ? 'd' : 'D')
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '');
+  // Lớp mỏng — bản thật ở src/core/FilenameBuilder.js.
+  return globalThis.FilenameBuilder ? globalThis.FilenameBuilder.toAscii(str) : str;
 }
 
 class DownloadHelper {
@@ -46,45 +43,13 @@ class DownloadHelper {
    * @returns {string} Full filename path like "flow-output/CuteCats/2026-03-12_CuteCats_cute_cat_001.png"
    */
   static buildFilename({ template, project, prompt, index, taskName, folder, ext }) {
-    const now = new Date();
-    const date = now.toISOString().slice(0, 10); // 2026-03-12
-    const time = now.toTimeString().slice(0, 8).replace(/:/g, '-'); // 14-30-25
-
-    // Sanitize inputs — convert Vietnamese diacritics to ASCII, strip special chars
-    const safeProject = _toAscii(project || '').substring(0, 30).replace(/[^a-zA-Z0-9_-]/g, '_');
-    const safePrompt = _toAscii(prompt || 'flow').substring(0, 40).replace(/[^a-zA-Z0-9_-]/g, '_');
-    const safeIndex = index ? String(index).padStart(3, '0') : '';
-
-    let filename = (template || '[Date]_[Prompt]')
-      .replace(/\[Date\]/gi, date)
-      .replace(/\[Time\]/gi, time)
-      .replace(/\[Project\]/gi, safeProject)
-      .replace(/\[Prompt\]/gi, safePrompt)
-      .replace(/\[Index\]/gi, safeIndex);
-
-    // Clean up: remove leading/trailing underscores, collapse multiple underscores
-    filename = filename.replace(/_+/g, '_').replace(/^_|_$/g, '');
-
-    if (!filename) filename = 'flow_' + Date.now();
-
-    // Build full path
-    const baseFolder = folder || 'seosonaflow_output';
-    const extension = ext || 'png';
-
-    if (taskName) {
-      const safeTaskName = _toAscii(taskName).substring(0, 30).replace(/[^a-zA-Z0-9_-]/g, '_');
-      // [Bug fix 2026-06-10] Dedupe nếu taskName trùng baseFolder → tránh duplicate path
-      // (vd user set node.download_folder = workflow.wf_name = 'seosonaflow_output' = setting →
-      // path output 'seosonaflow_output/seosonaflow_output/file.png' fail zsh "no such file or directory").
-      // Compare case-insensitive sau khi sanitize để chắc chắn match same physical folder.
-      if (safeTaskName.toLowerCase() === baseFolder.toLowerCase()) {
-        console.warn('[DownloadHelper] taskName trùng baseFolder, skip duplicate layer:', baseFolder);
-        return `${baseFolder}/${filename}.${extension}`;
-      }
-      return `${baseFolder}/${safeTaskName}/${filename}.${extension}`;
-    }
-    return `${baseFolder}/${filename}.${extension}`;
+    // Lõi nằm ở src/core/FilenameBuilder.js — dùng chung với content.js và GenTab.
+    // Trước đây ba nơi mỗi nơi một bản chép, và đã LỆCH thật ở thư mục mặc định.
+    const FB = globalThis.FilenameBuilder;
+    if (!FB) throw new Error('FilenameBuilder chua duoc nap — kiem tra thu tu script trong sidebar.html');
+    return FB.buildPath({ template, project, prompt, index, taskName, folder, ext });
   }
+
 
   // ═══════════════════════════════════════════════════════════════
   // 2. Load Download Settings
