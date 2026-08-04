@@ -89,7 +89,12 @@
           };
           let _lastGroup = null;
           return Object.entries(nodeTypes)
-          .filter(([key]) => !['transform', 'merge', 'output'].includes(key))
+          // 'transform' và 'output' đã gỡ hẳn khỏi NodeTemplates (không có trong catalog, executor
+          // không dispatch) nên không cần lọc nữa.
+          // 'merge' thì NGƯỢC LẠI — nó SỐNG: có trong catalog 26 type, executor dispatch ở
+          // WorkflowExecutor ~4487, và có sẵn nhãn UI ['Logic','Gộp',...]. Nó bị gộp chung vào
+          // danh sách lọc này nên người dùng KHÔNG có cách nào thêm node merge từ giao diện, mà
+          // cũng không có đường tạo nào khác. Một node chạy được nhưng vô hình. Nay bỏ lọc.
           .filter(isAllowedNode)
           .filter(isCompatibleNode)
           .sort(([ka, a], [kb, b]) => {

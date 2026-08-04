@@ -19,7 +19,8 @@
 
 1. Tải/clone repo về máy.
 2. `chrome://extensions` → bật **Developer mode** → **Load unpacked** → chọn **thư mục `seosona-flow`** (không phải thư mục gốc của repo — `manifest.json` nằm trong đó).
-3. Chrome sẽ hỏi quyền truy cập mọi trang (`<all_urls>`) — cần cho Image-to-Prompt và auto-download.
+3. Chrome hỏi quyền cho **các trang provider** đã khai sẵn (`labs.google`, `chatgpt.com`, `gemini.google.com`, `grok.com`, `claude.ai`, CDN ảnh/video của Google). `<all_urls>` nằm ở **optional** — Chrome chỉ hỏi khi bạn dùng Image-to-Prompt trên một trang ngoài danh sách.
+   > Lưu ý minh bạch: content script của Image-to-Prompt hiện **được nạp sẵn trên mọi trang http/https** (trừ các trang thanh toán/đăng nhập đã loại trừ), nên nó hiện diện rộng hơn phần quyền optional gợi ý. Xem SF-010 trong báo cáo audit.
 4. Đăng nhập sẵn các trang bạn sẽ dùng: `labs.google/fx` (Flow), `chatgpt.com`, `gemini.google.com`, `grok.com`.
 5. Bấm icon extension → **Side Panel** mở bên phải (`pages/sidebar.html`).
 
@@ -60,5 +61,6 @@ npm run seosona:doctor   # kiểm tra kết nối OS + tình trạng dự án
 
 ## Chất lượng & tài liệu (dev)
 
-- **Verify toàn bộ:** `npm run verify` (nhiều tier: static, budgets, lint, security, architecture, workflows, providers, privacy, ux, release, readiness + unit/integration/E2E).
+- **Verify:** `npm run verify` — **15 tier**: static, budgets, lint, security, audit, architecture, workflows, providers, privacy, ux, release, readiness, test:audit, test:unit, test:integration.
+- **E2E chạy RIÊNG:** `npm run test:e2e` (cần trình duyệt thật nên không nằm trong `verify`). Trước đây dòng này ghi verify đã gồm E2E — không đúng, và đó là cách người ta phát hành với receipt xanh trong khi CI E2E đỏ. Nguồn sự thật là `scripts/quality/lib/tiers.mjs`: `VERIFY_TIERS` (15) + `E2E_TIER` (1) = `ALL_TIERS`.
 - **Tài liệu:** [Getting started](../docs/user/getting-started.md) · [Testing](../docs/development/testing.md) · [Privacy](../docs/privacy/README.md) · [Runbooks](../docs/runbooks/) · [Data-First planning](../docs/governance/data-first-planning.md).
