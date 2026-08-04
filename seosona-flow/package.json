@@ -52,7 +52,9 @@
     "security:independence": "node scripts/security/scan-independence.mjs",
     "build:catalog": "node scripts/build/sync-node-catalog.mjs",
     "verify:release": "node scripts/quality/verify.mjs --release",
-    "security:rawfetch": "node scripts/security/scan-raw-fetch.mjs"
+    "security:rawfetch": "node scripts/security/scan-raw-fetch.mjs",
+    "test:governance": "node scripts/test/run-tests.mjs governance",
+    "test:readiness": "node scripts/test/run-tests.mjs readiness"
   },
   "devDependencies": {
     "@playwright/test": "1.55.1",
