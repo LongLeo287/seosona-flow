@@ -488,7 +488,8 @@ async function _safeFetch(url, options) {
   if (env && env.response) return env.response;
   // Chính sách từ chối → dựng Response lỗi để chỗ gọi xử lý như một lỗi HTTP bình thường, thay
   // vì ném ra ngoài và làm vỡ những handler chưa có try/catch.
-  console.warn('[NetworkPolicy] từ chối', env && env.reason, '→', String(url).slice(0, 80));
+  // Lý do đã nằm trong Response trả về; chỗ gọi nào cần thì tự báo. Không log riêng ở đây —
+  // NetworkGate phía trên đã log các ca bị chặn vì chính sách runtime.
   return new Response(JSON.stringify({ error: (env && env.reason) || 'POLICY_DENIED' }),
     { status: 502, headers: { 'Content-Type': 'application/json' } });
 }
@@ -881,6 +882,60 @@ async function _restorePendingRenames() {
 // Restore ngay khi SW boot (top-level — chạy mỗi lần SW init)
 _restorePendingRenames();
 
+// Đuôi media được chấp nhận. Dùng CHUNG cho cả hai nhánh đổi tên bên dưới — trước đây chỉ nhánh
+// thứ hai có danh sách này, nhánh đầu thì không, và đó là chỗ file .htm chui ra.
+const MEDIA_EXTS = ['png', 'jpg', 'jpeg', 'webp', 'gif', 'mp4', 'webm', 'mov', 'm4v'];
+
+// Chốt đuôi file từ tên Chrome đưa: cắt query/fragment, chỉ nhận đuôi trong danh sách trên,
+// còn lại suy từ kiểu nội dung. Một chỗ, dùng cho mọi nhánh.
+function _resolveMediaExt(rawFilename, mime, preferVideo) {
+  const clean = String(rawFilename || '').split(/[?#]/)[0];
+  const dot = clean.lastIndexOf('.');
+  const ext = (dot >= 0 ? clean.slice(dot + 1) : '').toLowerCase();
+  if (MEDIA_EXTS.includes(ext)) return ext;
+  const m = String(mime || '');
+  if (m.startsWith('video/') || preferVideo) return 'mp4';
+  if (m.startsWith('image/')) return m === 'image/jpeg' ? 'jpg' : (m.split('/')[1] || 'png');
+  return 'png';
+}
+
+// Tên ta dựng có thể chứa dấu chấm trong chữ prompt ("logo 2.0"), nên chỉ coi là "đã có đuôi"
+// khi phần sau dấu chấm cuối đúng là một đuôi media.
+function _hasMediaExt(name) {
+  const dot = String(name || '').lastIndexOf('.');
+  return dot >= 0 && MEDIA_EXTS.includes(String(name).slice(dot + 1).toLowerCase());
+}
+
+// zoomGuard — nhớ mức phóng GỐC của tab trong storage.session (mất khi đóng trình duyệt, đúng
+// vòng đời ta cần). Khoá theo tabId vì mỗi tab có mức zoom riêng.
+const _ZOOM_GUARD_KEY = 'seosona_zoom_guard';
+async function _zoomGuardArm(tabId, original) {
+  try {
+    if (tabId == null || typeof original !== 'number') return;
+    const st = await chrome.storage.session.get([_ZOOM_GUARD_KEY]);
+    const map = st[_ZOOM_GUARD_KEY] || {};
+    if (map[tabId] != null) return;   // đã ghi rồi thì GIỮ mức gốc đầu tiên, đừng đè bằng mức đã zoom
+    map[tabId] = original;
+    await chrome.storage.session.set({ [_ZOOM_GUARD_KEY]: map });
+  } catch (_) { globalThis.SEOSONA_swallow?.('background#_zoomGuardArm', _); }
+}
+async function _zoomGuardTake(tabId) {
+  try {
+    if (tabId == null) return null;
+    const st = await chrome.storage.session.get([_ZOOM_GUARD_KEY]);
+    const map = st[_ZOOM_GUARD_KEY] || {};
+    const v = map[tabId];
+    if (v == null) return null;
+    delete map[tabId];
+    await chrome.storage.session.set({ [_ZOOM_GUARD_KEY]: map });
+    return v;
+  } catch (_) { return null; }
+}
+// Tab đóng thì dọn luôn, đừng để bản ghi rác tích lại.
+try {
+  chrome.tabs.onRemoved.addListener((tabId) => { _zoomGuardTake(tabId); });
+} catch (_) { /* API tabs có thể chưa sẵn lúc nạp */ }
+
 chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggest) => {
   // ============================================================
   // GIẢI PHÁP CHÍNH: Check byExtensionId TRƯỚC TIÊN
@@ -937,8 +992,18 @@ chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggest) => {
     }
     const rename = _pendingDownloadRenames.splice(renameIdx, 1)[0];
     _persistPendingRenames();
-    const origExt = downloadItem.filename?.split('.').pop() || 'png';
-    const rawName = rename.filename.includes('.') ? rename.filename : `${rename.filename}.${origExt}`;
+    // NHÁNH NÀY TỪNG KHÔNG CÓ LỚP CHẶN NÀO.
+    // Nó lấy `filename.split('.').pop()` thô: Chrome đưa "media.htm" thì đuôi thành "htm" và ta
+    // lưu ra đúng cái .htm người dùng báo lỗi. Lớp chặn HTML chỉ tồn tại ở nhánh thứ hai bên
+    // dưới, nên mọi lượt tải đi qua đường "own extension" đều lọt.
+    // (Cấu trúc hai nhánh này có từ mã gốc cùng ngách, và ở đó nhánh sớm cũng không chặn —
+    // ta thừa hưởng nguyên lỗi chứ không tự gây ra.)
+    // KHÔNG dùng `isVideoDownload` ở đây: nó khai bằng const mãi phía dưới (~1006), tức đang ở
+    // vùng chết tạm thời — chạm vào là ReferenceError. node --check không bắt lỗi này.
+    const _earlyIsVideo = mime.startsWith('video/') ||
+      /\.(mp4|webm|mov)$/i.test(String(downloadItem.filename || '').split(/[?#]/)[0]);
+    const origExt = _resolveMediaExt(downloadItem.filename, mime, _earlyIsVideo);
+    const rawName = _hasMediaExt(rename.filename) ? rename.filename : `${rename.filename}.${origExt}`;
     const customName = _sanitizePathSegment(rawName) || 'download';
     const safeFolder = _sanitizePathSegment(rename.folder || '');
     const fullPath = safeFolder ? `${safeFolder}/${customName}` : customName;
@@ -1005,14 +1070,11 @@ chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggest) => {
   // Đuôi file phải đọc từ TÊN ĐÃ CẮT query/fragment. Bản cũ làm `filename.split('.').pop()`
   // trên chuỗi thô, nên "media.html?x=1" ra đuôi "html?x=1" — không khớp phép so sánh
   // === 'html' bên dưới, thế là lớp chặn HTML nằm im và file vẫn rơi ra .htm.
-  const _cleanName = String(downloadItem.filename || '').split(/[?#]/)[0];
-  const _dot = _cleanName.lastIndexOf('.');
-  let origExt = (_dot >= 0 ? _cleanName.slice(_dot + 1) : '').toLowerCase();
+  let origExt = (String(downloadItem.filename || '').split(/[?#]/)[0].split('.').pop() || '').toLowerCase();
 
   // Chỉ chấp nhận đuôi media đã biết. Bất kỳ thứ gì khác (html, htm, chuỗi rác, rỗng) đều coi
   // là "không biết" rồi suy lại từ mime — chặn theo danh sách CHO PHÉP thay vì đuổi bắt từng
   // biến thể của cái sai.
-  const MEDIA_EXTS = ['png', 'jpg', 'jpeg', 'webp', 'gif', 'mp4', 'webm', 'mov', 'm4v'];
   if (!MEDIA_EXTS.includes(origExt)) {
     const before = origExt || '(rỗng)';
     if (mime.startsWith('video/') || isVideoDownload) {
@@ -1027,9 +1089,7 @@ chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggest) => {
   // Tên do ta dựng có thể chứa dấu chấm trong chữ prompt; chỉ coi là "đã có đuôi" khi phần
   // sau dấu chấm cuối đúng là một đuôi media. Bản cũ dùng includes('.') nên prompt kiểu
   // "logo 2.0" làm mất bước gắn đuôi và Chrome tự đặt .htm.
-  const _rDot = rename.filename.lastIndexOf('.');
-  const _rExt = _rDot >= 0 ? rename.filename.slice(_rDot + 1).toLowerCase() : '';
-  const rawName2 = MEDIA_EXTS.includes(_rExt) ? rename.filename : `${rename.filename}.${origExt}`;
+  const rawName2 = _hasMediaExt(rename.filename) ? rename.filename : `${rename.filename}.${origExt}`;
   const customName = _sanitizePathSegment(rawName2) || 'download';
   const safeFolder2 = _sanitizePathSegment(rename.folder || '');
   const fullPath = safeFolder2 ? `${safeFolder2}/${customName}` : customName;
@@ -3400,10 +3460,45 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           tabId = (tabs.find(t => t.active) || tabs[0])?.id;
         }
         if (tabId == null) { sendResponse({ ok: false }); return; }
+        // Ghi mức zoom GỐC trước lần đổi đầu tiên, để còn đường trả lại (xem zoomGuard bên dưới).
+        if (message.original != null) await _zoomGuardArm(tabId, message.original);
         await chrome.tabs.setZoom(tabId, message.factor);
         sendResponse({ ok: true, tabId });
       } catch (e) { sendResponse({ ok: false, error: e?.message }); }
     })();
+    return true;
+  }
+
+  // ── zoomGuard: trả lại mức phóng khi thao tác chết giữa chừng ───────────────────────────
+  //
+  // Ta đổi zoom THẬT của tab (chrome.tabs.setZoom) để ép Flow render thêm tile, rồi trả lại
+  // trong `finally`. `finally` xử lý được ngoại lệ — nhưng KHÔNG chạy khi tab bị tải lại, bị
+  // đóng, hoặc khi service worker MV3 bị Chrome dựng xuống giữa chừng. Lúc đó người dùng ở lại
+  // với một tab bị thu nhỏ và không hiểu vì sao, phải tự Ctrl+0.
+  // Nên ghi mức gốc ra storage.session; content script hỏi lại mỗi lần nạp và ta trả zoom về.
+  if (message.action === 'zoomGuard:recover') {
+    (async () => {
+      try {
+        const tabId = sender.tab?.id;
+        if (tabId == null) { sendResponse({ recovered: false }); return; }
+        const original = await _zoomGuardTake(tabId);
+        if (original == null) { sendResponse({ recovered: false }); return; }
+        const now = await chrome.tabs.getZoom(tabId).catch(() => null);
+        // Chỉ trả lại khi zoom hiện tại THẬT SỰ khác mức gốc — tránh giật màn hình vô cớ.
+        if (typeof now === 'number' && Math.abs(now - original) > 0.01) {
+          await chrome.tabs.setZoom(tabId, original);
+          // Không log ở đây: content script báo cùng sự kiện này ở console của TRANG, nơi người
+          // dùng thực sự nhìn. Log hai lần cho một việc chỉ làm dày nhật ký.
+          sendResponse({ recovered: true, original });
+          return;
+        }
+        sendResponse({ recovered: false });
+      } catch (e) { sendResponse({ recovered: false, error: e?.message }); }
+    })();
+    return true;
+  }
+  if (message.action === 'zoomGuard:disarm') {
+    (async () => { try { await _zoomGuardTake(sender.tab?.id); } catch (_) { /* best effort */ } sendResponse({ ok: true }); })();
     return true;
   }
 

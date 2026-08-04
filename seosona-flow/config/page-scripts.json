@@ -256,7 +256,6 @@
       "../src/core/VideoFrameExtractor.js",
       "../src/core/EditorExecutor.js",
       "../src/core/TileMonitor.js",
-      "../src/core/DownloadExecutor.js",
       "../src/core/PromptQueue.js",
       "../src/core/ExecutionTracker.js",
       "../src/core/PipelineFooter.js",

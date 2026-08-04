@@ -79,7 +79,7 @@
     "workflowClonedFromShared", "workflowDeleted", "workflowEditorClosed", "workflowExecutionEvent",
     "workflowResults:appendRows", "workflowResults:createRun", "workflowResults:exportCsv", "workflowResults:getRun",
     "workflowResults:listRuns", "workflowResults:setStatus", "workflowSaved", "workflowStatus",
-    "workflowTemplateImportRequested", "workflow_shared",
+    "workflowTemplateImportRequested", "workflow_shared", "zoomGuard:disarm", "zoomGuard:recover",
   ];
   var KNOWN = new Set(KNOWN_ACTIONS);
 

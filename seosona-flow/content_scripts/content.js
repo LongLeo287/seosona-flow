@@ -9963,14 +9963,36 @@ async function _getBrowserZoom() {
     });
   } catch (_) { return null; }
 }
-async function _setBrowserZoom(factor) {
+async function _setBrowserZoom(factor, original) {
   try {
     return await new Promise((resolve) => {
-      chrome.runtime.sendMessage({ action: 'setBrowserZoom', factor }, (r) => {
+      // `original` đi kèm để background ghi lại mức phóng GỐC (zoomGuard). Cần vì `finally` của ta
+      // không chạy khi tab bị tải lại/đóng hoặc service worker bị dựng xuống giữa chừng — lúc đó
+      // người dùng ở lại với một tab thu nhỏ và phải tự Ctrl+0.
+      chrome.runtime.sendMessage({ action: 'setBrowserZoom', factor, original }, (r) => {
         resolve(chrome.runtime.lastError ? false : !!r?.ok);
       });
     });
   } catch (_) { return false; }
+}
+
+// Hỏi background xem tab này có mức zoom nào đang kẹt từ lượt trước không. Gọi MỘT LẦN lúc nạp:
+// nếu lượt trước chết giữa chừng thì đây là đường duy nhất trả zoom về cho người dùng.
+async function _zoomGuardRecoverOnLoad() {
+  try {
+    chrome.runtime.sendMessage({ action: 'zoomGuard:recover' }, (r) => {
+      void chrome.runtime.lastError;
+      if (r?.recovered) console.log('[SEOSONA Flow] zoomGuard: đã trả zoom kẹt về', r.original);
+    });
+  } catch (_) { globalThis.SEOSONA_swallow?.('content#_zoomGuardRecoverOnLoad', _); }
+}
+// Chờ một nhịp cho background sẵn sàng rồi mới hỏi.
+setTimeout(_zoomGuardRecoverOnLoad, 1500);
+
+// Báo background bỏ canh khi ta đã tự trả zoom về — tránh lần nạp sau lại "khôi phục" thừa.
+function _zoomGuardDisarm() {
+  try { chrome.runtime.sendMessage({ action: 'zoomGuard:disarm' }, () => void chrome.runtime.lastError); }
+  catch (_) { globalThis.SEOSONA_swallow?.('content#_zoomGuardDisarm', _); }
 }
 
 // Zoom SESSION (2026-06-15): khi submit multi-prompt, zoom nhỏ MỘT LẦN + giữ NGUYÊN suốt cả batch
@@ -10033,7 +10055,7 @@ async function _ensureZoomSessionActive() {
   if (!s || !s.armed || s.active) return;
   const o = await _getBrowserZoom();
   if (o != null) {
-    await _setBrowserZoom(s.factor); s.mode = 'browser'; s.original = o;
+    await _setBrowserZoom(s.factor, o); s.mode = 'browser'; s.original = o;
     // Đợi browser zoom PAINT xong (double rAF) TRƯỚC khi bật active + counter-scale. setZoom async
     // (resolve ≠ đã repaint) → nếu counter-scale 1/factor áp khi page CHƯA nhỏ → tracker/banner phình
     // 1/factor× 1 nhịp ("to double"). active chỉ true sau paint → tracker.update cũng không bù sớm.
@@ -10082,6 +10104,7 @@ async function _endZoomSession() {
       // để KHÔNG bao giờ để Flow kẹt ở mức zoom nhỏ (kể cả khi error/force-stop/capture sai).
       const target = (typeof s.original === 'number' && s.original > 0 && s.original !== s.factor) ? s.original : 1;
       await _setBrowserZoom(target);
+      _zoomGuardDisarm(); // đã trả về rồi → bỏ canh, lần nạp sau khỏi "khôi phục" thừa
       console.log(`[SEOSONA Flow] zoom session: restore browser zoom → ${target}`);
     } else {
       document.body.style.zoom = (s.originalCss && s.originalCss !== String(s.factor)) ? s.originalCss : '1';
@@ -10167,14 +10190,14 @@ async function ensureFlowTilesLoaded(force = false, targetFileNames = []) {
   const originalCssZoom = document.body.style.zoom || '1';
   const _applyZoom = async (f) => {
     if (_inSession) { await _ensureZoomSessionActive(); return; }
-    if (_useBz) await _setBrowserZoom(f); else document.body.style.zoom = String(f);
+    if (_useBz) await _setBrowserZoom(f, _bzOrig); else document.body.style.zoom = String(f);
     // Per-call (pre-pipeline: correctStaleFileIds + reupload) → báo "đang quét ảnh tham chiếu"
     // + counter-scale banner theo factor hiện tại để đọc được khi zoom nhỏ.
     if (hasTargets) _showZoomNotice('scanningRefImages', f);
   };
   const _restoreZoom = async () => {
     if (_inSession) return; // session tự restore khi endFlowZoomSession
-    if (_useBz) await _setBrowserZoom(_bzOrig); else document.body.style.zoom = originalCssZoom;
+    if (_useBz) { await _setBrowserZoom(_bzOrig); _zoomGuardDisarm(); } else document.body.style.zoom = originalCssZoom;
     if (hasTargets) _hideZoomNotice(); // ẩn banner "đang quét" sau khi restore zoom
   };
   const _scCfg = _getDynamicSelector('flow_scroll_container');
