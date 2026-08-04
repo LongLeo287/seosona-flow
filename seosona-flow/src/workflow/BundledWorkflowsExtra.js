@@ -323,7 +323,9 @@
     var nGen = genNode(p + 'gen', COL[2], 200, 'Flow — Generate', { ratio: '4:5', quantity: 1 });
     var nDl = dlNode(p + 'dl', COL[3], 200);
     T.push(tpl(id, 'Chủ đề → carousel nhiều slide',
-      'chu-de-carousel-nhieu-slide',
+      // Trùng slug với template 34 trong BundledTemplates.js. Slug dùng để tra cứu nên trùng là
+      // một trong hai bản không bao giờ được chọn tới. Đổi bản này (id 1013) vì nó là bản thêm sau.
+      'chu-de-carousel-nhieu-slide-v2',
       'Social: 1 chủ đề → carousel 6 slide đồng bộ (cover→ý→CTA) → generate → tải về. Chừa chỗ cho caption tiếng Việt.',
       [nTopic, nAI, nGen, nDl],
       [E(nTopic.id, nAI.id, 'output_1', 'input_1'),
@@ -954,7 +956,12 @@
     t.media_type = mediaType;
     t.category_id = group.id;
     var prefix = categoryId === 6 ? 'Tiện ích — ' : (mediaType === 'Video' ? 'Video — ' : 'Ảnh — ');
-    t.category_name = prefix + sourceCategory;
+    // Vài mục trong META đã tự mang sẵn tiền tố (vd 'Video — Thiên nhiên'), nên nối thẳng sẽ ra
+    // 'Video — Video — Thiên nhiên'. Đã xảy ra ở 1030/1031/1034/1037. Cắt tiền tố trùng trước khi nối
+    // thay vì sửa tay từng mục — sửa tay thì mục thêm sau lại lặp lại lỗi này.
+    var bare = String(sourceCategory || '');
+    if (bare.indexOf(prefix) === 0) bare = bare.slice(prefix.length);
+    t.category_name = prefix + bare;
     t.category = { id: group.id, name: t.category_name, slug: group.slug, icon: group.icon };
     t.tags = uniqueTags([mediaType === 'Video' ? 'video' : 'ảnh'].concat(m ? m[1] : []));
     t.node_count = (t.nodes || []).length;

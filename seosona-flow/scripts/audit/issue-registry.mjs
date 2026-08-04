@@ -8,6 +8,25 @@ import { PHASE_OWNER, FACTS, AUD, SEC, UNKNOWNS } from './lib/issues-data.mjs';
 const JSON_REL = 'seosona-flow/artifacts/audit/issues.json';
 const MD_REL = 'docs/audits/issue-registry.md';
 
+// Đo lại vài con số mà FACTS từng khẳng định, ngay lúc sinh artifact. Không suy đoán, không
+// hardcode — đọc thẳng từ các artifact khác đã được generator chính thức tạo ra.
+function liveSnapshot() {
+  const root = repoRoot();
+  const read = (rel) => {
+    try { return JSON.parse(readFileSync(join(root, rel), 'utf8')); } catch { return null; }
+  };
+  const inv = read('seosona-flow/artifacts/audit/phase-01/repository-inventory.json');
+  const graph = read('seosona-flow/artifacts/audit/phase-01/architecture-graph.json');
+  const msgs = read('seosona-flow/artifacts/audit/phase-01/message-contracts.json');
+  return {
+    note: 'đo lại lúc sinh artifact; so với facts để thấy baseline đã cũ tới đâu',
+    trackedFiles: inv?.totals?.files ?? null,
+    pages: Array.isArray(graph?.pages) ? graph.pages.length : null,
+    sidebarScripts: graph?.pages?.find((p) => p.page === 'pages/sidebar.html')?.scripts?.length ?? null,
+    messageActions: msgs?.summary?.totalActions ?? null,
+  };
+}
+
 function buildIssues() {
   const findings = [...AUD, ...SEC].map((i) => ({
     id: i.id,
@@ -31,7 +50,15 @@ function buildIssues() {
       sec: SEC.length,
       unknowns: UNKNOWNS.length,
     },
-    facts: FACTS,
+    // SF-012 — FACTS và findings ở đây là ẢNH CHỤP PHASE-01, không phải hiện trạng. Trước đây
+    // chúng nằm trần trong artifact nên đọc lên tưởng là số hôm nay: FACT-001 ghi 232 file
+    // (nay hơn 2.200), FACT-002 ghi 8 trang / 141 script sidebar (nay 13 / 185), FACT-003 ghi
+    // 312 action (nay 384), FACT-007 nói chưa có test/CI/SBOM — trái hẳn repo hiện tại.
+    // Nay gắn nhãn baseline rõ ràng và kèm số ĐO LẠI ngay lúc sinh, để hai thứ nằm cạnh nhau
+    // và không thể lẫn.
+    baselineNote: 'facts/findings là ảnh chụp Phase-01 (baseline), KHÔNG phải trạng thái hiện tại; xem currentSnapshot để so.',
+    facts: FACTS.map((f) => ({ ...f, kind: 'baseline-fact' })),
+    currentSnapshot: liveSnapshot(),
     findings,
     unknowns: UNKNOWNS.map((u) => ({ ...u, owner: PHASE_OWNER[u.phase] })),
   };
@@ -45,6 +72,17 @@ function renderMd(data) {
   lines.push('> Regenerate with `node scripts/audit/issue-registry.mjs`; verify with `--check`.');
   lines.push('');
   lines.push('This registry separates **facts** (reproduced by Phase 1 artifacts), **findings** (AUD/SEC issues each roadmap task must reference), and **unknowns** (sealed-report follow-ups with unproven impact).');
+  lines.push('');
+  lines.push('> **Đọc kỹ:** bảng Facts dưới đây là **ảnh chụp Phase-01**, KHÔNG phải trạng thái hôm nay.');
+  lines.push('> Cột "Hiện tại" là số đo lại lúc sinh file này. Chênh lệch lớn là bình thường — repo đã đi xa hơn baseline.');
+  lines.push('');
+  const cur = data.currentSnapshot || {};
+  lines.push('| Chỉ số | Baseline (Phase-01) | Hiện tại |');
+  lines.push('|---|---:|---:|');
+  lines.push(`| File được theo dõi | 232 | ${cur.trackedFiles ?? '—'} |`);
+  lines.push(`| Trang extension | 8 | ${cur.pages ?? '—'} |`);
+  lines.push(`| Script của sidebar | 141 | ${cur.sidebarScripts ?? '—'} |`);
+  lines.push(`| Message action | 312 | ${cur.messageActions ?? '—'} |`);
   lines.push('');
   lines.push('## Facts');
   lines.push('');

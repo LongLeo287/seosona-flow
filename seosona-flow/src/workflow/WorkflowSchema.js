@@ -6,7 +6,12 @@
   'use strict';
 
   var LIMITS = { maxNodes: 500, maxEdges: 2000, maxName: 200, maxIdLen: 200, maxDepth: 8 };
-  var KNOWN_NODE_TYPES = ['image', 'generate', 'prompt', 'chatgpt', 'text', 'note'];
+  // SINH TỪ src/workflow/framework/node-catalog.json — ĐỪNG sửa tay ở đây.
+  // Trước đây danh sách này viết tay và chỉ có 6 type, trong khi catalog runtime có 26. Node lạ
+  // chỉ bị warning nên workflow vẫn chạy, nhưng validator kêu ầm lên với hầu hết workflow thật
+  // → cảnh báo mất hết giá trị, và không thể dùng nó làm cổng kiểm ngữ nghĩa.
+  // Cập nhật: chạy `node scripts/build/sync-node-types.mjs`.
+  var KNOWN_NODE_TYPES = ['chatgpt', 'condition', 'delay', 'download', 'entity_ref', 'generate', 'grok', 'image', 'image_composite', 'loop', 'merge', 'note', 'prompt', 'prompt_sequence', 'quality_gate', 'random_pick', 'style_anchor', 'switch', 'telegram', 'text', 'text_export', 'text_extract', 'text_overlay', 'text_qa', 'text_template', 'variant_expand'];
   var DANGEROUS_KEYS = ['__proto__', 'prototype', 'constructor'];
 
   function isPlainObject(v) { return v && typeof v === 'object' && !Array.isArray(v); }
