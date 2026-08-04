@@ -34,7 +34,7 @@
     "security:secrets": "node scripts/security/scan-secrets.mjs",
     "security:permissions": "node scripts/security/scan-permissions.mjs",
     "security:vendored": "node scripts/security/scan-vendored.mjs",
-    "security:verify": "npm run security:secrets && npm run security:permissions && npm run security:vendored && npm run security:actions && npm run security:independence",
+    "security:verify": "npm run security:secrets && npm run security:permissions && npm run security:vendored && npm run security:actions && npm run security:independence && npm run security:rawfetch",
     "test:audit": "node scripts/test/run-tests.mjs audit",
     "test:unit": "node scripts/test/run-tests.mjs unit",
     "test:integration": "node scripts/test/run-tests.mjs integration",
@@ -50,7 +50,9 @@
     "verify": "node scripts/quality/verify.mjs",
     "security:actions": "node scripts/security/sync-privileged-actions.mjs --check",
     "security:independence": "node scripts/security/scan-independence.mjs",
-    "build:catalog": "node scripts/build/sync-node-catalog.mjs"
+    "build:catalog": "node scripts/build/sync-node-catalog.mjs",
+    "verify:release": "node scripts/quality/verify.mjs --release",
+    "security:rawfetch": "node scripts/security/scan-raw-fetch.mjs"
   },
   "devDependencies": {
     "@playwright/test": "1.55.1",

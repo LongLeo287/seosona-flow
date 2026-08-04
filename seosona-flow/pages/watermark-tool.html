@@ -83,7 +83,7 @@
       <div><b>Kéo thả</b> hoặc bấm để chọn ảnh / video</div>
       <div class="hint">PNG · JPG · WEBP · MP4 · WEBM — chọn được NHIỀU file, xử lý lần lượt</div>
     </div>
-    <input type="file" id="file" accept="image/*,video/*" multiple hidden>
+    <input type="file" id="file" accept="image/*,video/*" multiple hidden aria-label="File">
 
     <!-- Hàng chờ: xử lý lần lượt, mỗi dòng có trạng thái và nút tải riêng. Trước đây mỗi
          lần chỉ một file — làm loạt 20 ảnh phải kéo 20 lần. -->
@@ -124,7 +124,7 @@
       </div>
 
       <div class="srcrow" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
-        <label style="display:flex;align-items:center;gap:6px;">Nguồn watermark
+        <label for="source" style="display:flex;align-items:center;gap:6px;">Nguồn watermark
           <select id="source" style="min-width:180px"></select>
         </label>
         <span id="srcHint" style="font-size:12px;color:var(--muted,#8b8b92)"></span>
@@ -133,16 +133,16 @@
       <details class="adv" id="adv">
         <summary>Tuỳ chỉnh nâng cao</summary>
         <div class="advrow">
-          <label>Phương pháp
+          <label for="method">Phương pháp
             <select id="method">
               <option value="alpha" selected>Gemini (chuẩn, tự phát hiện)</option>
               <option value="inpaint">Vá lân cận (watermark khác)</option>
             </select>
           </label>
-          <label>Độ mạnh (chỉ khi ép)
+          <label for="gain">Độ mạnh (chỉ khi ép)
             <input type="range" id="gain" min="0.5" max="2" step="0.05" value="1" style="width:110px"><span id="gainVal" style="color:var(--txt)">tự động</span>
           </label>
-          <label>Góc (inpaint)
+          <label for="corner">Góc (inpaint)
             <select id="corner"><option value="br" selected>Dưới-phải</option><option value="bl">Dưới-trái</option><option value="tr">Trên-phải</option><option value="tl">Trên-trái</option></select>
           </label>
         </div>

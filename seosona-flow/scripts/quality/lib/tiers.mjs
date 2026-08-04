@@ -22,3 +22,10 @@ export const VERIFY_TIERS = [
 export const E2E_TIER = { id: 'test:e2e', cmd: 'npm run test:e2e' };
 
 export const ALL_TIERS = [...VERIFY_TIERS, E2E_TIER];
+
+// SF-005 — `verify` (15 tầng) KHÔNG gồm E2E, nhưng README từng nói là có và
+// final-verification vẫn ký ACCEPTED dựa trên 15 tầng đó. Kết quả: phát hành với receipt xanh
+// trong khi CI E2E đỏ. Nay có hai lệnh tách bạch, tên nói đúng việc nó làm:
+//   npm run verify         → 15 tầng, nhanh, dùng khi đang code
+//   npm run verify:release → 15 tầng + E2E, dùng trước khi phát hành
+export const RELEASE_TIERS = [...ALL_TIERS];

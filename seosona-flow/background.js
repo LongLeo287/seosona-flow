@@ -7459,9 +7459,26 @@ async function _saveImageAsFormat(srcUrl, formatInfo) {
     // định dạng gốc). Vẫn đúng kích thước gốc (bestUrl đã resolve trước đó).
     console.log('[I2P] save convert fail → direct download:', e?.message);
     const m = /\.(jpe?g|png|webp|gif|avif|bmp)(\?|#|$)/i.exec(srcUrl);
-    const ext = m ? m[1].toLowerCase().replace('jpeg', 'jpg') : format;
+    // SF-017 — KHÔNG được đặt đuôi theo định dạng người dùng CHỌN ở nhánh này.
+    // Nhánh này tải thẳng URL gốc, tức bytes giữ nguyên định dạng NGUỒN. Bản cũ khi URL không có
+    // đuôi rõ ràng thì lấy `format` (thứ người dùng chọn) làm đuôi — ra một file tên .png nhưng
+    // ruột là WEBP. Đó là nói dối trong tên file, và phần mềm khác mở lên sẽ hỏng.
+    // Có đuôi trong URL thì dùng đuôi đó; không có thì để trống cho Chrome tự suy từ Content-Type.
+    const ext = m ? m[1].toLowerCase().replace('jpeg', 'jpg') : '';
     const base = (self.SEOSONA_ContextMenuModel?.baseNameFromUrl?.(srcUrl) || 'image');
-    const fn = `SEOSONA Flow/${base}.${ext}`;
+    const fn = ext ? `SEOSONA Flow/${base}.${ext}` : `SEOSONA Flow/${base}`;
+    // Và phải NÓI RA. Người dùng chọn PNG mà nhận WEBP thì họ cần biết ngay, chứ không phải phát
+    // hiện lúc mở file ở phần mềm khác.
+    if (String(format).toLowerCase() !== ext) {
+      try {
+        chrome.notifications.create('seosona-saveas-' + Date.now(), {
+          type: 'basic', iconUrl: chrome.runtime.getURL('icons/icon-128.png'),
+          title: 'SEOSONA Flow — đã lưu BẢN GỐC',
+          message: `Không chuyển được sang ${String(format).toUpperCase()} (trang chặn tải chéo nguồn). Đã lưu ảnh gốc${ext ? ' .' + ext : ''} thay vì bản đã chuyển.`,
+          priority: 2,
+        }, () => { void chrome.runtime.lastError; });
+      } catch (_) { globalThis.SEOSONA_swallow?.('background#_saveImageAsFormat', _); }
+    }
     // [AUDIT-3] KHÔNG queue rename ở nhánh này: url là http(s) nên Chrome tôn trọng `filename` trực
     // tiếp. Queue là hàng đợi DÙNG CHUNG (3 nơi push) mà listener lấy phần tử index 0 khi URL không
     // chứa uuid → queue thừa có thể bị download khác "ăn" mất → đặt sai tên cho cả hai.

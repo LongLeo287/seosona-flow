@@ -278,7 +278,7 @@
                   </svg>
                   <span data-i18n="gen.importTxt">Import .txt</span>
                 </button>
-                <input type="file" id="importTxtFile" accept=".txt,.csv" class="hidden" />
+                <input type="file" id="importTxtFile" accept=".txt,.csv" class="hidden" / aria-label="Import Txt File">
                 <button class="btn btn-secondary btn-xs" id="promptMergeBtn" data-i18n-title="pmerge.btnTitle" title="Tạo prompt hàng loạt từ bảng (CSV) — ghép cột vào template">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="3" y="3" width="18" height="18" rx="2"></rect>
@@ -364,7 +364,7 @@
                   </button>
                 </div>
                 <!-- Hidden select for compatibility -->
-                <select id="genType" class="hidden">
+                <select id="genType" class="hidden" aria-label="Gen Type">
                   <option value="Image">Ảnh</option>
                   <option value="Video">Video</option>
                 </select>
@@ -374,7 +374,7 @@
               <div class="setting-cluster cluster-settings">
               <div class="gen-compact-item" id="imageModelContainer" data-cg5-model="1">
                 <div class="input-group select-group compact-select">
-                  <select id="imageModel">
+                  <select id="imageModel" aria-label="Image Model">
                     <option value="Nano Banana Pro">Nano Banana Pro</option>
                     <option value="Nano Banana 2">Nano Banana 2</option>
                   </select>
@@ -384,7 +384,7 @@
               <!-- ChatGPT model (Instant/Thinking — GPT-5.5) — chỉ hiện khi provider='chatgpt' -->
               <div class="gen-compact-item hidden" id="chatgptModelContainer">
                 <div class="input-group select-group compact-select">
-                  <select id="chatgptModel">
+                  <select id="chatgptModel" aria-label="Chatgpt Model">
                     <option value="Instant">Instant</option>
                     <option value="Thinking">Thinking</option>
                   </select>
@@ -394,7 +394,7 @@
               <!-- Gemini model -->
               <div class="gen-compact-item hidden" id="geminiModelContainer">
                 <div class="input-group select-group compact-select">
-                  <select id="geminiModel">
+                  <select id="geminiModel" aria-label="Gemini Model">
                     <option value="1.5-flash-lite">3.1 Flash-Lite</option>
                     <option value="1.5-flash">3.5 Flash</option>
                     <option value="1.5-pro">3.1 Pro</option>
@@ -405,7 +405,7 @@
               <!-- Claude model -->
               <div class="gen-compact-item hidden" id="claudeModelContainer">
                 <div class="input-group select-group compact-select">
-                  <select id="claudeModel">
+                  <select id="claudeModel" aria-label="Claude Model">
                     <option value="sonnet-5">Sonnet 5</option>
                     <option value="opus-4.8">👑 Opus 4.8 (Premium)</option>
                     <option value="fable-5">👑 Fable 5 (Premium)</option>
@@ -416,7 +416,7 @@
               </div>
               <div class="gen-compact-item hidden" id="videoModelContainer">
                 <div class="input-group select-group compact-select">
-                  <select id="videoModel">
+                  <select id="videoModel" aria-label="Video Model">
                     <option value="Omni Flash">Omni Flash</option>
                     <option value="Veo 3.1 Lite">Veo 3.1 Lite</option>
                     <option value="Veo 3.1 Fast">Veo 3.1 Fast</option>
@@ -433,7 +433,7 @@
               <!-- Removed break video -->
               <div class="gen-compact-item hidden" id="videoInputTypeContainer">
                 <div class="input-group select-group compact-select">
-                  <select id="videoInputType">
+                  <select id="videoInputType" aria-label="Video Input Type">
                     <option value="Frames">Frames</option>
                     <option value="Ingredients">Ingredients</option>
                   </select>
@@ -481,7 +481,7 @@
               </div>
               <!-- ChatGPT: toggle xóa tin nhắn sau khi gen thành công — chỉ hiển thị khi provider='chatgpt' -->
               <div class="gen-compact-item hidden" id="chatgptDeleteAfterGenContainer">
-                <label class="gen-compact-toggle" title="Xóa tin nhắn sau khi gen thành công" data-i18n-title="settings.chatgptDeleteAfterGen">
+                <label for="genChatgptDeleteAfterGen" class="gen-compact-toggle" title="Xóa tin nhắn sau khi gen thành công" data-i18n-title="settings.chatgptDeleteAfterGen">
                   <input type="checkbox" id="genChatgptDeleteAfterGen" />
                   <span class="gen-compact-toggle-icon">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -495,7 +495,7 @@
               <div class="gen-compact-item" id="ratioSection">
                 <div class="input-group select-group compact-select">
                   <!-- Placeholder options (FOUC prevention). GenTab.updateRatioOptions() overwrite tại init từ ProviderConfigManager.getRatiosSync('flow', mode). -->
-                  <select id="aspectRatio">
+                  <select id="aspectRatio" aria-label="Aspect Ratio">
                     <option value="16:9">▬ 16:9</option>
                     <option value="4:3">▭ 4:3</option>
                     <option value="1:1">□ 1:1</option>
@@ -596,7 +596,7 @@
                 </button>
                 <div class="premium-select-wrapper ref-mode-select" title="Cách dùng ảnh tham chiếu">
                   <svg class="premium-select-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                  <select id="refImageMode">
+                  <select id="refImageMode" aria-label="Ref Image Mode">
                     <option value="all" data-i18n="gen.refModeAll">Tất cả</option>
                     <option value="mention">@Mention</option>
                     <option value="sequential" data-i18n="gen.refModeSequential">Thứ tự</option>
@@ -849,7 +849,7 @@
                 <button class="btn btn-secondary btn-sm btn-toolbar-icon sf-reload-btn" id="reloadMyPromptsBtn" title="Tải lại">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
                 </button>
-                <select id="myPromptsCategoryFilter" class="sf-filter-select" style="max-width: fit-content !important;">
+                <select id="myPromptsCategoryFilter" class="sf-filter-select" style="max-width: fit-content !important;" aria-label="My Prompts Category Filter">
                   <option value="" data-i18n="templates.category">Danh mục</option>
                 </select>
                 <div class="sf-spacer"></div>
@@ -1094,7 +1094,7 @@
                 </div>
                 <div class="photos-search-header">
                   <p class="photos-search-hint" data-i18n="albums.selectChannel">Chọn kênh để tìm kiếm</p>
-                  <label class="photos-multisearch-toggle">
+                  <label for="photosMultiSearchToggle" class="photos-multisearch-toggle">
                     <input type="checkbox" id="photosMultiSearchToggle">
                     <span class="photos-toggle-slider"></span>
                     <span class="photos-toggle-label">Đa kênh</span>

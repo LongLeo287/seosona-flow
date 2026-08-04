@@ -59,7 +59,16 @@ function main() {
   }
 
   if (files.length === 0) {
-    console.log(`[run-tests] tier "${tier}" has no test files yet — skipping.`);
+    // SF-014 — tầng rỗng KHÔNG phải là tầng đã kiểm.
+    // Trước đây luôn exit 0, nên `npm run verify` báo xanh cho tầng 'ux' chưa từng có một file
+    // test nào. "Bỏ qua" mà tính là "đạt" đúng là kiểu xanh giả mà báo cáo audit nói tới.
+    // Vẫn cho qua khi đang phát triển (phase sau mới thêm test), nhưng chế độ phát hành thì đỏ.
+    const strict = process.argv.includes('--strict') || process.env.SEOSONA_RELEASE === '1';
+    if (strict) {
+      console.error(`[run-tests] tier "${tier}" KHÔNG có file test — ở chế độ phát hành đây là LỖI, không phải bỏ qua.`);
+      process.exit(1);
+    }
+    console.log(`[run-tests] tier "${tier}" has no test files yet — skipping (dev mode).`);
     process.exit(0);
   }
 

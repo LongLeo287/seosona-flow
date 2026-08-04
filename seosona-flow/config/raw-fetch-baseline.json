@@ -1,0 +1,6 @@
+{
+  "_note": "SF-003 — trần số fetch() trần trong service worker. CHỈ được giảm. Giảm bằng cách chuyển sang NetworkService.fetchSafe().",
+  "counts": {
+    "background.js": 20
+  }
+}

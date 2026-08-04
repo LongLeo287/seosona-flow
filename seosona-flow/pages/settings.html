@@ -103,7 +103,7 @@
           <span data-i18n="settings.providerDefault">Default provider</span>
         </div>
         <div class="s-field">
-          <label data-i18n="settings.defaultProvider">Default provider for new items</label>
+          <label for="defaultProvider" data-i18n="settings.defaultProvider">Default provider for new items</label>
           <div class="s-select-group">
             <select id="defaultProvider">
               <option value="flow" data-i18n="gen.providerFlow">Google Flow</option>
@@ -128,7 +128,7 @@
         </div>
         <div class="s-grid">
           <div class="s-field">
-            <label data-i18n="settings.defaultType">Default type</label>
+            <label for="defaultGenType" data-i18n="settings.defaultType">Default type</label>
             <div class="s-select-group">
               <select id="defaultGenType">
                 <option value="Image" data-i18n="settings.image">Image</option>
@@ -138,7 +138,7 @@
             </div>
           </div>
           <div class="s-field">
-            <label data-i18n="settings.defaultImageRatio">Default image ratio</label>
+            <label for="defaultImageRatio" data-i18n="settings.defaultImageRatio">Default image ratio</label>
             <div class="s-select-group">
               <select id="defaultImageRatio">
                 <option value="16:9">▬ 16:9</option>
@@ -151,7 +151,7 @@
             </div>
           </div>
           <div class="s-field">
-            <label data-i18n="settings.defaultVideoRatio">Default video ratio</label>
+            <label for="defaultVideoRatio" data-i18n="settings.defaultVideoRatio">Default video ratio</label>
             <div class="s-select-group">
               <select id="defaultVideoRatio">
                 <option value="16:9">▬ 16:9</option>
@@ -163,7 +163,7 @@
         </div>
         <div class="s-grid">
           <div class="s-field">
-            <label data-i18n="settings.defaultImageModel">Default image model</label>
+            <label for="defaultImageModel" data-i18n="settings.defaultImageModel">Default image model</label>
             <div class="s-select-group">
               <select id="defaultImageModel">
                 <option value="Nano Banana Pro">Nano Banana Pro</option>
@@ -173,7 +173,7 @@
             </div>
           </div>
           <div class="s-field">
-            <label data-i18n="settings.defaultVideoModel">Default video model</label>
+            <label for="defaultVideoModel" data-i18n="settings.defaultVideoModel">Default video model</label>
             <div class="s-select-group">
               <select id="defaultVideoModel">
                 <!-- Populated by settings-page.js from ModelRegistry -->
@@ -182,7 +182,7 @@
             </div>
           </div>
           <div class="s-field" id="defaultVideoDurationRow">
-            <label data-i18n="settings.defaultVideoDuration">Default video duration</label>
+            <label for="defaultVideoDuration" data-i18n="settings.defaultVideoDuration">Default video duration</label>
             <div class="s-select-group">
               <select id="defaultVideoDuration">
                 <!-- Populated by settings-page.js from PCM video_durations -->
@@ -225,7 +225,7 @@
           <span data-i18n="gen.providerChatGPT">ChatGPT</span>
         </div>
         <div class="s-field">
-          <label data-i18n="settings.chatgptDefaultRatio">Default ChatGPT ratio</label>
+          <label for="chatgptDefaultRatio" data-i18n="settings.chatgptDefaultRatio">Default ChatGPT ratio</label>
           <div class="s-select-group">
             <select id="chatgptDefaultRatio">
               <option value="story">▮ Story (9:16)</option>
@@ -238,7 +238,7 @@
           </div>
         </div>
         <div class="s-field">
-          <label data-i18n="settings.chatgptDefaultModel">Default ChatGPT model</label>
+          <label for="chatgptDefaultModel" data-i18n="settings.chatgptDefaultModel">Default ChatGPT model</label>
           <div class="s-select-group">
             <select id="chatgptDefaultModel">
               <option value="Instant">Instant</option>
@@ -258,7 +258,7 @@
         <details class="s-details" style="margin-top:8px;">
           <summary data-i18n="settings.chatgptAdvanced" style="font-size:12px;color:var(--muted-foreground);cursor:pointer;">Advanced</summary>
           <div class="s-field" style="margin-top:8px;">
-            <label data-i18n="settings.chatgptFallbackPrefix">Fallback prompt prefix (when image mode fails)</label>
+            <label for="chatgptFallbackPrefix" data-i18n="settings.chatgptFallbackPrefix">Fallback prompt prefix (when image mode fails)</label>
             <textarea id="chatgptFallbackPrefix" rows="2" style="width:100%;font-family:inherit;font-size:12px;padding:6px;background:var(--input-background);color:var(--foreground);border:1px solid var(--border);border-radius:4px;">Generate an image of: </textarea>
           </div>
         </details>
@@ -274,7 +274,7 @@
         </div>
         <div class="s-grid">
           <div class="s-field">
-            <label data-i18n="settings.grokDefaultMode">Default mode</label>
+            <label for="grokDefaultMode" data-i18n="settings.grokDefaultMode">Default mode</label>
             <div class="s-select-group">
               <select id="grokDefaultMode">
                 <option value="image" data-i18n="grok.modeImage">Image</option>
@@ -284,7 +284,7 @@
             </div>
           </div>
           <div class="s-field">
-            <label data-i18n="settings.grokDefaultRatio">Default ratio</label>
+            <label for="grokDefaultRatio" data-i18n="settings.grokDefaultRatio">Default ratio</label>
             <div class="s-select-group">
               <select id="grokDefaultRatio">
                 <option value="story" data-i18n="grok.ratioStory">▮ 9:16 (Portrait)</option>
@@ -299,7 +299,7 @@
         </div>
         <div class="s-grid grok-video-only" id="grokVideoFieldsRow">
           <div class="s-field" id="grokDurationRow">
-            <label data-i18n="settings.grokDefaultDuration">Video duration</label>
+            <label for="grokDefaultDuration" data-i18n="settings.grokDefaultDuration">Video duration</label>
             <div class="s-select-group">
               <select id="grokDefaultDuration">
                 <option value="6s" data-i18n="grok.videoDuration6s">6 seconds</option>
@@ -309,7 +309,7 @@
             </div>
           </div>
           <div class="s-field" id="grokResolutionRow">
-            <label data-i18n="settings.grokDefaultResolution">Video resolution</label>
+            <label for="grokDefaultResolution" data-i18n="settings.grokDefaultResolution">Video resolution</label>
             <div class="s-select-group">
               <select id="grokDefaultResolution">
                 <option value="480p" data-i18n="grok.videoResolution480p">480p</option>
@@ -322,7 +322,7 @@
         <!-- Image quality (Grok update 2026-04) — chỉ hiện khi mode=image -->
         <div class="s-grid grok-image-only" id="grokImageFieldsRow">
           <div class="s-field" id="grokImageQualityRow">
-            <label data-i18n="settings.grokDefaultImageQuality">Image quality</label>
+            <label for="grokDefaultImageQuality" data-i18n="settings.grokDefaultImageQuality">Image quality</label>
             <div class="s-select-group">
               <select id="grokDefaultImageQuality">
                 <option value="speed" data-i18n="grok.imageQualitySpeed">Speed</option>
@@ -387,20 +387,20 @@
           <label for="autoRetryToggle" data-i18n="settings.autoRetryOnFail">Tự động thử lại khi tạo lỗi (workflow)</label>
         </div>
         <div class="s-field">
-          <label data-i18n="settings.folderName">Folder name</label>
+          <label for="downloadFolder" data-i18n="settings.folderName">Folder name</label>
           <input type="text" id="downloadFolder" value="seosonaflow_output" placeholder="seosonaflow_output" />
         </div>
         <div class="s-field">
-          <label data-i18n="settings.projectName">Project name</label>
+          <label for="fileNameProject" data-i18n="settings.projectName">Project name</label>
           <input type="text" id="fileNameProject" data-i18n-placeholder="E.g.: CuteCats" placeholder="VD: CuteCats" />
         </div>
         <div class="s-field">
-          <label data-i18n="settings.fileNameTemplate">File name template</label>
+          <label for="fileNameTemplate" data-i18n="settings.fileNameTemplate">File name template</label>
           <input type="text" id="fileNameTemplate" value="[Date]_[Project]_[Prompt]_[Index]" placeholder="[Date]_[Project]_[Prompt]_[Index]" />
           <span class="s-hint" data-i18n="settings.fileNameTemplateHint">Supported variables: [Date], [Time], [Project], [Prompt], [Index]</span>
         </div>
         <div class="s-field">
-          <label data-i18n="settings.imageResolution">Image resolution</label>
+          <label for="downloadResolution" data-i18n="settings.imageResolution">Image resolution</label>
           <div class="s-select-group">
             <select id="downloadResolution">
               <option value="1k">1K — bản gốc (tải thẳng)</option>
@@ -411,7 +411,7 @@
           </div>
         </div>
         <div class="s-field">
-          <label data-i18n="settings.videoResolution">Video resolution</label>
+          <label for="videoDownloadResolution" data-i18n="settings.videoResolution">Video resolution</label>
           <div class="s-select-group">
             <select id="videoDownloadResolution">
               <option value="720p">720p — bản gốc (tải thẳng)</option>
@@ -443,7 +443,7 @@
         </div>
         <div class="s-grid">
           <div class="s-field">
-            <label data-i18n="settings.theme">Theme</label>
+            <label for="themeSelect" data-i18n="settings.theme">Theme</label>
             <div class="s-select-group">
               <select id="themeSelect">
                 <option value="dark" data-i18n="settings.themeDark">Dark (Default)</option>
@@ -454,7 +454,7 @@
             </div>
           </div>
           <div class="s-field">
-            <label data-i18n="settings.language">Language</label>
+            <label for="languageSelect" data-i18n="settings.language">Language</label>
             <div class="s-select-group">
               <select id="languageSelect">
                 <option value="vi">Tiếng Việt</option>
@@ -510,7 +510,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
             <span data-i18n="settings.importSettings">Import Settings</span>
           </button>
-          <input type="file" id="importFileInput" accept=".json" style="display: none;" />
+          <input type="file" id="importFileInput" accept=".json" style="display: none;" / aria-label="Import File Input">
         </div>
 
         <!-- Full backup (2026-07-09): sao lưu/khôi phục TOÀN BỘ dữ liệu local (workflows, prompts,
@@ -526,7 +526,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path></svg>
             <span data-i18n="settings.fullRestore">Khôi phục</span>
           </button>
-          <input type="file" id="fullRestoreInput" accept=".json" style="display: none;" />
+          <input type="file" id="fullRestoreInput" accept=".json" style="display: none;" / aria-label="Full Restore Input">
         </div>
 
         <!-- Storage usage meter (2026-07-09): hiện dung lượng đang dùng + hạn ngạch trình duyệt. -->
@@ -569,13 +569,13 @@
               </span>
             </div>
             <div class="s-input-group">
-              <input type="number" id="inputTimeout" value="1200" min="100" max="60000" step="100" />
+              <input type="number" id="inputTimeout" value="1200" min="100" max="60000" step="100" / aria-label="Input Timeout">
               <span class="s-suffix">ms (100-60000)</span>
             </div>
           </div>
           <!-- Phase 2c: delayBetweenPrompts moved to server (system-settings/execution) -->
           <div class="s-field">
-            <label data-i18n="settings.blobMaxAgeDays" data-i18n-title="settings.blobMaxAgeDaysTitle">Album image blob storage</label>
+            <label for="blobMaxAgeDays" data-i18n="settings.blobMaxAgeDays" data-i18n-title="settings.blobMaxAgeDaysTitle">Album image blob storage</label>
             <div class="s-select-group">
               <select id="blobMaxAgeDays">
                 <option value="1" data-i18n="settings.day1">1 day</option>
@@ -605,7 +605,7 @@
         </div>
         <p class="s-section-desc" data-i18n="settings.pipelineQueueDesc">Run multiple tasks simultaneously</p>
         <div class="s-toggle-row">
-          <label class="s-toggle">
+          <label for="queueEnabled" class="s-toggle">
             <input type="checkbox" id="queueEnabled" />
             <span class="s-toggle-track"><span class="s-toggle-thumb"></span></span>
             <span data-i18n="settings.enablePipelineQueue">Enable Pipeline Queue</span>
@@ -627,11 +627,11 @@
         </div>
         <div class="s-grid">
           <div class="s-field">
-            <label data-i18n="settings.randomDelay">Random delay (seconds)</label>
+            <label for="randomDelayMin" data-i18n="settings.randomDelay">Random delay (seconds)</label>
             <div class="s-input-group" style="gap: 4px;">
               <input type="number" id="randomDelayMin" value="3" min="0" max="60" step="1" style="width: 50px;" />
               <span class="s-suffix">&mdash;</span>
-              <input type="number" id="randomDelayMax" value="10" min="1" max="120" step="1" style="width: 50px;" />
+              <input type="number" id="randomDelayMax" value="10" min="1" max="120" step="1" style="width: 50px;" / aria-label="Random Delay Max">
             </div>
           </div>
         </div>
@@ -646,7 +646,7 @@
           <span data-i18n="settings.automationMode">Automation Mode</span>
         </div>
         <div class="s-toggle-row">
-          <label class="s-toggle">
+          <label for="humanizedMode" class="s-toggle">
             <input type="checkbox" id="humanizedMode" />
             <span class="s-toggle-track"><span class="s-toggle-thumb"></span></span>
             <span data-i18n="settings.humanizedMode">Humanized mode</span>
@@ -654,7 +654,7 @@
           <span class="s-hint" data-i18n="settings.humanizedModeHint">Type characters naturally with random delays between actions</span>
         </div>
         <div class="s-field" style="margin-top: 10px;">
-          <label data-i18n="settings.typingSpeed">Typing speed</label>
+          <label for="humanizedSpeed" data-i18n="settings.typingSpeed">Typing speed</label>
           <div class="s-range-group">
             <input type="range" id="humanizedSpeed" min="0.2" max="2" step="0.1" value="0.5" />
             <span id="humanizedSpeedLabel">0.5x</span>
@@ -783,7 +783,7 @@
           <div id="telegramCustomBotSetup" class="hidden" style="margin-top: 12px; margin-bottom: 12px;">
             <div class="telegram-custom-bot-card">
               <div class="s-field" style="margin-bottom: 8px;">
-                <label>Bot Token</label>
+                <label for="telegramCustomBotToken">Bot Token</label>
                 <div class="s-input-group">
                   <input type="text" id="telegramCustomBotToken" placeholder="123456789:ABCdefGHIjklMNOpqrsTUVwxyz" />
                 </div>
@@ -875,7 +875,7 @@
           </div>
           <!-- Notification toggle khi đã link -->
           <div class="s-toggle-row" style="margin-top: 12px;">
-            <label class="s-toggle">
+            <label for="notifyTelegramInTab" class="s-toggle">
               <input type="checkbox" id="notifyTelegramInTab" />
               <span class="s-toggle-track">
                 <span class="s-toggle-thumb"></span>
@@ -899,7 +899,7 @@
 
             <!-- Default Provider -->
             <div class="s-field" style="margin-bottom: 12px;">
-              <label data-i18n="settings.telegramDefaultProvider">Default Provider</label>
+              <label for="telegramDefaultProvider" data-i18n="settings.telegramDefaultProvider">Default Provider</label>
               <div class="s-select-group">
                 <select id="telegramDefaultProvider">
                   <option value="flow" data-i18n="gen.providerFlow">Google Flow</option>
@@ -923,7 +923,7 @@
                 <div class="telegram-provider-content">
                   <div class="s-grid">
                     <div class="s-field">
-                      <label data-i18n="settings.telegramFlowRatio">Aspect Ratio</label>
+                      <label for="telegramFlowRatio" data-i18n="settings.telegramFlowRatio">Aspect Ratio</label>
                       <div class="s-select-group">
                         <select id="telegramFlowRatio">
                           <option value="16:9">▬ 16:9</option>
@@ -936,7 +936,7 @@
                       </div>
                     </div>
                     <div class="s-field">
-                      <label data-i18n="settings.telegramFlowModel">Model</label>
+                      <label for="telegramFlowModel" data-i18n="settings.telegramFlowModel">Model</label>
                       <div class="s-select-group">
                         <select id="telegramFlowModel">
                           <option value="Nano Banana Pro">🍌 Nano Banana Pro</option>
@@ -957,7 +957,7 @@
                 </summary>
                 <div class="telegram-provider-content">
                   <div class="s-field">
-                    <label data-i18n="settings.telegramChatgptRatio">Aspect Ratio</label>
+                    <label for="telegramChatgptRatio" data-i18n="settings.telegramChatgptRatio">Aspect Ratio</label>
                     <div class="s-select-group">
                       <select id="telegramChatgptRatio">
                         <option value="square">□ 1:1 (Square)</option>
@@ -981,7 +981,7 @@
                 <div class="telegram-provider-content">
                   <div class="s-grid">
                     <div class="s-field">
-                      <label data-i18n="settings.telegramGrokMode">Mode</label>
+                      <label for="telegramGrokMode" data-i18n="settings.telegramGrokMode">Mode</label>
                       <div class="s-select-group">
                         <select id="telegramGrokMode">
                           <option value="image" data-i18n="grok.modeImage">Image</option>
@@ -991,7 +991,7 @@
                       </div>
                     </div>
                     <div class="s-field">
-                      <label data-i18n="settings.telegramGrokRatio">Aspect Ratio</label>
+                      <label for="telegramGrokRatio" data-i18n="settings.telegramGrokRatio">Aspect Ratio</label>
                       <div class="s-select-group">
                         <select id="telegramGrokRatio">
                           <option value="widescreen">▬ 16:9 (Landscape)</option>
@@ -1007,7 +1007,7 @@
                   <!-- Video-only settings -->
                   <div class="s-grid telegram-grok-video-only" id="telegramGrokVideoFields">
                     <div class="s-field">
-                      <label data-i18n="settings.telegramGrokDuration">Video Duration</label>
+                      <label for="telegramGrokDuration" data-i18n="settings.telegramGrokDuration">Video Duration</label>
                       <div class="s-select-group">
                         <select id="telegramGrokDuration">
                           <option value="6s" data-i18n="grok.videoDuration6s">6 seconds</option>
@@ -1017,7 +1017,7 @@
                       </div>
                     </div>
                     <div class="s-field">
-                      <label data-i18n="settings.telegramGrokResolution">Resolution</label>
+                      <label for="telegramGrokResolution" data-i18n="settings.telegramGrokResolution">Resolution</label>
                       <div class="s-select-group">
                         <select id="telegramGrokResolution">
                           <option value="480p">480p</option>
@@ -1029,7 +1029,7 @@
                   </div>
                   <!-- Image-only settings -->
                   <div class="s-field telegram-grok-image-only" id="telegramGrokImageFields">
-                    <label data-i18n="settings.telegramGrokImageQuality">Image Quality</label>
+                    <label for="telegramGrokImageQuality" data-i18n="settings.telegramGrokImageQuality">Image Quality</label>
                     <div class="s-select-group">
                       <select id="telegramGrokImageQuality">
                         <option value="speed" data-i18n="grok.imageQualitySpeed">Speed</option>
@@ -1054,7 +1054,7 @@
             </div>
             <!-- Auto download toggle -->
             <div class="s-toggle-row" style="margin-bottom: 12px;">
-              <label class="s-toggle">
+              <label for="telegramAutoDownload" class="s-toggle">
                 <input type="checkbox" id="telegramAutoDownload" checked />
                 <span class="s-toggle-track">
                   <span class="s-toggle-thumb"></span>
@@ -1072,7 +1072,7 @@
             </div>
             <!-- Image resolution -->
             <div class="s-field" style="margin-bottom: 12px;">
-              <label data-i18n="settings.telegramImageResolution">Image resolution</label>
+              <label for="telegramDownloadResolution" data-i18n="settings.telegramImageResolution">Image resolution</label>
               <div class="s-select-group">
                 <select id="telegramDownloadResolution">
                   <option value="1k">1K</option>
@@ -1084,7 +1084,7 @@
             </div>
             <!-- Video resolution -->
             <div class="s-field" style="margin-bottom: 0;">
-              <label data-i18n="settings.telegramVideoResolution">Video resolution</label>
+              <label for="telegramVideoDownloadResolution" data-i18n="settings.telegramVideoResolution">Video resolution</label>
               <div class="s-select-group">
                 <select id="telegramVideoDownloadResolution">
                   <option value="720p">720p</option>
@@ -1265,7 +1265,7 @@
           </div>
           <!-- Auto download toggle (mặc định TẮT) -->
           <div class="s-toggle-row" style="margin-bottom: 12px;">
-            <label class="s-toggle">
+            <label for="mcpAutoDownload" class="s-toggle">
               <input type="checkbox" id="mcpAutoDownload" />
               <span class="s-toggle-track">
                 <span class="s-toggle-thumb"></span>
@@ -1283,7 +1283,7 @@
           </div>
           <!-- Image resolution -->
           <div class="s-field" style="margin-bottom: 12px;">
-            <label data-i18n="settings.mcpImageResolution">Image resolution</label>
+            <label for="mcpDownloadResolution" data-i18n="settings.mcpImageResolution">Image resolution</label>
             <div class="s-select-group">
               <select id="mcpDownloadResolution">
                 <option value="1k">1K</option>
@@ -1295,7 +1295,7 @@
           </div>
           <!-- Video resolution -->
           <div class="s-field" style="margin-bottom: 0;">
-            <label data-i18n="settings.mcpVideoResolution">Video resolution</label>
+            <label for="mcpVideoDownloadResolution" data-i18n="settings.mcpVideoResolution">Video resolution</label>
             <div class="s-select-group">
               <select id="mcpVideoDownloadResolution">
                 <option value="720p">720p</option>
@@ -1466,11 +1466,11 @@
         <p class="s-help-text" data-i18n="settings.backupHelp" style="margin:2px 0 12px;">
           Xuất toàn bộ dữ liệu (prompt, workflow, template, cài đặt…) ra 1 file để mang sang máy khác. Máy mới cài extension rồi Nhập lại là dùng tiếp.
         </p>
-        <label class="s-checkbox-row" style="display:flex;align-items:center;gap:8px;margin-bottom:8px;cursor:pointer;">
+        <label for="backupIncludeSecrets" class="s-checkbox-row" style="display:flex;align-items:center;gap:8px;margin-bottom:8px;cursor:pointer;">
           <input type="checkbox" id="backupIncludeSecrets">
           <span class="s-help-text" style="margin:0;" data-i18n="settings.backupIncludeSecrets">Kèm cả token đăng nhập / MCP (nhạy cảm — thường KHÔNG cần)</span>
         </label>
-        <label class="s-checkbox-row" style="display:flex;align-items:center;gap:8px;margin-bottom:12px;cursor:pointer;">
+        <label for="backupReplaceMode" class="s-checkbox-row" style="display:flex;align-items:center;gap:8px;margin-bottom:12px;cursor:pointer;">
           <input type="checkbox" id="backupReplaceMode">
           <span class="s-help-text" style="margin:0;" data-i18n="settings.backupReplaceMode">Khi Nhập: THAY THẾ toàn bộ data hiện tại (mặc định tắt = hợp nhất, an toàn)</span>
         </label>
@@ -1483,7 +1483,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
             <span data-i18n="settings.backupImport">Nhập backup</span>
           </button>
-          <input type="file" id="backupImportFile" accept="application/json,.json" style="display:none;">
+          <input type="file" id="backupImportFile" accept="application/json,.json" style="display:none;" aria-label="Backup Import File">
         </div>
       </section>
 

@@ -46,20 +46,20 @@
     <p class="sub">Chèn chữ VECTOR sắc nét lên ảnh AI — chính tả, dấu tiếng Việt, kerning & ngắt-dòng luôn đúng (code dựng chữ, không phải model). Diệt "rớt chữ / rớt dòng".</p>
     <div class="grid">
       <div class="card">
-        <div class="drop" id="drop">📁 Kéo-thả hoặc bấm chọn ảnh nền<input type="file" id="file" accept="image/*" hidden></div>
-        <label>Chữ cần overlay</label>
+        <div class="drop" id="drop">📁 Kéo-thả hoặc bấm chọn ảnh nền<input type="file" id="file" accept="image/*" hidden aria-label="File"></div>
+        <label for="text">Chữ cần overlay</label>
         <textarea id="text" placeholder="Nhập chữ… (giữ ngắn cho heading; dài sẽ tự xuống dòng cân đối)"></textarea>
         <div class="row">
-          <div><label>Vị trí</label><select id="pos"><option value="center">Giữa</option><option value="top">Trên</option><option value="bottom">Dưới</option></select></div>
-          <div><label>Kiểu</label><select id="mode"><option value="heading">Heading (cân dòng)</option><option value="body">Body (chống runt)</option></select></div>
+          <div><label>Vị trí</label><select id="pos" aria-label="Pos"><option value="center">Giữa</option><option value="top">Trên</option><option value="bottom">Dưới</option></select></div>
+          <div><label>Kiểu</label><select id="mode" aria-label="Mode"><option value="heading">Heading (cân dòng)</option><option value="body">Body (chống runt)</option></select></div>
         </div>
         <div class="row">
-          <div><label>Cỡ chữ (px)</label><input type="text" id="size" value="64" inputmode="numeric"></div>
-          <div><label>Canh</label><select id="align"><option value="center">Giữa</option><option value="left">Trái</option><option value="right">Phải</option></select></div>
+          <div><label>Cỡ chữ (px)</label><input type="text" id="size" value="64" inputmode="numeric" aria-label="Size"></div>
+          <div><label>Canh</label><select id="align" aria-label="Align"><option value="center">Giữa</option><option value="left">Trái</option><option value="right">Phải</option></select></div>
         </div>
-        <label>Màu chữ</label>
+        <label for="color">Màu chữ</label>
         <div class="swatch"><input type="color" id="color" value="#ffffff"><span class="hint" id="colorhex">#ffffff</span></div>
-        <label>Kiểm tra chính tả (tuỳ chọn)</label>
+        <label for="expected">Kiểm tra chính tả (tuỳ chọn)</label>
         <input type="text" id="expected" placeholder="Chuỗi mong đợi để OCR/so khớp (bỏ trống = không kiểm)">
         <div class="actions">
           <button class="btn btn-primary" id="render" disabled>Overlay</button>
