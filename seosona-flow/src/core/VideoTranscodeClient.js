@@ -44,8 +44,11 @@
     return _worker;
   }
 
+  // Đường lùi chạy-trên-trang cần thư viện có mặt NGAY TRONG trang. Content script không nạp
+  // nó nữa (620 KB mỗi lần mở trang là quá đắt cho một đường lùi hiếm dùng), nên ở ngữ cảnh
+  // content script tầng này tự bỏ qua và rơi thẳng xuống MediaRecorder.
   function _inPage(blob, opt) {
-    if (!root.VideoTranscoder || !root.VideoTranscoder.canRun()) return null;
+    if (!root.VideoTranscoder || !root.VideoTranscoder.canRun() || !root.Mediabunny) return null;
     return root.VideoTranscoder.process(blob, opt);
   }
 

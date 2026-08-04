@@ -24,11 +24,18 @@
     return e;
   }
 
+  /**
+   * Máy này chạy được đường WebCodecs không?
+   *
+   * KHÔNG đòi `Mediabunny` có mặt ở đây: thư viện 620 KB chỉ nạp trong Worker (qua
+   * importScripts) và ở trang công cụ. Nhét nó vào content script là bắt MỌI lần mở trang
+   * Flow phải tải và phân tích 620 KB, kể cả khi người dùng không đụng tới xoá watermark.
+   * Chỗ nào THẬT SỰ gọi process() thì lúc đó mới cần, và đã ném NO_MEDIABUNNY nói rõ.
+   */
   function canRun() {
     return typeof root.VideoEncoder === 'function'
       && typeof root.VideoDecoder === 'function'
-      && typeof root.OffscreenCanvas === 'function'
-      && !!root.Mediabunny;
+      && typeof root.OffscreenCanvas === 'function';
   }
 
   /**

@@ -124,8 +124,6 @@
         "src/core/VeoWatermarkProbe.js",
         "src/core/VeoWatermarkProfile.js",
         "src/core/WebmDuration.js",
-        "lib/mediabunny.js",
-        "src/core/VideoTranscoder.js",
         "src/core/VideoTranscodeClient.js",
         "content_scripts/watermark-inject.js"
       ],
@@ -141,8 +139,6 @@
         "src/core/VeoWatermarkProbe.js",
         "src/core/VeoWatermarkProfile.js",
         "src/core/WebmDuration.js",
-        "lib/mediabunny.js",
-        "src/core/VideoTranscoder.js",
         "src/core/VideoTranscodeClient.js",
         "content_scripts/watermark-inject.js"
       ],
