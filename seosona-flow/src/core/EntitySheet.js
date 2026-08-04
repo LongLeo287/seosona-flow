@@ -22,6 +22,26 @@
   };
   var DEFAULT_TYPE = 'character';
 
+  // VAI TRÒ tham chiếu — KHÁC với loại thực thể ở trên, và đây là chỗ ta từng thiếu.
+  // `type` trả lời thứ này LÀ GÌ; `role` trả lời model phải LẤY GÌ từ ảnh này. Trộn hai câu
+  // hỏi làm một là mất khả năng diễn đạt: không nói được "giữ mặt người này, lấy chuyển động
+  // từ clip kia, đặt vào bối cảnh nọ" — cách dùng thường gặp nhất khi gen video.
+  // Nói RÕ vai trò còn chặn một lỗi im lặng: đưa hai ảnh nhân vật mà không phân vai thì model
+  // tự đoán, và thường trộn đặc điểm của cả hai thành một người thứ ba.
+  var ROLES = {
+    identity:    { label: 'Nhân dạng',   take: 'khuôn mặt, dáng người, trang phục, màu tóc — giữ NGUYÊN' },
+    motion:      { label: 'Chuyển động', take: 'nhịp và hướng vận động, cách máy quay đi — KHÔNG lấy nhân dạng' },
+    environment: { label: 'Bối cảnh',    take: 'không gian, ánh sáng, chất liệu nền — KHÔNG lấy nhân vật trong ảnh' },
+  };
+  var ROLE_BY_TYPE = { character: 'identity', creature: 'identity', prop: 'identity', location: 'environment' };
+  var DEFAULT_ROLE = 'identity';
+  function roleOf(entity) {
+    var r = String((entity && entity.role) || '').toLowerCase();
+    if (ROLES[r]) return r;
+    return ROLE_BY_TYPE[String((entity && entity.type) || '').toLowerCase()] || DEFAULT_ROLE;
+  }
+  function roleInfo(role) { return ROLES[String(role || '').toLowerCase()] || ROLES[DEFAULT_ROLE]; }
+
   function typeInfo(type) {
     return TYPES[String(type || '').toLowerCase()] || TYPES[DEFAULT_TYPE];
   }
@@ -65,6 +85,8 @@
         type: TYPES[String(p[1] || '').trim().toLowerCase()] ? String(p[1]).trim().toLowerCase() : DEFAULT_TYPE,
         appearance: String(p[2] || '').trim(),
         voice: String(p[3] || '').trim(),
+        // Cột 5 tuỳ chọn. Không ghi thì suy từ loại — đừng bắt khai thứ đoán được.
+        role: ROLES[String(p[4] || '').trim().toLowerCase()] ? String(p[4]).trim().toLowerCase() : '',
       };
     }).filter(Boolean);
   }
@@ -101,12 +123,18 @@
    */
   function castBlock(entities, opts) {
     opts = opts || {};
-    var list = (entities || []).map(function (e) { return '- ' + e.name + ' (' + e.type + ')'; }).join('\n');
+    // Ghi kèm VAI TRÒ và LẤY GÌ: model không tự biết ảnh nào để giữ mặt, ảnh nào để lấy
+    // chuyển động. Không nói thì nó đoán, và đoán sai thì nhân vật trôi.
+    var list = (entities || []).map(function (e) {
+      var r = roleOf(e);
+      return '- ' + e.name + ' (' + e.type + ' · ' + ROLES[r].label + ') → lấy: ' + ROLES[r].take;
+    }).join('\n');
     if (!list) return '';
     var label = opts.label || 'CAST';
     return '[' + label + ']\n' + list + '\n'
       + 'Quy tắc: gọi các tên trên ĐÚNG NGUYÊN VĂN và chỉ tả HÀNH ĐỘNG của họ. '
       + 'KHÔNG tả lại ngoại hình/trang phục — ảnh tham chiếu đã quy định phần đó.\n'
+      + 'Mỗi tham chiếu chỉ đóng ĐÚNG vai đã ghi; không mượn thuộc tính chéo giữa chúng.\n'
       + '[/' + label + ']';
   }
 
@@ -132,7 +160,10 @@
 
   global.EntitySheet = {
     TYPES: TYPES,
+    ROLES: ROLES,
     typeInfo: typeInfo,
+    roleOf: roleOf,
+    roleInfo: roleInfo,
     parse: parse,
     parseLines: parseLines,
     duplicateNames: duplicateNames,

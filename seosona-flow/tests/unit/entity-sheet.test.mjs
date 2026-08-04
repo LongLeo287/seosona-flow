@@ -72,7 +72,9 @@ test('khối CAST liệt kê tên và ÉP luật "tả hành động, cấm tả
   const block = ES.castBlock(ES.parse('Pippip | character | mèo vàng\nChợ | location | bến cảng'));
   assert.match(block, /^\[CAST\]/);
   assert.match(block, /\[\/CAST\]$/);
-  assert.match(block, /Pippip \(character\)/);
+  // ĐỔI: dòng cast nay kèm VAI TRÒ và LẤY GÌ (xem ROLES) — model không tự biết ảnh nào để
+  // giữ mặt, ảnh nào để lấy chuyển động. Vẫn phải có tên và loại như cũ.
+  assert.match(block, /Pippip \(character · Nhân dạng\)/);
   assert.match(block, /KHÔNG tả lại ngoại hình/);
 });
 
@@ -162,5 +164,55 @@ test('trang sửa template nạp ĐỦ bộ module mà executor cần (lỗ hổ
   const list = cfg.pages['pages/workflow-template-editor.html'];
   for (const m of ['StyleAnchor', 'PngText', 'TextOverlay', 'TextIntegrity', 'VietnameseLint', 'EntitySheet']) {
     assert.ok(list.some((s) => s.endsWith(`core/${m}.js`)), `template editor thiếu ${m}`);
+  }
+});
+
+// ── VAI TRÒ tham chiếu (học seedance-2.0) ────────────────────────────────────
+// `type` = thứ này LÀ GÌ. `role` = model phải LẤY GÌ từ ảnh. Hai câu hỏi khác nhau; gộp làm
+// một thì không diễn đạt được "giữ mặt người này, lấy chuyển động từ clip kia".
+
+test('vai trò suy được từ loại — không bắt người dùng khai thứ đoán được', () => {
+  assert.equal(ES.roleOf({ type: 'character' }), 'identity');
+  assert.equal(ES.roleOf({ type: 'creature' }), 'identity');
+  assert.equal(ES.roleOf({ type: 'prop' }), 'identity');
+  assert.equal(ES.roleOf({ type: 'location' }), 'environment');
+});
+
+test('người dùng khai role thì role THẮNG loại', () => {
+  // Ca dùng thật: một clip/ảnh đạo cụ nhưng chỉ muốn lấy CHUYỂN ĐỘNG từ nó.
+  assert.equal(ES.roleOf({ type: 'prop', role: 'motion' }), 'motion');
+  assert.equal(ES.roleOf({ type: 'character', role: 'environment' }), 'environment');
+});
+
+test('role lạ hoặc thiếu → quay về suy từ loại, không ném', () => {
+  assert.equal(ES.roleOf({ type: 'location', role: 'không-tồn-tại' }), 'environment');
+  assert.equal(ES.roleOf({}), 'identity');
+  assert.equal(ES.roleOf(null), 'identity');
+});
+
+test('parse đọc cột thứ 5 làm vai trò', () => {
+  const e = ES.parse('Clip mẫu | prop | | | motion');
+  assert.equal(e.length, 1);
+  assert.equal(ES.roleOf(e[0]), 'motion');
+});
+
+test('castBlock nói RÕ lấy gì từ ai — không nói thì model tự đoán', () => {
+  const block = ES.castBlock([
+    { name: 'Lan', type: 'character' },
+    { name: 'Phố cổ', type: 'location' },
+    { name: 'Clip', type: 'prop', role: 'motion' },
+  ]);
+  assert.match(block, /Lan .*Nhân dạng.*khuôn mặt/s);
+  assert.match(block, /Phố cổ .*Bối cảnh.*KHÔNG lấy nhân vật/s);
+  assert.match(block, /Clip .*Chuyển động.*KHÔNG lấy nhân dạng/s);
+  // Chốt chống mượn chéo: hai ảnh nhân vật không phân vai thì model trộn thành người thứ ba.
+  assert.match(block, /không mượn thuộc tính chéo/);
+});
+
+test('ba vai trò, mỗi vai có nhãn đọc được VÀ nói rõ lấy gì', () => {
+  assert.deepEqual(Object.keys(ES.ROLES).sort(), ['environment', 'identity', 'motion']);
+  for (const [k, v] of Object.entries(ES.ROLES)) {
+    assert.ok(v.label && v.label.length > 3, `${k} thiếu nhãn`);
+    assert.ok(v.take && v.take.length > 20, `${k} không nói rõ lấy gì — model sẽ đoán`);
   }
 });
