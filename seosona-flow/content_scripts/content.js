@@ -4778,26 +4778,41 @@ async function downloadViaFlowMenu(tileId, resolution, fileName, promptText, tas
     }
     const fallbackChain = _getDownloadFallbackChain(isVideo);
 
-    // Tìm vị trí của resLabel trong fallback chain, bắt đầu từ đó
-    let startIdx = fallbackChain.indexOf(resLabel);
-    if (startIdx < 0) startIdx = 0;
+    // Loại NGAY các dòng không phải "tải file": 4K có nút Upgrade là lối vào trang gói, bấm
+    // vào là trang điều hướng đi và Chrome lưu lại trang HTML đó thành .htm. Nhánh full-size
+    // (_downloadFullSizeViaMenu) đã lọc 'upgrade' từ lâu; nhánh này thì chưa — đó là lệch.
+    const _pickable = [...subItems].filter((it) => {
+      if (it.getAttribute('aria-disabled') === 'true' || it.hasAttribute('disabled')) return false;
+      const t = (it.textContent || '').toLowerCase();
+      if (t.includes('upgrade') || t.includes('nâng cấp')) return false;
+      if (t.includes('gif')) return false;   // GIF không phải bản gốc
+      return (it.textContent || '').trim().length > 0;
+    });
+
+    // So khớp KHÔNG phân biệt hoa thường: setting lưu '1k' còn menu ghi '1K'.
+    const _startsWith = (item, label) =>
+      (item.textContent || '').trim().toLowerCase().startsWith(String(label || '').toLowerCase());
+
+    // Bắt đầu ĐÚNG ở mức người dùng chọn. Nếu không tìm thấy nhãn đó trong chuỗi thì đi từ
+    // mức THẤP NHẤT, không phải index 0 — index 0 là 4K, tức tự ý nhảy lên mức cao nhất
+    // (bản upscale, có thể khoá gói) trong khi người dùng chỉ xin bản thường.
+    let startIdx = fallbackChain.findIndex((l) => String(l).toLowerCase() === String(resLabel).toLowerCase());
+    if (startIdx < 0) startIdx = Math.max(0, fallbackChain.length - 1);
 
     let targetItem = null;
     let actualResLabel = resLabel;
     for (let fi = startIdx; fi < fallbackChain.length && !targetItem; fi++) {
       const tryLabel = fallbackChain[fi];
-      for (const item of subItems) {
-        const text = item.textContent?.trim() || '';
-        if (text.startsWith(tryLabel)) {
-          if (item.getAttribute('aria-disabled') === 'true') {
-            console.log(`[SEOSONA Flow] downloadViaFlowMenu: ${tryLabel} is disabled (aria-disabled), trying lower resolution`);
-            break; // Try next in fallback chain
-          }
-          targetItem = item;
-          actualResLabel = tryLabel;
-          break;
-        }
+      for (const item of _pickable) {
+        if (_startsWith(item, tryLabel)) { targetItem = item; actualResLabel = tryLabel; break; }
       }
+    }
+
+    // Vẫn chưa có thì ưu tiên dòng ghi "Original size" — đó là bản render gốc; các dòng
+    // "Upscaled" là thao tác phóng to, đi đường khác và không phải thứ nút Tải nên trả về.
+    if (!targetItem) {
+      targetItem = _pickable.find((it) => _textIncludesAny((it.textContent || '').toLowerCase(), FULL_SIZE_TEXTS)) || null;
+      if (targetItem) actualResLabel = (targetItem.textContent || '').trim().split(/\s+/)[0] || resLabel;
     }
 
     if (targetItem && actualResLabel !== resLabel) {
@@ -4808,13 +4823,12 @@ async function downloadViaFlowMenu(tileId, resolution, fileName, promptText, tas
       // Last resort: tải option đầu tiên available (tốt hơn là không tải gì)
       const availableItems = [...subItems].map(i => i.textContent?.trim()).join(', ');
       console.warn(`[SEOSONA Flow] downloadViaFlowMenu: ${resLabel} not found in sub-menu. Available: [${availableItems}]`);
-      for (const item of subItems) {
-        if (item.getAttribute('aria-disabled') !== 'true') {
-          targetItem = item;
-          const firstWord = item.textContent?.trim().split(' ')[0] || '?';
-          sendLog(`${resLabel} không khả dụng, tải ${firstWord} thay thế`, 'warn');
-          break;
-        }
+      // Chốt cuối vẫn phải lấy từ danh sách ĐÃ LỌC — bản cũ duyệt subItems thô nên có thể
+      // rơi trúng dòng Upgrade và biến cú tải thành cú mở trang gói.
+      if (_pickable.length) {
+        targetItem = _pickable[_pickable.length - 1];   // dòng thấp nhất = an toàn nhất
+        const firstWord = (targetItem.textContent || '').trim().split(' ')[0] || '?';
+        sendLog(`${resLabel} không khả dụng, tải ${firstWord} thay thế`, 'warn');
       }
       if (!targetItem) {
         console.warn('[SEOSONA Flow] downloadViaFlowMenu: no downloadable option found');
@@ -4822,6 +4836,11 @@ async function downloadViaFlowMenu(tileId, resolution, fileName, promptText, tas
         return false;
       }
     }
+
+    // Ghi rõ đã chọn dòng nào: khi ra file .htm thì đây là manh mối quyết định — biết ngay
+    // là bấm trúng bản gốc hay trúng bản upscale/gói trả phí.
+    console.log('[SEOSONA Flow] downloadViaFlowMenu: chọn mục submenu = "' +
+      (targetItem.textContent || '').trim().slice(0, 60) + '" (xin ' + resLabel + ')');
 
     // 8. Re-validate media URL trước khi click download (tránh race condition)
     // Media có thể đã thay đổi trong thời gian chờ menu render

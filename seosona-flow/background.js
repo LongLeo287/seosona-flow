@@ -917,22 +917,34 @@ chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggest) => {
 
   const rename = _pendingDownloadRenames.splice(renameIdx, 1)[0];
   _persistPendingRenames();
-  let origExt = downloadItem.filename?.split('.').pop()?.toLowerCase() || 'png';
-  // Bug fix: Flow context menu đôi khi trả về HTML page (server response error /
-  // auth redirect / media chưa ready) → downloadItem.filename = "media.html" hay tương tự
-  // → save file thành .html SAI. Detect & override sang ext đúng theo mime + filename hint.
-  if (origExt === 'html' || origExt === 'htm') {
+  // Đuôi file phải đọc từ TÊN ĐÃ CẮT query/fragment. Bản cũ làm `filename.split('.').pop()`
+  // trên chuỗi thô, nên "media.html?x=1" ra đuôi "html?x=1" — không khớp phép so sánh
+  // === 'html' bên dưới, thế là lớp chặn HTML nằm im và file vẫn rơi ra .htm.
+  const _cleanName = String(downloadItem.filename || '').split(/[?#]/)[0];
+  const _dot = _cleanName.lastIndexOf('.');
+  let origExt = (_dot >= 0 ? _cleanName.slice(_dot + 1) : '').toLowerCase();
+
+  // Chỉ chấp nhận đuôi media đã biết. Bất kỳ thứ gì khác (html, htm, chuỗi rác, rỗng) đều coi
+  // là "không biết" rồi suy lại từ mime — chặn theo danh sách CHO PHÉP thay vì đuổi bắt từng
+  // biến thể của cái sai.
+  const MEDIA_EXTS = ['png', 'jpg', 'jpeg', 'webp', 'gif', 'mp4', 'webm', 'mov', 'm4v'];
+  if (!MEDIA_EXTS.includes(origExt)) {
+    const before = origExt || '(rỗng)';
     if (mime.startsWith('video/') || isVideoDownload) {
       origExt = 'mp4';
     } else if (mime.startsWith('image/')) {
       origExt = mime === 'image/jpeg' ? 'jpg' : (mime.split('/')[1] || 'png');
     } else {
-      // Mime cũng không cho biết → infer từ rename context (nếu có ext trong tên)
       origExt = 'png'; // safe default cho Flow image
     }
-    console.warn(`[SEOSONA Flow] Download rename: HTML response detected (filename="${downloadItem.filename}", mime="${mime}") → coerce ext to "${origExt}"`);
+    console.warn(`[SEOSONA Flow] Download rename: đuôi lạ "${before}" (filename="${downloadItem.filename}", mime="${mime}") → ép về "${origExt}"`);
   }
-  const rawName2 = rename.filename.includes('.') ? rename.filename : `${rename.filename}.${origExt}`;
+  // Tên do ta dựng có thể chứa dấu chấm trong chữ prompt; chỉ coi là "đã có đuôi" khi phần
+  // sau dấu chấm cuối đúng là một đuôi media. Bản cũ dùng includes('.') nên prompt kiểu
+  // "logo 2.0" làm mất bước gắn đuôi và Chrome tự đặt .htm.
+  const _rDot = rename.filename.lastIndexOf('.');
+  const _rExt = _rDot >= 0 ? rename.filename.slice(_rDot + 1).toLowerCase() : '';
+  const rawName2 = MEDIA_EXTS.includes(_rExt) ? rename.filename : `${rename.filename}.${origExt}`;
   const customName = _sanitizePathSegment(rawName2) || 'download';
   const safeFolder2 = _sanitizePathSegment(rename.folder || '');
   const fullPath = safeFolder2 ? `${safeFolder2}/${customName}` : customName;
