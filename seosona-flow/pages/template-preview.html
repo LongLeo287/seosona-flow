@@ -44,7 +44,7 @@
     .tp-loading__text { font-size: 13px; font-weight: 500; letter-spacing: .2px; color: var(--muted-foreground, #9a9aa2); }
     @keyframes tp-spin { to { transform: rotate(360deg); } }
     /* Lazy thumbnail shimmer — ảnh server load chậm → skeleton cho tới khi load xong.
-       LƯU Ý: .df-preview-thumb là DIV wrapper (chứa <img>) → fade IMG, KHÔNG fade div.
+       LƯU Ý: .df-preview-thumb là DIV wrapper (chứa <img alt="">) → fade IMG, KHÔNG fade div.
        Opacity buộc theo class CONTAINER (.df-node-preview.tp-thumb-loading) — markLoaded gỡ class. */
     .df-node-preview.tp-thumb-loading { position: relative; }
     .df-node-preview.tp-thumb-loading .df-preview-thumb img { opacity: 0; }
@@ -54,6 +54,7 @@
   </style>
 </head>
 <body>
+<main style="display:contents">
 <!-- Loading overlay (gỡ bởi template-preview-init.js sau khi diagram render) -->
 <div id="tpLoading" class="tp-loading">
   <div class="tp-loading__spinner"></div>
@@ -102,5 +103,6 @@
 <script src="../src/workflow/NodeTemplates.js"></script>
 <script src="../src/workflow/DiagramCanvas.js"></script>
 <script src="../scripts/template-preview-init.js"></script>
+</main>
 </body>
 </html>

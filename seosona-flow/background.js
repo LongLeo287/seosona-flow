@@ -83,14 +83,27 @@ const _extensionPopupWindows = new Set();
 const API_BASE_DEFAULT = 'http://localhost:8080/api/v1';
 let _apiBaseUrl = API_BASE_DEFAULT;
 chrome.storage.local.get(['apiBaseUrl'], (data) => {
-  if (data?.apiBaseUrl) _apiBaseUrl = data.apiBaseUrl;
+  if (data?.apiBaseUrl) { _apiBaseUrl = data.apiBaseUrl; _syncGateBackendHosts(); }
 });
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area === 'local' && changes.apiBaseUrl?.newValue) {
-    _apiBaseUrl = changes.apiBaseUrl.newValue;
+    _apiBaseUrl = changes.apiBaseUrl.newValue; _syncGateBackendHosts();
   }
 });
 function getApiBaseUrl() { return _apiBaseUrl; }
+
+// Cổng mặc định chỉ biết localhost/127.0.0.1 và *.seosona.vn. Người dùng trỏ apiBaseUrl sang host
+// khác thì cổng phải học host đó, không thì traffic backend bị xếp nhầm là 'other' và đi lọt.
+function _syncGateBackendHosts() {
+  try {
+    const gate = self.SEOSONA_RuntimeNetworkGate;
+    if (!gate || !gate.setBackendHosts) return;
+    const host = new URL(_apiBaseUrl).hostname.toLowerCase();
+    const base = ['localhost', '127.0.0.1'];
+    gate.setBackendHosts(base.indexOf(host) === -1 ? base.concat([host]) : base);
+  } catch (_) { globalThis.SEOSONA_swallow?.('background#_syncGateBackendHosts', _); }
+}
+_syncGateBackendHosts();
 
 // L8: persist transient throttle state across SW suspension via chrome.storage.session.
 // Restore on startup; write on change (see _persistApiRateLimit / _persistLastCaptureTime).
@@ -296,7 +309,7 @@ async function _doEnrollment() {
     const apiBase = getApiBaseUrl();
     const extVersion = chrome.runtime.getManifest()?.version || 'unknown';
 
-    const response = await fetch(`${apiBase}/enroll`, {
+    const response = await _safeFetch(`${apiBase}/enroll`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -439,7 +452,68 @@ async function _clearEnrollment() {
  *
  * Skip auto-sign nếu url là /enroll (chicken-and-egg) hoặc options.body là FormData.
  */
+// ── SF-003 — lối vào DUY NHẤT cho fetch đặc quyền trong service worker ───────────────────
+//
+// NetworkPolicy đã có sẵn: kiểm lại từng chặng redirect, chặn địa chỉ nội bộ, timeout và trần
+// kích thước. Nhưng nó chỉ bảo vệ những đường ĐI QUA nó, mà file này còn 20 chỗ gọi thẳng
+// fetch(). Hệ quả đúng như báo cáo audit: redirect công khai thoát khỏi lần kiểm ban đầu, và
+// phản hồi lớn không bị chặn nên service worker có thể chết vì hết bộ nhớ.
+//
+// Hàm này trả về đúng một Response như fetch, nên chỗ gọi giữ nguyên `resp.ok`, `resp.blob()`
+// — đổi tên hàm là đủ, không phải sửa danh sách tham số ở 20 nơi.
+//
+// Ngữ cảnh SUY TỪ CHÍNH lời gọi thay vì bắt mỗi chỗ tự khai, vì mỗi loại có trần khác nhau thật:
+//   backend — cho phép địa chỉ nội bộ (backend mặc định chạy localhost), tải nhẹ
+//   media   — ảnh/video gốc từ CDN provider (dấu hiệu: gửi kèm cookie), trần cao
+//   image   — ảnh lẻ, trần vừa
+const _NET_CTX = {
+  backend: { allowPrivate: true, maxBytes: 16 * 1024 * 1024, timeoutMs: 30000 },
+  media: { allowPrivate: false, maxBytes: 512 * 1024 * 1024, timeoutMs: 180000 },
+  image: { allowPrivate: false, maxBytes: 64 * 1024 * 1024, timeoutMs: 60000 },
+};
+function _netKind(url, options) {
+  const u = String(url || '');
+  try {
+    if (u.startsWith(getApiBaseUrl())) return 'backend';
+  } catch (_) { /* getApiBaseUrl chưa sẵn sàng lúc boot */ }
+  if (/\/(enroll|auth|sse|executions|system-config|workflows|workflow-templates)(\/|\?|$)/.test(u)) return 'backend';
+  if (options && options.credentials === 'include') return 'media';
+  return 'image';
+}
+async function _safeFetch(url, options) {
+  const ns = self.SEOSONA_NetworkService;
+  // Đường lùi PHẢI là fetch THẬT — gọi lại chính mình là đệ quy vô hạn.
+  if (!ns || !ns.fetchSafe) return fetch(url, options);
+  const env = await ns.fetchSafe(url, options, _NET_CTX[_netKind(url, options)]);
+  if (env && env.response) return env.response;
+  // Chính sách từ chối → dựng Response lỗi để chỗ gọi xử lý như một lỗi HTTP bình thường, thay
+  // vì ném ra ngoài và làm vỡ những handler chưa có try/catch.
+  console.warn('[NetworkPolicy] từ chối', env && env.reason, '→', String(url).slice(0, 80));
+  return new Response(JSON.stringify({ error: (env && env.reason) || 'POLICY_DENIED' }),
+    { status: 502, headers: { 'Content-Type': 'application/json' } });
+}
+
 async function _signedFetch(url, options = {}) {
+  // RuntimeNetworkGate — CHỐT DUY NHẤT cho request tới backend.
+  //
+  // Cổng này viết từ Phase 3 (SEC-003), được importScripts ở đầu file, nhưng KHÔNG có một call
+  // site nào — một lưới an toàn treo trên tường. Đó chính là lý do SF-001 lọt được: enrollment
+  // gửi vân tay thiết bị ở local mode mà không ai chặn. Vá thủ công từng hàm thì đường gọi
+  // backend THÊM SAU lại lọt tiếp; chặn ở chỗ chúng đi qua thì không.
+  const _gate = self.SEOSONA_RuntimeNetworkGate;
+  if (_gate) {
+    const _d = _gate.guard(url, {
+      localMode: self.SEOSONA_LOCAL_MODE !== false,
+      userInitiated: options.userInitiated === true,
+    });
+    if (!_d.allowed) {
+      console.warn('[NetworkGate] chặn', _d.class, _d.reason, '→', String(url).slice(0, 80));
+      return new Response(
+        JSON.stringify({ success: false, error: { code: 'LOCAL_MODE', message: 'backend disabled in local mode' } }),
+        { status: 503, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+  }
   const headers = { ...(options.headers || {}) };
   const method = (options.method || 'GET').toUpperCase();
   const isEnroll = typeof url === 'string' && /\/enroll(\?|$)/.test(url);
@@ -459,7 +533,7 @@ async function _signedFetch(url, options = {}) {
       Object.assign(headers, sigHeaders);
     } catch (_) { /* signing optional — fail silent in log_only mode */ }
   }
-  return fetch(url, { ...options, headers });
+  return _safeFetch(url, { ...options, headers });
 }
 
 // Trigger enrollment lúc SW wake (fire-and-forget, nếu enrollment valid sẽ no-op).
@@ -615,7 +689,7 @@ chrome.runtime.onSuspend.addListener(() => {
       const execId = data?.af_running_workflow?.execution_id;
       if (!execId) return;
       // keepalive=true: cho phép fetch complete dù SW bị kill
-      fetch(`${getApiBaseUrl()}/executions/${execId}/complete`, {
+      _safeFetch(`${getApiBaseUrl()}/executions/${execId}/complete`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1608,7 +1682,7 @@ chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => 
         try {
           const parsed = new URL(u);
           if (parsed.protocol !== 'https:' || !MEDIA_HOSTS.test(parsed.hostname)) continue;
-          const resp = await fetch(u, { credentials: 'include', signal: AbortSignal.timeout(20000) });
+          const resp = await _safeFetch(u, { credentials: 'include', signal: AbortSignal.timeout(20000) });
           if (!resp.ok) continue;
           // [Security audit 2026-07-06] Redirect có thể thoát allowlist (host_permissions <all_urls>
           // → fetch follow + gửi cookie host đích) → verify URL CUỐI sau redirect.
@@ -3459,7 +3533,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       try {
         var url = String(message.url || '');
         if (!/^https?:\/\//i.test(url)) { sendResponse({ ok: false, error: 'BAD_URL' }); return; }
-        var resp = await fetch(url);
+        var resp = await _safeFetch(url);
         if (!resp.ok) { sendResponse({ ok: false, error: 'HTTP_' + resp.status }); return; }
         var buf = new Uint8Array(await resp.arrayBuffer());
         var bin = ''; for (var i = 0; i < buf.length; i++) bin += String.fromCharCode(buf[i]);
@@ -3476,7 +3550,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       try {
         if (!_isAllowedUrl(message.srcUrl)) { sendResponse({ ok: false, error: 'URL not allowed' }); return; }
         const maxPx = Number(message.maxPx) || 1536;
-        const resp = await fetch(message.srcUrl);
+        const resp = await _safeFetch(message.srcUrl);
         if (!resp.ok) { sendResponse({ ok: false, error: 'HTTP_' + resp.status }); return; }
         const blob = await resp.blob();
         let outBlob = blob;
@@ -3829,7 +3903,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
     (async () => {
       try {
-        const response = await fetch(url, {
+        const response = await _safeFetch(url, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data),
@@ -4103,7 +4177,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           Object.assign(headers, sigHeaders);
         }
 
-        let response = await fetch(url, fetchOptions);
+        let response = await _safeFetch(url, fetchOptions);
         let httpStatus = response.status;
 
         // Sprint 2 (HMAC retry): nếu 403 với revoke codes → clear enrollment, re-enroll,
@@ -4130,7 +4204,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
               delete headers['X-Signature'];
               const newSig = await _buildSignatureHeaders(method || 'GET', pathForSig, bodyStringForSig);
               Object.assign(headers, newSig);
-              response = await fetch(url, fetchOptions);
+              response = await _safeFetch(url, fetchOptions);
               httpStatus = response.status;
             }
           }
@@ -4887,7 +4961,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
     (async () => {
       try {
-        const resp = await fetch(message.url);
+        const resp = await _safeFetch(message.url);
         if (!resp.ok) {
           sendResponse({ success: false, error: `HTTP ${resp.status} ${resp.statusText}` });
           return;
@@ -4922,7 +4996,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           return;
         }
         // Google CDN may not support HEAD properly, use GET with range
-        const resp = await fetch(message.url, {
+        const resp = await _safeFetch(message.url, {
           method: 'GET',
           headers: { 'Range': 'bytes=0-0' }
         });
@@ -5080,7 +5154,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           // Điều này đảm bảo session SSE cũ được cleanup khi switch account qua Google OAuth
           if (stored.token && stored.user) {
             console.log('[SEOSONA Flow] OAuth: clearing SSE session for previous user');
-            fetch(`${apiBaseUrl}/sse/end-session`, {
+            _safeFetch(`${apiBaseUrl}/sse/end-session`, {
               method: 'POST',
               headers: {
                 'Authorization': `Bearer ${stored.token}`,
@@ -5103,7 +5177,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           // Gọi /auth/me để lấy user data đầy đủ (bao gồm google_id)
           let user = null;
           try {
-            const resp = await fetch(`${apiBaseUrl}/auth/me`, {
+            const resp = await _safeFetch(`${apiBaseUrl}/auth/me`, {
               method: 'GET',
               headers: {
                 'Authorization': `Bearer ${token}`,
@@ -5975,7 +6049,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             return;
           }
           try {
-            const resp = await fetch(url);
+            const resp = await _safeFetch(url);
             if (!resp.ok) {
               sendResponse({ success: false, error: 'HTTP_' + resp.status });
               return;
@@ -6006,7 +6080,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           target: { tabId },
           func: async (imgUrl) => {
             try {
-              const resp = await fetch(imgUrl);
+              const resp = await _safeFetch(imgUrl);
               if (!resp.ok) return { ok: false, status: resp.status, error: 'HTTP_' + resp.status };
               const blob = await resp.blob();
               return await new Promise((resolve) => {
@@ -6074,7 +6148,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           target: { tabId },
           func: async (imgUrl) => {
             try {
-              const resp = await fetch(imgUrl, { credentials: 'include' });
+              const resp = await _safeFetch(imgUrl, { credentials: 'include' });
               if (!resp.ok) return { ok: false, status: resp.status, error: 'HTTP_' + resp.status };
               const blob = await resp.blob();
               // Convert blob → base64 data URL qua FileReader
@@ -6475,7 +6549,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         // qua credentials:include nếu cookie không bị SameSite=Strict restriction.
         const trySwFetch = async () => {
           try {
-            const resp = await fetch(url, { credentials: 'include' });
+            const resp = await _safeFetch(url, { credentials: 'include' });
             if (!resp.ok) {
               return { success: false, error: 'HTTP_' + resp.status, status: resp.status };
             }
@@ -6515,7 +6589,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             target: { tabId },
             func: async (mediaUrl) => {
               try {
-                const resp = await fetch(mediaUrl, { credentials: 'include' });
+                const resp = await _safeFetch(mediaUrl, { credentials: 'include' });
                 if (!resp.ok) return { ok: false, status: resp.status, error: 'HTTP_' + resp.status };
                 const blob = await resp.blob();
                 return await new Promise((resolve) => {
@@ -6607,7 +6681,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             target: { tabId: tid },
             func: async (imgUrl, withCreds) => {
               try {
-                const resp = await fetch(imgUrl, withCreds ? { credentials: 'include' } : {});
+                const resp = await _safeFetch(imgUrl, withCreds ? { credentials: 'include' } : {});
                 if (!resp.ok) return { ok: false, status: resp.status, error: 'HTTP_' + resp.status };
                 const blob = await resp.blob();
                 return await new Promise((resolve) => {
@@ -6630,7 +6704,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         // Fallback: SW direct fetch (public CDN không cần cookie).
         if (!r?.ok && _isAllowedUrl(url)) {
           try {
-            const resp = await fetch(url, { cache: 'no-store' });
+            const resp = await _safeFetch(url, { cache: 'no-store' });
             if (resp.ok) {
               const blob = await resp.blob();
               const base64 = await new Promise((resolve) => {
@@ -7443,7 +7517,7 @@ async function _saveImageAsFormat(srcUrl, formatInfo) {
   const format = formatInfo?.format || 'png';
   try {
     // Đường CHÍNH: fetch → chuyển định dạng (PNG/JPEG/WEBP) qua canvas.
-    const resp = await fetch(srcUrl);
+    const resp = await _safeFetch(srcUrl);
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const sourceBlob = await resp.blob();
     const outputBlob = await _i2pConvertImageBlob(sourceBlob, formatInfo?.mimeType || 'image/png');
@@ -7488,7 +7562,7 @@ async function _saveImageAsFormat(srcUrl, formatInfo) {
 
 async function _fetchImageAsBase64(srcUrl, maxPx, quality) {
   try {
-    const resp = await fetch(srcUrl);
+    const resp = await _safeFetch(srcUrl);
     if (!resp.ok) return null;
     const blob = await resp.blob();
     const srcType = blob.type || '';
