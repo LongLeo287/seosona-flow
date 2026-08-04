@@ -1667,322 +1667,20 @@ async function openTemplatePreviewWindow(template, kind = 'template') {
   }
 }
 
-// [Affiliate Creator Page] Web (labs.seosona.vn) gọi extension TRỰC TIẾP qua externally_connectable —
-// chuẩn MV3 (response-based). Web biết CHẮC extension đã cài + đã xử lý (ko cần ping/pong đoán mò,
-// ko phụ thuộc content script relay). Chỉ chạy với extension ĐÚNG ID web target (prod). Dev (ID khác)
-// → web fallback window.postMessage (ref-bridge relay).
-chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
-  const origin = sender?.origin || sender?.url || '';
-  if (!/^https:\/\/labs\.seosona\.vn([/:]|$)/.test(origin)) { sendResponse({ ok: false, error: 'BAD_ORIGIN' }); return; }
-  console.log('[Background] onMessageExternal:', message?.type, 'from', origin);
+// Cầu nối website ĐÃ GỠ (2026-08-04, quyết định của chủ dự án).
+//
+// Trước đây ở đây có chrome.runtime.onMessageExternal mở 12 khả năng điều khiển extension từ
+// https://labs.seosona.vn: mở xem trước mẫu, tải media, chạy/dừng workflow, chạy node, đọc dự án
+// hiện tại, liệt kê thư viện Flow, tải ảnh lên Flow, đóng cửa sổ...
+//
+// Nó CHƯA BAO GIỜ CHẠY: manifest không khai `externally_connectable`, mà thiếu khoá đó thì Chrome
+// không chuyển message nào từ trang web tới. Nghĩa là 312 dòng mã chết mang theo một mặt điều
+// khiển từ xa vào mọi bản phát hành.
+//
+// Với sản phẩm local-first, việc đúng là gỡ chứ không phải khai báo cho nó sống dậy: khai báo là
+// tự mở một đường để website điều khiển extension, đúng thứ người duyệt Chrome Web Store soi kỹ.
+// Cần lại thì `git revert` một lệnh — lịch sử còn nguyên.
 
-  if (message?.type === 'ping') {
-    // [P3.6] Feature-detect: web gate nút/tab theo capabilities — extension cũ thiếu handler
-    // sẽ không fail im lặng nữa (web hiện "Cập nhật extension để dùng X").
-    sendResponse({
-      ok: true, installed: true,
-      version: chrome.runtime.getManifest().version,
-      capabilities: ['openTemplatePreview', 'fetchMedia', 'providerStatus', 'runWorkflow', 'stopWorkflow', 'workflowStatus', 'runNode', 'currentProject', 'listFlowLibrary', 'uploadToFlow', 'listFlowCharacters', 'closeWindow'],
-    });
-    return;
-  }
-
-  // [Audit 2026-07-07] Đóng cửa sổ popup (mở bằng chrome.windows.create) — trang web KHÔNG tự
-  // window.close() được (browser chặn). Web gửi 'closeWindow' → extension remove window của sender.
-  if (message?.type === 'closeWindow') {
-    const winId = sender?.tab?.windowId;
-    if (winId == null) { sendResponse({ ok: false, error: 'NO_WINDOW' }); return; }
-    chrome.windows.remove(winId).then(() => sendResponse({ ok: true })).catch((e) => sendResponse({ ok: false, error: e?.message }));
-    return true; // async
-  }
-
-  if (message?.type === 'openTemplatePreview') {
-    const templateId = message.templateId;
-    let refCode = (message.refCode || '').trim();
-    if (templateId === undefined || templateId === null || templateId === '') { sendResponse({ ok: false, error: 'NO_TEMPLATE_ID' }); return; }
-    (async () => {
-      try {
-        if (refCode && /^[A-Za-z0-9_\-]{4,40}$/.test(refCode)) {
-          try { chrome.storage.local.set({ seosona_ref: { code: refCode, expires: Date.now() + 90 * 24 * 60 * 60 * 1000 } }); } catch (_) { /* owned suppression (P4.T7): silent by design */ }
-        }
-        // kind='official' → trang /workflows/{slug} (WorkflowTemplate official); else community /@{slug}.
-        const url = message.kind === 'official'
-          ? `${getApiBaseUrl()}/workflow-templates/${encodeURIComponent(templateId)}`
-          : `${getApiBaseUrl()}/creator-templates/${encodeURIComponent(templateId)}/public`;
-        console.log('[Background] external preview fetch:', url);
-        // _signedFetch: publicShow nằm trong group verify.signature → BẮT BUỘC ký (plain fetch → 403).
-        const resp = await _signedFetch(url, {
-          method: 'GET', headers: { 'Accept': 'application/json', 'X-Extension-Id': chrome.runtime.id }, cache: 'no-store',
-        });
-        const json = await resp.json().catch(() => null);
-        console.log('[Background] external preview fetch result:', resp.status, 'success=', json?.success, 'hasData=', !!json?.data);
-        if (!resp.ok || !json?.success || !json?.data) { sendResponse({ ok: false, error: 'FETCH_FAILED', status: resp.status }); return; }
-        await openTemplatePreviewWindow(json.data);
-        sendResponse({ ok: true });
-      } catch (err) {
-        console.error('[Background] onMessageExternal openTemplatePreview error:', err.message);
-        sendResponse({ ok: false, error: 'EXCEPTION', message: err.message });
-      }
-    })();
-    return true; // async sendResponse
-  }
-
-  // [PLAN A P0.5] Web (labs.seosona.vn) không gửi được cookie provider cross-site → media 401/403.
-  // Extension fetch hộ (SW fetch mang cookie nhờ host_permissions) → trả data URL.
-  // Allowlist host media provider (Flow/Google + ChatGPT/OpenAI + Grok/xAI) — KHÔNG open proxy.
-  if (message?.type === 'fetchMedia') {
-    const MEDIA_HOSTS = /(^|\.)(labs\.google|googleusercontent\.com|storage\.googleapis\.com|flow-content\.google|chatgpt\.com|oaiusercontent\.com|openai\.com|grok\.com|x\.ai)$/i;
-    const urls = (Array.isArray(message.urls) ? message.urls : []).filter((u) => typeof u === 'string').slice(0, 12);
-    (async () => {
-      const results = {};
-      // Tuần tự + budget tổng payload — 1 response chứa nhiều video base64 có thể vượt limit message Chrome.
-      let budget = 48 * 1024 * 1024;
-      for (const u of urls) {
-        results[u] = null;
-        try {
-          const parsed = new URL(u);
-          if (parsed.protocol !== 'https:' || !MEDIA_HOSTS.test(parsed.hostname)) continue;
-          const resp = await _safeFetch(u, { credentials: 'include', signal: AbortSignal.timeout(20000) });
-          if (!resp.ok) continue;
-          // [Security audit 2026-07-06] Redirect có thể thoát allowlist (host_permissions <all_urls>
-          // → fetch follow + gửi cookie host đích) → verify URL CUỐI sau redirect.
-          try {
-            const finalUrl = new URL(resp.url);
-            if (finalUrl.protocol !== 'https:' || !MEDIA_HOSTS.test(finalUrl.hostname)) continue;
-          } catch (_) { continue; }
-          // Pre-check size trước khi tải blob (tránh tải 25MB rồi mới discard)
-          const clen = Number(resp.headers.get('content-length') || 0);
-          if (clen > 25 * 1024 * 1024) continue;
-          const blob = await resp.blob();
-          const isImg = /^image\//.test(blob.type);
-          const isVid = /^video\//.test(blob.type);
-          if ((!isImg && !isVid) || blob.size > (isVid ? 25 : 20) * 1024 * 1024) continue;
-          let outBlob = blob;
-          if (isImg) {
-            try {
-              const bmp = await createImageBitmap(blob);
-              const scale = Math.min(1, 512 / Math.max(bmp.width, bmp.height));
-              const oc = new OffscreenCanvas(Math.max(1, Math.round(bmp.width * scale)), Math.max(1, Math.round(bmp.height * scale)));
-              const ctx = oc.getContext('2d');
-              ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, oc.width, oc.height);
-              ctx.drawImage(bmp, 0, 0, oc.width, oc.height);
-              outBlob = await oc.convertToBlob({ type: 'image/jpeg', quality: 0.82 });
-            } catch (_) { /* downscale fail → blob gốc */ }
-          }
-          const bytes = new Uint8Array(await outBlob.arrayBuffer());
-          let bin = '';
-          for (let i = 0; i < bytes.length; i += 8192) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 8192));
-          const b64 = btoa(bin);
-          if (b64.length > budget) continue; // hết budget → null, giữ chỗ URL còn lại
-          budget -= b64.length;
-          results[u] = `data:${outBlob.type || (isVid ? 'video/mp4' : 'image/jpeg')};base64,${b64}`;
-        } catch (_) { /* URL hỏng / fetch fail → null */ }
-      }
-      sendResponse({ ok: true, results });
-    })();
-    return true; // async sendResponse
-  }
-
-  // [Sidebar web] Check provider status (tab mở + composer ready) — badge "Ready" trên brand header
-  // /app/spaces (parity extension _renderProviderLoginReminder). Generic composer selector đủ cho badge.
-  if (message?.type === 'providerStatus') {
-    (async () => {
-      const URLS = {
-        flow: '*://labs.google/fx/*',
-        chatgpt: '*://chatgpt.com/*',
-        grok: '*://grok.com/*',
-        gemini: '*://gemini.google.com/*', // prompt node use_ai=gemini — composer rich-textarea contenteditable
-      };
-      const out = {};
-      for (const [p, url] of Object.entries(URLS)) {
-        try {
-          const tabs = await chrome.tabs.query({ url });
-          const tab = tabs && tabs.length ? (tabs.find(t => t.active) || tabs[0]) : null;
-          if (!tab) { out[p] = { tabOpen: false, ready: false }; continue; }
-          let ready = p === 'flow'; // flow: tab mở = đủ (content script tự lo phần sau)
-          if (!ready) {
-            try {
-              const r = await chrome.scripting.executeScript({
-                target: { tabId: tab.id },
-                func: () => !!document.querySelector('textarea, [contenteditable="true"]'),
-              });
-              ready = !!(r && r[0] && r[0].result);
-            } catch (_) { /* redirect login/cloudflare → ready=false */ }
-          }
-          out[p] = { tabOpen: true, ready };
-        } catch (_) { out[p] = { tabOpen: false, ready: false }; }
-      }
-      sendResponse({ ok: true, providers: out });
-    })();
-    return true;
-  }
-
-  // [Parity audit] Character Selector Flow — web đọc danh sách nhân vật user đã scrape (storage.local
-  // seosona_provider_characters_scraped). Character KHÔNG sync server → chỉ có qua bridge. Read-only.
-  if (message?.type === 'listFlowCharacters') {
-    (async () => {
-      try {
-        const res = await chrome.storage.local.get(['seosona_provider_characters_scraped']);
-        const wrap = res?.seosona_provider_characters_scraped;
-        const list = Array.isArray(wrap?.data) ? wrap.data : (Array.isArray(wrap) ? wrap : []);
-        const characters = list.map((c) => ({
-          slug: c?.slug || null, name: c?.name || c?.search_value || '',
-          search_value: c?.search_value || c?.name || '', thumbnail: c?.thumbnail_url || null,
-        })).filter((c) => c.slug && c.search_value).slice(0, 300);
-        sendResponse({ ok: true, characters });
-      } catch (e) { sendResponse({ ok: false, error: 'EXCEPTION', message: e.message }); }
-    })();
-    return true;
-  }
-
-  // [P3.2] Web bấm Run → mở run-window (popup NHẸ, KHÔNG editor) chạy workflow. Response = accepted
-  // (đã mở host), KHÔNG chờ chạy xong — web theo dõi qua P2.7 (postMessage realtime + poll executions).
-  if (message?.type === 'runWorkflow' || message?.type === 'runNode') {
-    const wfId = String(message.workflowId || message.wfId || '').trim();
-    const nodeId = message.type === 'runNode' ? String(message.nodeId || '').trim() : null;
-    if (!wfId) { sendResponse({ ok: false, error: 'NO_WORKFLOW_ID' }); return; }
-    if (message.type === 'runNode' && !nodeId) { sendResponse({ ok: false, error: 'NO_NODE_ID' }); return; }
-    (async () => {
-      try {
-        // Busy check: af_running_workflow heartbeat-based (same logic executor readRunningFlag —
-        // stale >5' coi như context chết, cho chạy đè).
-        const stored = await chrome.storage.local.get(['af_running_workflow']);
-        const flag = stored?.af_running_workflow;
-        const alive = flag && (Date.now() - (flag.last_heartbeat_at || flag.started_at || 0)) < 5 * 60 * 1000;
-        if (alive) { sendResponse({ ok: false, error: 'BUSY', wf_id: flag.wf_id, wf_name: flag.wf_name || null }); return; }
-        await openRunWindow(wfId, nodeId);
-        sendResponse({ ok: true, accepted: true });
-      } catch (err) {
-        console.error('[Background] runWorkflow error:', err.message);
-        sendResponse({ ok: false, error: 'EXCEPTION', message: err.message });
-      }
-    })();
-    return true;
-  }
-
-  // [P3.3] Stop: broadcast execution:stop — cùng cơ chế cross-context stop sẵn có
-  // (run-window/editor/sidebar listener xử lý như remote stop).
-  if (message?.type === 'stopWorkflow') {
-    const wfId = String(message.workflowId || message.wfId || '').trim();
-    // force=true → dừng CỨNG (parity ext _forceStopExecution:16203): run-window nhận
-    // execution:force_stop → cancelAll gate + MessageBridge.stopExecution + clear flag.
-    const eventName = message.force === true ? 'execution:force_stop' : 'execution:stop';
-    try {
-      chrome.runtime.sendMessage({ action: 'workflowExecutionEvent', event: eventName, data: { wf_id: wfId || undefined } }).catch(function (_e) { globalThis.SEOSONA_swallow?.('background#func', _e); });
-    } catch (_) { /* owned suppression (P4.T7): silent by design */ }
-    sendResponse({ ok: true });
-    return;
-  }
-
-  // [P3.3] Status nhanh từ flag local (web vẫn nên poll executions/{id} server cho node_states).
-  if (message?.type === 'workflowStatus') {
-    (async () => {
-      try {
-        const stored = await chrome.storage.local.get(['af_running_workflow']);
-        const flag = stored?.af_running_workflow;
-        const alive = flag && (Date.now() - (flag.last_heartbeat_at || flag.started_at || 0)) < 5 * 60 * 1000;
-        sendResponse({ ok: true, running: !!alive, wf_id: alive ? flag.wf_id : null, wf_name: alive ? (flag.wf_name || null) : null, started_at: alive ? (flag.started_at || null) : null });
-      } catch (e) { sendResponse({ ok: false, error: 'EXCEPTION', message: e.message }); }
-    })();
-    return true;
-  }
-
-  // [P3.11] Chip "Target project" trên /app/spaces — đọc project Flow đang mở TRỰC TIẾP từ
-  // content script (KHÔNG cần endpoint server — realtime + 0 API).
-  if (message?.type === 'currentProject') {
-    (async () => {
-      try {
-        const tabs = await chrome.tabs.query({ url: '*://labs.google/fx/*' });
-        const tab = tabs && tabs.length ? (tabs.find(t => t.active) || tabs[0]) : null;
-        if (!tab) { sendResponse({ ok: true, tabOpen: false, projectId: null, projectName: null }); return; }
-        const ctx = await new Promise((resolve) => {
-          chrome.tabs.sendMessage(tab.id, { action: 'getProjectContext' }, (r) => {
-            void chrome.runtime.lastError;
-            resolve(r || null);
-          });
-        });
-        sendResponse({ ok: true, tabOpen: true, projectId: ctx?.projectId || null, projectName: ctx?.projectName || null, projectError: !!ctx?.projectError });
-      } catch (e) { sendResponse({ ok: false, error: 'EXCEPTION', message: e.message }); }
-    })();
-    return true;
-  }
-
-  // [P5.5b] Web picker tab "Ảnh Flow": scan tiles trang Flow đang mở (content handler
-  // 'scanFlowImages' sẵn có — same nguồn ImagePickerModal extension) → {file_id, file_name, thumbnail}.
-  if (message?.type === 'listFlowLibrary') {
-    (async () => {
-      try {
-        const tabs = await chrome.tabs.query({ url: '*://labs.google/fx/*' });
-        const tab = tabs && tabs.length ? (tabs.find(t => t.active) || tabs[0]) : null;
-        if (!tab) { sendResponse({ ok: false, error: 'NO_FLOW_TAB' }); return; }
-        const r = await new Promise((resolve) => {
-          chrome.tabs.sendMessage(tab.id, { action: 'scanFlowImages', deep: message.deep === true }, (resp) => {
-            void chrome.runtime.lastError;
-            resolve(resp || null);
-          });
-        });
-        if (!r || r.error) { sendResponse({ ok: false, error: r?.error || 'SCAN_FAILED' }); return; }
-        const images = (Array.isArray(r.images) ? r.images : []).slice(0, 300).map((x) => ({
-          file_id: x.fileId || null,
-          file_name: x.file_name || null,
-          thumbnail: x.thumbnail || null,
-          type: x.type || 'image',
-        })).filter((x) => x.file_id && x.thumbnail);
-        sendResponse({ ok: true, images });
-      } catch (e) { sendResponse({ ok: false, error: 'EXCEPTION', message: e.message }); }
-    })();
-    return true;
-  }
-
-  // [P5.5c] Web upload local → Flow TRỰC TIẾP: content handler 'uploadFilesToFlow' sẵn có (same
-  // cơ chế MCP upload_ref) → tile_id thật; scan lại để lấy file_name/thumbnail (MediaRegistry là
-  // module page-side, background không đọc được).
-  if (message?.type === 'uploadToFlow') {
-    // Serialize: content handler poll DOM tile mới — 2 instance song song cross-claim tile (Bug 59
-    // pattern; MessageBridge có mutex nhưng đường bridge này gọi thẳng content → tự guard).
-    if (globalThis._uploadToFlowBusy) { sendResponse({ ok: false, error: 'BUSY', message: 'Đang upload ảnh khác lên Flow — thử lại sau.' }); return; }
-    globalThis._uploadToFlowBusy = true;
-    (async () => {
-      try {
-        let b64 = String(message.base64 || '');
-        const mimeMatch = b64.startsWith('data:') ? b64.match(/^data:([^;]+);/) : null;
-        if (b64.startsWith('data:')) b64 = b64.split(',')[1] || '';
-        // ~12MB base64 (~9MB ảnh) — chặn payload quá cỡ
-        if (!b64 || b64.length > 12 * 1024 * 1024) { sendResponse({ ok: false, error: 'BAD_IMAGE' }); return; }
-        const tabs = await chrome.tabs.query({ url: '*://labs.google/fx/*' });
-        const tab = tabs && tabs.length ? (tabs.find(t => t.active) || tabs[0]) : null;
-        if (!tab) { sendResponse({ ok: false, error: 'NO_FLOW_TAB' }); return; }
-        // Activate tab trước upload (same MessageBridge._ensureFlowTabActive — Chrome throttle tab nền)
-        try { await chrome.tabs.update(tab.id, { active: true }); } catch (_) { /* owned suppression (P4.T7): silent by design */ }
-        const result = await new Promise((resolve) => {
-          chrome.tabs.sendMessage(tab.id, {
-            action: 'uploadFilesToFlow',
-            filesData: [{ name: String(message.name || 'web_ref.jpg').slice(0, 120), type: (mimeMatch && mimeMatch[1]) || message.mime || 'image/jpeg', base64: b64 }],
-          }, (resp) => { void chrome.runtime.lastError; resolve(resp || null); });
-        });
-        const tileId = result?.orderedTileIds?.[0] || result?.tileIds?.[0] || null;
-        if (!tileId) {
-          sendResponse({ ok: false, error: result?.error || 'UPLOAD_FAILED', message: result?.errorMessage || null });
-          return;
-        }
-        // Scan nhanh lấy file_name/thumbnail của tile vừa upload
-        let fileName = null, thumbnail = null;
-        try {
-          const scan = await new Promise((resolve) => {
-            chrome.tabs.sendMessage(tab.id, { action: 'scanFlowImages' }, (resp) => { void chrome.runtime.lastError; resolve(resp || null); });
-          });
-          const found = (scan?.images || []).find((x) => x.fileId === tileId);
-          if (found) { fileName = found.file_name || null; thumbnail = found.thumbnail || null; }
-        } catch (_) { /* owned suppression (P4.T7): silent by design */ }
-        sendResponse({ ok: true, file_id: tileId, file_name: fileName, thumbnail });
-      } catch (e) { sendResponse({ ok: false, error: 'EXCEPTION', message: e.message }); }
-      finally { globalThis._uploadToFlowBusy = false; }
-    })();
-    return true;
-  }
-
-  sendResponse({ ok: false, error: 'UNKNOWN_TYPE' });
-});
 
 // [PLAN A P3.1] Run-window: popup host NHẸ chạy workflow KHÔNG mở editor (script core execution,
 // không Drawflow/editor UI). Single-instance: reuse window nếu còn mở → gửi message load run mới.
@@ -7444,7 +7142,7 @@ if (chrome.contextMenus) {
       // tìm <img> trong <a href=linkUrl> (link/overlay ctx). Rỗng → thử ảnh-tại-con-trỏ (content script).
       let _saveUrl = await _i2pBestUrl(tab?.id, info.srcUrl, info.linkUrl);
       if (!_saveUrl) _saveUrl = await _i2pCtxImageUrl(tab?.id);
-      if (!_saveUrl) { _i2pNotify('SEOSONA Flow', 'Không tìm thấy ảnh ở vị trí chuột phải. Tải lại trang (F5) rồi thử lại.'); return; }
+      if (!_saveUrl) { _i2pNotify('SEOSONA Flow', 'Không lấy được ảnh. Hãy bấm chuột phải TRỰC TIẾP lên ảnh (không phải lên vùng phủ hay liên kết bọc ngoài).'); return; }
       try { await _saveImageAsFormat(_saveUrl, saveFormat); }
       catch (e) { _i2pNotify('SEOSONA Flow', `Không lưu được ảnh: ${e?.message || e}`); }
       return;
@@ -7461,7 +7159,7 @@ if (chrome.contextMenus) {
       // [U5] URL ảnh gốc: image context → best; link/overlay context → tìm <img> trong <a>.
       let _genUrl = await _i2pBestUrl(tab.id, info.srcUrl, info.linkUrl);
       if (!_genUrl) _genUrl = await _i2pCtxImageUrl(tab.id);
-      if (!_genUrl) { _i2pNotify('SEOSONA Flow', 'Không tìm thấy ảnh ở vị trí chuột phải. Tải lại trang (F5) rồi thử lại.'); return; }
+      if (!_genUrl) { _i2pNotify('SEOSONA Flow', 'Không lấy được ảnh. Hãy bấm chuột phải TRỰC TIẾP lên ảnh (không phải lên vùng phủ hay liên kết bọc ngoài).'); return; }
       // Ảnh gốc có thể khác origin với ảnh hiển thị (vd Google Images → site nguồn) → xin thêm.
       if (_genUrl !== (info.srcUrl || '')) await _i2pEnsureHostPermission(_genUrl);
       await _sendImageToGenTab(_genUrl);
@@ -7470,7 +7168,16 @@ if (chrome.contextMenus) {
     // Inject on-demand (tab mở trước reload extension chưa có i2p-content.js).
     // [fix #6] Inject fail (chrome://, web store, PDF, CSP...) → BÁO thay vì im lặng.
     try {
-      await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['content_scripts/i2p-content.js'] });
+      // Tiêm theo YÊU CẦU thay vì nạp sẵn trên mọi trang (SF-010).
+      // Trước đây manifest khai content script cho http://*/* + https://*/*, tức extension có mặt
+      // trong DOM của MỌI trang người dùng mở — kể cả ngân hàng, email. Với tính năng này thì
+      // không cần: người dùng phải bấm chuột phải mới kích hoạt, và đó chính là cử chỉ activeTab
+      // cần. Xin rộng hơn mức cần là lý do bị từ chối phổ biến nhất khi nộp Chrome Web Store.
+      // ErrorCatalog đi kèm để SEOSONA_swallow hoạt động, ngang với bản nạp sẵn cũ.
+      await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        files: ['src/core/ErrorCatalog.js', 'content_scripts/i2p-content.js'],
+      });
     } catch (e) {
       console.warn('[I2P] inject i2p-content failed:', e.message);
       _i2pNotify('SEOSONA Flow', 'Không dùng được trên trang này (trình duyệt chặn chèn mã).');

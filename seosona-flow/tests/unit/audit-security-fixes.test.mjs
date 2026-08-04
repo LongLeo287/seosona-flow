@@ -37,7 +37,7 @@ test('SF-011: registry mặc định ĐANG enforce, không fail-open lúc khởi
   const R = scope.SEOSONA_PrivilegedActionRegistry;
   assert.equal(R.isEnforcing(), true, 'mặc định phải BẬT');
   assert.equal(R.guard({ action: '__khong_ton_tai__' }, {}).block, true, 'action lạ bị chặn ngay');
-  assert.equal(R.guard({ action: 'workflowStatus' }, {}).block, false, 'action thật vẫn qua');
+  assert.equal(R.guard({ action: 'prepareDownloadRename' }, {}).block, false, 'action thật vẫn qua');
 });
 
 test('SF-011: tắt tường minh vẫn được tôn trọng', () => {

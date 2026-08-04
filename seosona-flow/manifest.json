@@ -150,31 +150,6 @@
         "https://*.grok.com/*"
       ],
       "run_at": "document_idle"
-    },
-    {
-      "all_frames": false,
-      "exclude_matches": [
-        "*://accounts.google.com/*",
-        "*://*.accounts.google.com/*",
-        "*://oauth.googleusercontent.com/*",
-        "*://*.oauth.googleusercontent.com/*",
-        "*://*.stripe.com/*",
-        "*://checkout.link.com/*",
-        "*://*.lemonsqueezy.com/*",
-        "*://*.paypal.com/*",
-        "*://polar.sh/*",
-        "*://*.polar.sh/*",
-        "*://*.sepay.vn/*"
-      ],
-      "js": [
-        "src/core/ErrorCatalog.js",
-        "content_scripts/i2p-content.js"
-      ],
-      "matches": [
-        "http://*/*",
-        "https://*/*"
-      ],
-      "run_at": "document_idle"
     }
   ],
   "content_security_policy": {

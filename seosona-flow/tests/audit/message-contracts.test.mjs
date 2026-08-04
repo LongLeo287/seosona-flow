@@ -24,11 +24,17 @@ test('positive: known privileged actions are present and classified', () => {
   }
 });
 
-test('positive: at least one externally reachable action is recorded', () => {
-  assert.ok(c.summary.externalListeners >= 1, 'onMessageExternal listener detected');
-  assert.ok(c.summary.externallyReachable.length >= 1, 'external-reachable actions recorded');
-  for (const a of c.summary.externallyReachable) {
-    assert.equal(byAction.get(a).externallyReachable, true);
+// ĐẢO CHIỀU 2026-08-04 (SF-004). Bài này trước đây đòi PHẢI CÓ ít nhất một action gọi được từ
+// website — hợp lý khi còn cầu nối labs.seosona.vn. Nay cầu nối đã gỡ (316 dòng mã chết mở 12
+// khả năng điều khiển từ xa, chưa từng chạy vì manifest không khai externally_connectable).
+// Với sản phẩm local-first, con số đúng là KHÔNG. Giữ bài test nhưng khoá chiều ngược lại, để
+// ai đó mở lại cửa này thì cổng đỏ ngay chứ không lặng lẽ trôi qua.
+test('negative: KHÔNG action nào gọi được từ website', () => {
+  assert.equal(c.summary.externalListeners, 0, 'không còn onMessageExternal listener');
+  assert.deepEqual(c.summary.externallyReachable, [],
+    `mặt tấn công từ website phải bằng 0, đang có: ${c.summary.externallyReachable.join(', ')}`);
+  for (const r of c.registry) {
+    assert.notEqual(r.externallyReachable, true, `${r.action} không được đánh dấu gọi-từ-ngoài`);
   }
 });
 
