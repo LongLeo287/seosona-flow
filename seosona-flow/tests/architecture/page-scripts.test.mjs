@@ -41,12 +41,15 @@ test('boundary: all scripts are CSP-safe local references', () => {
 // 30 workflow mẫu mà người dùng mở một cái) — nay nạp theo yêu cầu, xem ensureBundledTemplates.
 // 185 -> 184: GỠ DownloadExecutor.js — 194 dòng được NẠP nhưng không ai khởi tạo (kiểm cả mã
 // gốc cùng ngách: bên đó cũng để chết y hệt). Đường tải thật nằm ở content.js.
+// 184 -> 185: StructuredLogger.js nạp ngay sau ErrorCatalog ở MỌI trang + content script —
+// swallow() nay ghi có cấu trúc (SF-019). Cùng lượt GỠ DownloadExecutor.js (chết, 0 nơi khởi
+// tạo), nên tổng vẫn 185.
 // 184 -> 185: FilenameBuilder.js — lõi dựng tên file, gom 3 bản chép (content.js ·
 // DownloadHelper · GenTab) vốn đã LỆCH nhau ở thư mục mặc định.
 // 183 -> 184: DownloadPrefs.js — nguồn chân lý cho mức tải về, nạp ở CẢ sidebar lẫn content
 // script của Flow để hai bên không còn tự chép mặc định mỗi nơi một kiểu.
 test('negative: sidebar keeps its full ordered script list', () => {
-  assert.equal(config.pages['pages/sidebar.html'].length, 184);
+  assert.equal(config.pages['pages/sidebar.html'].length, 185);
   assert.equal(config.pages['pages/sidebar.html'][0], '../src/core/ErrorCatalog.js');
 });
 

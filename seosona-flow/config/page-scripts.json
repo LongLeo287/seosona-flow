@@ -5,6 +5,7 @@
   "pages": {
     "pages/angles-editor.html": [
       "../src/core/ErrorCatalog.js",
+      "../src/core/StructuredLogger.js",
       "../src/core/ApiClient.js",
       "../src/core/RuntimeMode.js",
       "../src/core/utils.js",
@@ -72,6 +73,7 @@
     ],
     "pages/effects-editor.html": [
       "../src/core/ErrorCatalog.js",
+      "../src/core/StructuredLogger.js",
       "../src/core/ApiClient.js",
       "../src/core/RuntimeMode.js",
       "../src/core/utils.js",
@@ -124,22 +126,26 @@
     ],
     "pages/metadata-tool.html": [
       "../src/core/ErrorCatalog.js",
+      "../src/core/StructuredLogger.js",
       "../src/core/MetadataScrubber.js",
       "../scripts/metadata-tool.js"
     ],
     "pages/motion-preview.html": [
       "../src/core/ErrorCatalog.js",
+      "../src/core/StructuredLogger.js",
       "../src/core/MotionRecipes.js",
       "../scripts/motion-preview.js"
     ],
     "pages/selector-doctor.html": [
       "../src/core/ErrorCatalog.js",
+      "../src/core/StructuredLogger.js",
       "../src/core/SelectorOverride.js",
       "../src/core/SelectorDoctor.js",
       "../scripts/selector-doctor-page.js"
     ],
     "pages/settings.html": [
       "../src/core/ErrorCatalog.js",
+      "../src/core/StructuredLogger.js",
       "../src/core/ApiClient.js",
       "../src/i18n/vi.js",
       "../src/i18n/en.js",
@@ -164,6 +170,7 @@
     ],
     "pages/sidebar.html": [
       "../src/core/ErrorCatalog.js",
+      "../src/core/StructuredLogger.js",
       "../src/core/DownloadPrefs.js",
       "../src/core/FilenameBuilder.js",
       "../scripts/loading-i18n.js",
@@ -350,11 +357,13 @@
     ],
     "pages/style-anchor-tool.html": [
       "../src/core/ErrorCatalog.js",
+      "../src/core/StructuredLogger.js",
       "../src/core/StyleAnchor.js",
       "../scripts/style-anchor-tool.js"
     ],
     "pages/template-preview.html": [
       "../src/core/ErrorCatalog.js",
+      "../src/core/StructuredLogger.js",
       "../src/core/ApiClient.js",
       "../src/core/RuntimeMode.js",
       "../src/i18n/vi.js",
@@ -375,12 +384,14 @@
     ],
     "pages/text-overlay-tool.html": [
       "../src/core/ErrorCatalog.js",
+      "../src/core/StructuredLogger.js",
       "../src/core/TextOverlay.js",
       "../src/core/TextIntegrity.js",
       "../scripts/text-overlay-tool.js"
     ],
     "pages/watermark-tool.html": [
       "../src/core/ErrorCatalog.js",
+      "../src/core/StructuredLogger.js",
       "../src/core/watermark-alpha-data.js",
       "../src/core/gwr-bundle.js",
       "../src/core/FlowWatermarkProfiles.js",
@@ -395,6 +406,7 @@
     ],
     "pages/workflow-editor.html": [
       "../src/core/ErrorCatalog.js",
+      "../src/core/StructuredLogger.js",
       "../lib/drawflow.min.js",
       "../lib/html2canvas.min.js",
       "../src/core/ApiClient.js",
@@ -502,6 +514,7 @@
     ],
     "pages/workflow-template-editor.html": [
       "../src/core/ErrorCatalog.js",
+      "../src/core/StructuredLogger.js",
       "../lib/drawflow.min.js",
       "../lib/html2canvas.min.js",
       "../src/core/ApiClient.js",
