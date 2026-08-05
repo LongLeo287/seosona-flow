@@ -124,6 +124,14 @@
       "../src/effects/EffectsEditor.js",
       "../scripts/effects-editor-init.js"
     ],
+    "pages/layer-tool.html": [
+      "../src/core/ErrorCatalog.js",
+      "../src/core/StructuredLogger.js",
+      "../src/layers/LayerPrompt.js",
+      "../src/layers/LayerCutout.js",
+      "../src/layers/LayerStack.js",
+      "../scripts/layer-tool.js"
+    ],
     "pages/metadata-tool.html": [
       "../src/core/ErrorCatalog.js",
       "../src/core/StructuredLogger.js",

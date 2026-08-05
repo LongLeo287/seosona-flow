@@ -706,6 +706,7 @@ class GenTab {
     _bindTool(['toolsMetadataBtn'], 'pages/metadata-tool.html', 900, 760, 'Dọn metadata');
     _bindTool(['toolsTextOverlayBtn'], 'pages/text-overlay-tool.html', 1020, 780, 'Chữ lên ảnh');
     _bindTool(['toolsStyleAnchorBtn'], 'pages/style-anchor-tool.html', 980, 760, 'Neo phong cách');
+    _bindTool(['toolsLayerBtn'], 'pages/layer-tool.html', 1040, 800, 'Tách lớp');
 
     // Chẩn đoán selector — mở khi web đổi giao diện để xem chỗ nào gãy + vá nóng.
     // Công cụ dev, giữ ở header (không đưa vào tab Tools của người dùng cuối).

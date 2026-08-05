@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tách lớp — SEOSONA Flow</title>
+  <style>
+    :root { color-scheme: dark; --bg:#131315; --card:#1b1b1e; --card2:#232327; --line:rgba(255,255,255,.09); --txt:#e9eaec; --mut:#9498a1; --acc:#3d6ff5; --ok:#19d07b; --warn:#f0b45e; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--bg); color:var(--txt); font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+    .wrap { max-width:1000px; margin:0 auto; padding:22px 18px 60px; }
+    .head { display:flex; align-items:center; gap:12px; margin-bottom:4px; }
+    .head .spark { width:34px; height:34px; border-radius:9px; background:linear-gradient(135deg,#3d6ff5,#0e4099); display:flex; align-items:center; justify-content:center; font-size:17px; }
+    h1 { font-size:19px; font-weight:600; margin:0; }
+    .sub { color:var(--mut); font-size:12.5px; margin:2px 0 18px 46px; line-height:1.5; }
+    .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:14px; }
+    .card h2 { font-size:13px; font-weight:600; margin:0 0 10px; color:var(--mut); text-transform:uppercase; letter-spacing:.04em; }
+    .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    button { height:32px; padding:0 13px; border-radius:7px; border:1px solid var(--line); background:var(--card2); color:var(--txt); font-size:12.5px; cursor:pointer; font-family:inherit; }
+    button:hover:not(:disabled) { border-color:var(--acc); }
+    button.primary { background:var(--acc); border-color:var(--acc); color:#fff; font-weight:500; }
+    button:disabled { opacity:.45; cursor:default; }
+    label.f { font-size:12px; color:var(--mut); display:flex; align-items:center; gap:6px; }
+    input[type=range] { width:120px; }
+    input[type=number] { width:64px; height:28px; background:var(--card2); border:1px solid var(--line); border-radius:6px; color:var(--txt); padding:0 6px; font-family:inherit; }
+    select { height:30px; background:var(--card2); border:1px solid var(--line); border-radius:6px; color:var(--txt); padding:0 8px; font-family:inherit; font-size:12.5px; }
+    textarea { width:100%; min-height:86px; background:var(--card2); border:1px solid var(--line); border-radius:8px; color:var(--txt); padding:9px 11px; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:11.5px; line-height:1.55; resize:vertical; }
+    .drop { border:1.5px dashed var(--line); border-radius:10px; padding:24px; text-align:center; color:var(--mut); font-size:12.5px; }
+    .drop.over { border-color:var(--acc); color:var(--txt); }
+    .layers { display:flex; flex-direction:column; gap:8px; }
+    .layer { display:flex; align-items:center; gap:10px; background:var(--card2); border:1px solid var(--line); border-radius:9px; padding:8px 10px; }
+    .layer.sel { border-color:var(--acc); }
+    .layer .th { width:44px; height:44px; border-radius:6px; flex-shrink:0; background-image:linear-gradient(45deg,#2a2a2e 25%,transparent 25%),linear-gradient(-45deg,#2a2a2e 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#2a2a2e 75%),linear-gradient(-45deg,transparent 75%,#2a2a2e 75%); background-size:10px 10px; background-position:0 0,0 5px,5px -5px,-5px 0; }
+    .layer .th canvas { width:44px; height:44px; object-fit:contain; }
+    .layer .info { flex:1; min-width:0; }
+    .layer .nm { font-size:12.5px; font-weight:500; }
+    .layer .meta { font-size:11px; color:var(--mut); margin-top:2px; }
+    .layer .warn { font-size:11px; color:var(--warn); margin-top:3px; line-height:1.45; }
+    .mini { height:24px; padding:0 8px; font-size:11.5px; }
+    #stage { display:block; max-width:100%; border-radius:8px; background-image:linear-gradient(45deg,#232327 25%,transparent 25%),linear-gradient(-45deg,#232327 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#232327 75%),linear-gradient(-45deg,transparent 75%,#232327 75%); background-size:18px 18px; background-position:0 0,0 9px,9px -9px,-9px 0; }
+    .hint { font-size:11.5px; color:var(--mut); line-height:1.55; margin-top:8px; }
+    .empty { color:var(--mut); font-size:12.5px; text-align:center; padding:18px; }
+  </style>
+</head>
+<body>
+<main style="display:contents">
+<div class="wrap">
+  <div class="head">
+    <div class="spark">🧅</div>
+    <h1>Tách lớp</h1>
+  </div>
+  <p class="sub">
+    Bảo mô hình vẽ <b>từng vật một trên nền phẳng</b>, rồi cắt nền ở máy — bạn được các lớp tách rời thật.
+    Sửa một lớp thì lớp khác nguyên vẹn theo cấu trúc, không phải nhờ đo rồi hy vọng.
+  </p>
+
+  <div class="card">
+    <h2>1 · Prompt cho từng lớp</h2>
+    <div class="row" style="margin-bottom:10px">
+      <label class="f">Nền
+        <select id="backdrop" aria-label="Màu nền để cắt">
+          <option value="magenta">Magenta — hiếm gặp nhất</option>
+          <option value="green">Xanh lá — đụng cỏ, áo xanh</option>
+          <option value="blue">Xanh dương — đụng trời, sân</option>
+        </select>
+      </label>
+      <input type="text" id="subject" placeholder="vật cần vẽ, ví dụ: a badminton racket"
+             style="flex:1;min-width:220px;height:30px;background:var(--card2);border:1px solid var(--line);border-radius:6px;color:var(--txt);padding:0 9px;font-family:inherit;font-size:12.5px"
+             aria-label="Vật cần vẽ">
+      <button id="genPrompt" class="primary">Dựng prompt</button>
+    </div>
+    <textarea id="promptOut" readonly placeholder="Prompt sẽ hiện ở đây — chép sang Flow/ChatGPT để gen, rồi tải ảnh về và thả vào ô dưới." aria-label="Prompt đã dựng"></textarea>
+    <div class="row" style="margin-top:8px">
+      <button id="copyPrompt" class="mini" disabled>Chép prompt</button>
+      <span class="hint" id="promptNote"></span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>2 · Thả ảnh đã gen vào đây</h2>
+    <div class="drop" id="drop">
+      Kéo thả ảnh vào đây — mỗi ảnh thành một lớp<br>
+      <button id="pick" class="mini" style="margin-top:9px">Chọn từ máy</button>
+      <input type="file" id="file" accept="image/*" multiple hidden aria-label="Chọn ảnh">
+    </div>
+    <div class="row" style="margin-top:11px">
+      <label class="f">Ngưỡng nền <input type="range" id="tol" min="10" max="150" value="60" aria-label="Ngưỡng nhận nền"><span id="tolV">60</span></label>
+      <label class="f">Mềm biên <input type="range" id="soft" min="0" max="120" value="40" aria-label="Độ mềm biên cắt"><span id="softV">40</span></label>
+      <label class="f">Khử viền <input type="range" id="spill" min="0" max="100" value="80" aria-label="Mức khử viền màu"><span id="spillV">80</span></label>
+      <button id="recut" class="mini" disabled>Cắt lại tất cả</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>3 · Các lớp</h2>
+    <div class="layers" id="layers"><div class="empty">Chưa có lớp nào.</div></div>
+  </div>
+
+  <div class="card">
+    <h2>4 · Ghép lại</h2>
+    <div class="row" style="margin-bottom:11px">
+      <label class="f">Rộng <input type="number" id="outW" value="1024" min="16" max="8192" aria-label="Chiều rộng ảnh ghép"></label>
+      <label class="f">Cao <input type="number" id="outH" value="1024" min="16" max="8192" aria-label="Chiều cao ảnh ghép"></label>
+      <button id="fit" class="mini">Vừa khít các lớp</button>
+      <button id="download" class="primary" disabled>Tải PNG</button>
+    </div>
+    <canvas id="stage" width="1024" height="1024"></canvas>
+    <p class="hint">
+      Ghép lại luôn dựng từ <b>lớp gốc</b>, nên làm bao nhiêu lần cũng không tích luỹ sai số —
+      khác hẳn vòng lặp sửa-đè-lên-kết-quả-cũ.
+    </p>
+  </div>
+</div>
+</main>
+<script src="../src/core/ErrorCatalog.js"></script>
+<script src="../src/core/StructuredLogger.js"></script>
+<script src="../src/layers/LayerPrompt.js"></script>
+<script src="../src/layers/LayerCutout.js"></script>
+<script src="../src/layers/LayerStack.js"></script>
+<script src="../scripts/layer-tool.js"></script>
+</body>
+</html>
