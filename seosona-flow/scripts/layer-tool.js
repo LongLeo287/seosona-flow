@@ -1,11 +1,15 @@
 /**
  * layer-tool.js — công cụ TÁCH LỚP: một ảnh có sẵn → nhiều PNG nền trong suốt.
  *
- * Luồng tự động:
+ * Luồng:
  *   1. thả một ảnh
- *   2. bấm "Xem trong ảnh có gì" → hỏi mô hình liệt kê các vật (một lượt vision)
- *   3. bấm "Tách tất cả" → mỗi vật một lượt gen, dùng chính ảnh gốc làm THAM CHIẾU
- *   4. cắt nền ở máy, tải từng lớp .png
+ *   2. "Xem trong ảnh có gì" → hỏi mô hình liệt kê các vật (một lượt vision, TỰ ĐỘNG)
+ *   3. "Đưa sang tab Gen" → đẩy ảnh gốc làm tham chiếu + N prompt tách, bấm Bắt đầu ở đó
+ *   4. thả các ảnh đã gen về → cắt nền ở máy → tải từng lớp .png
+ *
+ * Vì sao bước 3 KHÔNG tự chạy luôn: sinh ảnh trên Flow là một luồng dài (gửi prompt → chờ ô
+ * hiện → tải về) do GenTab/WorkflowExecutor lo, không phải một lời gọi. Bàn giao đúng chỗ có
+ * sẵn máy móc thay vì viết lại từ đầu ở đây.
  *
  * Phép toán nằm ở src/layers/ (LayerDecompose, LayerCutout, LayerStack) và đã có 27 test.
  * File này nối chúng với DOM và với đường gọi provider của extension.
@@ -74,6 +78,12 @@
   }
 
   // ── gọi provider ──────────────────────────────────────────────────────────────────────
+  /** data:image/png;base64,XXXX → XXXX. Handler đòi base64 trần, không phải cả data URL. */
+  function _b64(dataUrl) {
+    var i = String(dataUrl || '').indexOf(',');
+    return i >= 0 ? dataUrl.slice(i + 1) : dataUrl;
+  }
+
   function bg(msg) {
     return new Promise(function (res) {
       try {
@@ -91,14 +101,19 @@
     busy = true; $('scan').disabled = true;
     note('Đang hỏi mô hình xem trong ảnh có gì…');
     var max = Math.max(2, Math.min(12, +$('maxObj').value || 6));
+    // Hợp đồng THẬT của pa:generate (xem PromptAssistantModal — bên gọi đang chạy được):
+    //   images: [{base64, name, type}]  — KHÔNG phải mảng data URL
+    //   trả về: {success, text}         — KHÔNG phải {ok, result}
     var r = await bg({
       action: 'pa:generate',
+      provider: 'chatgpt',
       metaPrompt: LD.listObjectsPrompt({ max: max }),
-      images: [sourceDataUrl],
+      images: [{ base64: _b64(sourceDataUrl), name: 'source.png', type: 'image/png' }],
+      timeout: 180000,
     });
     busy = false;
-    var text = r && (r.text || r.result || r.data);
-    if (!r || r.ok === false || !text) {
+    var text = r && r.text;
+    if (!r || !r.success || !text) {
       $('scan').disabled = false;
       note('Không hỏi được mô hình: ' + ((r && r.error) || 'không rõ')
         + '. Kiểm tra tab provider đã mở và đăng nhập chưa.', 'warn');
@@ -119,41 +134,67 @@
     render();
   }
 
-  /** Tách từng vật: mỗi vật một lượt gen, dùng ảnh gốc làm tham chiếu. */
-  async function runAll() {
-    if (busy || !objects.length) return;
-    busy = true; $('runAll').disabled = true; $('scan').disabled = true;
-    layers = [];
+  /**
+   * Đẩy sang tab Gen: ảnh gốc làm THAM CHIẾU + toàn bộ prompt tách dạng nhiều-prompt.
+   *
+   * Vì sao KHÔNG tự gen luôn ở đây: pa:generate đi qua provider:textTask — nó trả về CHỮ, không
+   * trả ảnh. Sinh ảnh trên Flow là một luồng dài (gửi prompt → chờ ô hiện → tải về) do GenTab và
+   * WorkflowExecutor lo, không phải một lời gọi. Bản trước tôi gọi pa:generate rồi mong nhận ảnh
+   * — sai từ gốc, và đó là lý do nó báo EXCEPTION.
+   *
+   * Nên: bàn giao đúng chỗ có sẵn máy móc. Tab Gen đã hỗ trợ nhiều prompt một lượt và tự tải về.
+   */
+  async function sendToGen() {
+    if (busy || !objects.length || !sourceDataUrl) return;
+    busy = true; $('runAll').disabled = true;
     var plan = LD.plan(objects, { backdrop: $('backdrop').value });
-    for (var i = 0; i < plan.steps.length; i++) {
-      var st = plan.steps[i];
-      note('Đang tách ' + (i + 1) + '/' + plan.steps.length + ': ' + st.label + '…');
-      var r = await bg({
-        action: 'pa:generate',
-        metaPrompt: st.positive + '\n\nNEGATIVE: ' + st.negative,
-        images: [sourceDataUrl],
-        wantImage: true,
-      });
-      var url = r && (r.imageUrl || r.image || r.dataUrl);
-      if (!url) {
-        note('Lớp "' + st.label + '" không tách được: ' + ((r && r.error) || 'provider không trả ảnh')
-          + '. Các lớp trước vẫn giữ.', 'warn');
-        continue;
-      }
+
+    // Mỗi prompt cách nhau một dòng trống — đúng cách GenTab tách nhiều prompt.
+    var text = plan.steps.map(function (st) {
+      return st.positive + ' NEGATIVE: ' + st.negative;
+    }).join('\n\n');
+
+    var a = await bg({
+      action: 'i2p:sendImageToGen',
+      base64: _b64(sourceDataUrl), type: 'image/png',
+      name: 'layer_source_' + Date.now() + '.png',
+    });
+    var b = await bg({ action: 'i2p:setGenPrompt', text: text });
+    busy = false; $('runAll').disabled = false;
+
+    var okA = a && (a.ok === true || a.success === true);
+    var okB = b && (b.ok === true || b.success === true);
+    if (!okA && !okB) {
+      note('Không đẩy sang tab Gen được: ' + ((a && a.error) || (b && b.error) || 'không rõ')
+        + '. Mở bảng bên rồi thử lại.', 'warn');
+      return;
+    }
+    note('Đã đưa ' + plan.steps.length + ' prompt + ảnh gốc (làm tham chiếu) sang tab Gen. '
+      + 'Bấm Bắt đầu ở đó — ' + plan.steps.length + ' lượt gen. Xong thì thả các ảnh về ô dưới để cắt nền.', 'ok');
+    $('backFromGen').style.display = '';
+  }
+
+  /** Ảnh đã gen ở tab Gen, tải về rồi thả lại đây → cắt nền thành lớp. */
+  async function addCutFiles(files) {
+    for (var i = 0; i < files.length; i++) {
+      var f = files[i];
+      if (!/^image\//.test(f.type)) continue;
       try {
-        var got = await readImageFromUrl(url);
-        var cut = CO.cutout(got, cutOpts());
+        var r = await readImage(f);
+        var cut = CO.cutout(r.data, cutOpts());
+        // Ghép tên file với vật đã liệt kê, nếu khớp — để lớp mang đúng tên thay vì tên file.
+        var base = f.name.replace(/\.[^.]+$/, '').toLowerCase();
+        var hit = objects.find(function (o) { return base.indexOf(o.id) >= 0; });
         layers.push({
-          id: st.id, name: st.label, source: got, image: cut.image, cut: cut,
+          id: (hit && hit.id) || ('f' + layers.length),
+          name: (hit && hit.label) || f.name.replace(/\.[^.]+$/, ''),
+          source: r.data, image: cut.image, cut: cut,
           x: 0, y: 0, scale: 1, z: layers.length, visible: true,
         });
-        render();
       } catch (e) {
-        note('Lớp "' + st.label + '" lỗi khi cắt nền: ' + (e && e.message), 'warn');
+        note('Bỏ qua ' + f.name + ': ' + (e && e.message), 'warn');
       }
     }
-    busy = false; $('runAll').disabled = false; $('scan').disabled = false;
-    if (layers.length) note('Xong ' + layers.length + '/' + plan.steps.length + ' lớp.', 'ok');
     render();
   }
 
@@ -381,7 +422,20 @@
     });
 
     $('scan').addEventListener('click', scan);
-    $('runAll').addEventListener('click', runAll);
+    // Nhận các ảnh đã gen ở tab Gen về — mỗi ảnh thành một lớp, cắt nền ngay.
+    $('pick2').addEventListener('click', function () { $('file2').click(); });
+    $('file2').addEventListener('change', function (e) { addCutFiles(e.target.files); e.target.value = ''; });
+    var d2 = $('drop2');
+    ['dragenter', 'dragover'].forEach(function (ev) {
+      d2.addEventListener(ev, function (e) { e.preventDefault(); d2.classList.add('over'); });
+    });
+    ['dragleave', 'drop'].forEach(function (ev) {
+      d2.addEventListener(ev, function (e) { e.preventDefault(); d2.classList.remove('over'); });
+    });
+    d2.addEventListener('drop', function (e) {
+      if (e.dataTransfer && e.dataTransfer.files) addCutFiles(e.dataTransfer.files);
+    });
+    $('runAll').addEventListener('click', sendToGen);
     $('recut').addEventListener('click', recutAll);
     $('fit').addEventListener('click', fitAll);
     $('downloadAll').addEventListener('click', saveAll);

@@ -78,9 +78,16 @@
       </label>
       <label class="f">Tối đa <input type="number" id="maxObj" value="6" min="2" max="12" aria-label="Số lớp tối đa"> lớp</label>
       <button id="scan" class="primary" disabled>Xem trong ảnh có gì</button>
-      <button id="runAll" disabled>Tách tất cả</button>
+      <button id="runAll" disabled>Đưa sang tab Gen</button>
     </div>
     <div id="planNote" class="hint"></div>
+    <div id="backFromGen" style="display:none;margin-top:11px">
+      <div class="drop" id="drop2">
+        Gen xong ở tab Gen thì thả các ảnh về đây — mỗi ảnh thành một lớp<br>
+        <button id="pick2" class="mini" style="margin-top:9px">Chọn từ máy</button>
+        <input type="file" id="file2" accept="image/*" multiple hidden aria-label="Ảnh đã tách">
+      </div>
+    </div>
     <div class="row" style="margin-top:10px">
       <label class="f">Ngưỡng nền <input type="range" id="tol" min="10" max="150" value="60" aria-label="Ngưỡng nhận nền"><span id="tolV">60</span></label>
       <label class="f">Mềm biên <input type="range" id="soft" min="0" max="120" value="40" aria-label="Độ mềm biên cắt"><span id="softV">40</span></label>
