@@ -37,6 +37,37 @@
       });
     } catch (_) { /* ignore */ }
 
+    // ── Chặn TẬN GỐC "Uncaught (in promise) Error: No SW" ────────────────────────────────
+    //
+    // Hai lưới ở trên chỉ GIẤU lỗi sau khi nó đã nổ. Nguồn thật: chrome.runtime.sendMessage
+    // KHÔNG có callback trả về một Promise, và Promise đó TỪ CHỐI khi service worker đang ngủ.
+    // Repo có hơn 60 chỗ gọi kiểu đó, phần lớn bọc trong try/catch — mà try/catch KHÔNG bắt
+    // được từ chối bất đồng bộ. Nên mỗi lần worker ngủ là một dòng đỏ trong bảng Lỗi.
+    //
+    // Bọc ở ĐÚNG MỘT chỗ thay vì đi vá 60 chỗ gọi. Dạng có callback giữ nguyên hoàn toàn;
+    // chỉ dạng Promise được gắn thêm .catch, và chỉ nuốt đúng nhóm lỗi worker-ngủ — lỗi thật
+    // vẫn ném bình thường.
+    try {
+      if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.sendMessage
+          && !chrome.runtime.sendMessage.__seosonaWrapped) {
+        var _origSend = chrome.runtime.sendMessage.bind(chrome.runtime);
+        var _wrapped = function () {
+          var args = Array.prototype.slice.call(arguments);
+          var hasCb = typeof args[args.length - 1] === 'function';
+          var out = _origSend.apply(null, args);
+          // Dạng callback: Chrome không trả Promise → trả nguyên, caller tự đọc lastError.
+          if (hasCb || !out || typeof out.then !== 'function') return out;
+          return out.catch(function (err) {
+            var m = (err && (err.message || err)) || '';
+            if (_NRE.test(String(m)) || _ctxDead()) return undefined;   // worker ngủ — im lặng
+            throw err;                                                  // lỗi thật — giữ nguyên
+          });
+        };
+        _wrapped.__seosonaWrapped = true;
+        chrome.runtime.sendMessage = _wrapped;
+      }
+    } catch (_) { /* không bọc được thì thôi, không được phá luồng khởi động */ }
+
     // Hạ mức console.warn/info BÌNH THƯỜNG (operational/reload-noise) xuống debug → không hiện trang Lỗi.
     // GIỮ console.error + exception thật. Cùng ý tưởng với content.js.
     try {

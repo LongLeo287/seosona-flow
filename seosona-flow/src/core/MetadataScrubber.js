@@ -361,18 +361,69 @@
    */
   var MAX_BYTES = 256 * 1024 * 1024;   // đọc cả file vào RAM; quá cỡ thì bỏ qua chứ không làm treo tab
 
+  /**
+   * Đang chạy trong content script trên trang của nhà cung cấp?
+   * Content script KHÔNG có host permission — nó chỉ mang quyền của TRANG. URL media của Flow là
+   * cross-origin và có chữ ký, nên fetch thẳng từ đây gần như luôn hỏng. Quyền đó nằm ở service
+   * worker. Đây chính là lý do người dùng thấy 'TẢI_KHÔNG_ĐƯỢC' mỗi lần tải: dọn metadata KHÔNG
+   * chạy được ở đường tải chính, và im lặng trả về URL gốc.
+   */
+  function _inContentScript() {
+    return typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.sendMessage
+      && typeof window !== 'undefined' && typeof document !== 'undefined'
+      && !(location && location.protocol === 'chrome-extension:');
+  }
+
+  /** Nhờ service worker tải hộ — nó có host_permissions cho các CDN của nhà cung cấp. */
+  function _fetchViaWorker(url) {
+    return new Promise(function (res) {
+      var done = false;
+      var finish = function (v) { if (!done) { done = true; res(v); } };
+      // Service worker MV3 hay ngủ. Không chờ mãi — quá hạn thì trả null để rơi về fetch thẳng.
+      var timer = setTimeout(function () { finish(null); }, 20000);
+      try {
+        chrome.runtime.sendMessage({ action: 'fetchBlob', url: url }, function (r) {
+          clearTimeout(timer);
+          // PHẢI đọc lastError, nếu không Chrome ném 'Unchecked runtime.lastError: No SW'.
+          if (chrome.runtime.lastError) { finish(null); return; }
+          if (!r || !r.success || !r.base64) { finish(null); return; }
+          try {
+            var bin = atob(r.base64);
+            var n = bin.length;
+            var bytes = new Uint8Array(n);
+            for (var i = 0; i < n; i++) bytes[i] = bin.charCodeAt(i);
+            finish({ bytes: bytes, type: r.contentType || '' });
+          } catch (_e) { finish(null); }
+        });
+      } catch (_e) { clearTimeout(timer); finish(null); }
+    });
+  }
+
   async function scrubUrl(url, opts) {
     var fallback = function (why) { return { url: url, changed: false, report: { skipped: why } }; };
     if (typeof fetch !== 'function' || typeof URL === 'undefined' || !url) return fallback('MÔI_TRƯỜNG_THIẾU');
     try {
-      var resp = await fetch(url);
-      if (!resp || !resp.ok) return fallback('TẢI_KHÔNG_ĐƯỢC');
-      var declared = Number(resp.headers && resp.headers.get && resp.headers.get('content-length'));
-      if (declared > MAX_BYTES) return fallback('QUÁ_LỚN');
-      var ab = await resp.arrayBuffer();
-      if (ab.byteLength > MAX_BYTES) return fallback('QUÁ_LỚN');
-      var buf = new Uint8Array(ab);
-      var type = (resp.headers && resp.headers.get && resp.headers.get('content-type')) || '';
+      var buf = null, type = '';
+
+      // Ưu tiên nhờ service worker khi ở content script — nó mới có quyền tới CDN nhà cung cấp.
+      if (_inContentScript() && /^https?:/i.test(url)) {
+        var viaSW = await _fetchViaWorker(url);
+        if (viaSW) {
+          if (viaSW.bytes.byteLength > MAX_BYTES) return fallback('QUÁ_LỚN');
+          buf = viaSW.bytes; type = viaSW.type;
+        }
+      }
+
+      if (!buf) {
+        var resp = await fetch(url);
+        if (!resp || !resp.ok) return fallback('TẢI_KHÔNG_ĐƯỢC');
+        var declared = Number(resp.headers && resp.headers.get && resp.headers.get('content-length'));
+        if (declared > MAX_BYTES) return fallback('QUÁ_LỚN');
+        var ab = await resp.arrayBuffer();
+        if (ab.byteLength > MAX_BYTES) return fallback('QUÁ_LỚN');
+        buf = new Uint8Array(ab);
+        type = (resp.headers && resp.headers.get && resp.headers.get('content-type')) || '';
+      }
       var r = scrub(buf, opts);
       if (!r.ok) return fallback('ĐỊNH_DẠNG_LẠ');
       if (!r.report.removed.length) return fallback('KHÔNG_CÓ_GÌ_ĐỂ_DỌN');
@@ -440,8 +491,10 @@
     var text = WHY[why] || (why.indexOf('LỖI:') === 0 ? 'Dọn metadata thất bại (' + why.slice(5).trim() + ') — file còn thông tin gốc.' : null);
     if (!text) return;                                  // ca lành, không làm phiền
     try {
-      // Kênh dev: luôn ghi, để còn lần ra nguyên nhân.
-      if (typeof console !== 'undefined') console.warn('[MetadataScrubber]', why);
+      // Kênh dev: MỖI LÝ DO MỘT LẦN mỗi phiên, không phải mỗi lượt tải.
+      // Bản trước ghi vô điều kiện, nên tải 20 ảnh là 20 dòng đỏ y hệt nhau trong bảng lỗi —
+      // ngập tới mức che mất lỗi thật. Số lần vẫn đếm đủ trong stats().
+      if (!_warned[why] && typeof console !== 'undefined') console.warn('[MetadataScrubber]', why);
       root.dispatchEvent?.(new CustomEvent('seosona:metadata-scrub', { detail: { why: why, text: text, stats: stats() } }));
       if (_warned[why]) return;                         // kênh người dùng: mỗi lý do 1 lần/phiên
       _warned[why] = true;
