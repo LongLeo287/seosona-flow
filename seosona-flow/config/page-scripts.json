@@ -128,6 +128,7 @@
       "../src/core/ErrorCatalog.js",
       "../src/core/StructuredLogger.js",
       "../src/layers/LayerPrompt.js",
+      "../src/layers/LayerDecompose.js",
       "../src/layers/LayerCutout.js",
       "../src/layers/LayerStack.js",
       "../scripts/layer-tool.js"

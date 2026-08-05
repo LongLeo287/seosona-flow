@@ -50,40 +50,38 @@
     <h1>Tách lớp</h1>
   </div>
   <p class="sub">
-    Bảo mô hình vẽ <b>từng vật một trên nền phẳng</b>, rồi cắt nền ở máy — bạn được các lớp tách rời thật.
-    Sửa một lớp thì lớp khác nguyên vẹn theo cấu trúc, không phải nhờ đo rồi hy vọng.
+    Thả <b>một tấm ảnh</b> vào — công cụ hỏi mô hình xem trong đó có những gì, rồi tách từng thứ
+    thành một file PNG nền trong suốt.<br>
+    <span style="color:var(--warn)">Mỗi lớp tốn một lượt gen, và các lớp ghép lại không khớp pixel với ảnh gốc —
+    mô hình vẽ lại chứ không cắt ra. Đây là tách để DÙNG TIẾP, không phải để phục dựng nguyên bản.</span>
   </p>
 
   <div class="card">
-    <h2>1 · Prompt cho từng lớp</h2>
-    <div class="row" style="margin-bottom:10px">
-      <label class="f">Nền
-        <select id="backdrop" aria-label="Màu nền để cắt">
-          <option value="magenta">Magenta — hiếm gặp nhất</option>
-          <option value="green">Xanh lá — đụng cỏ, áo xanh</option>
-          <option value="blue">Xanh dương — đụng trời, sân</option>
-        </select>
-      </label>
-      <input type="text" id="subject" placeholder="vật cần vẽ, ví dụ: a badminton racket"
-             style="flex:1;min-width:220px;height:30px;background:var(--card2);border:1px solid var(--line);border-radius:6px;color:var(--txt);padding:0 9px;font-family:inherit;font-size:12.5px"
-             aria-label="Vật cần vẽ">
-      <button id="genPrompt" class="primary">Dựng prompt</button>
+    <h2>1 · Ảnh nguồn</h2>
+    <div class="drop" id="drop">
+      Thả MỘT tấm ảnh vào đây<br>
+      <button id="pick" class="mini" style="margin-top:9px">Chọn từ máy</button>
+      <input type="file" id="file" accept="image/*" hidden aria-label="Ảnh nguồn">
     </div>
-    <textarea id="promptOut" readonly placeholder="Prompt sẽ hiện ở đây — chép sang Flow/ChatGPT để gen, rồi tải ảnh về và thả vào ô dưới." aria-label="Prompt đã dựng"></textarea>
-    <div class="row" style="margin-top:8px">
-      <button id="copyPrompt" class="mini" disabled>Chép prompt</button>
-      <span class="hint" id="promptNote"></span>
-    </div>
+    <canvas id="srcPrev" style="display:none;max-width:100%;margin-top:11px;border-radius:8px"></canvas>
   </div>
 
   <div class="card">
-    <h2>2 · Thả ảnh đã gen vào đây</h2>
-    <div class="drop" id="drop">
-      Kéo thả ảnh vào đây — mỗi ảnh thành một lớp<br>
-      <button id="pick" class="mini" style="margin-top:9px">Chọn từ máy</button>
-      <input type="file" id="file" accept="image/*" multiple hidden aria-label="Chọn ảnh">
+    <h2>2 · Tách</h2>
+    <div class="row" style="margin-bottom:10px">
+      <label class="f">Nền cắt
+        <select id="backdrop" aria-label="Màu nền để cắt">
+          <option value="magenta">Magenta — hiếm gặp nhất</option>
+          <option value="green">Xanh lá</option>
+          <option value="blue">Xanh dương</option>
+        </select>
+      </label>
+      <label class="f">Tối đa <input type="number" id="maxObj" value="6" min="2" max="12" aria-label="Số lớp tối đa"> lớp</label>
+      <button id="scan" class="primary" disabled>Xem trong ảnh có gì</button>
+      <button id="runAll" disabled>Tách tất cả</button>
     </div>
-    <div class="row" style="margin-top:11px">
+    <div id="planNote" class="hint"></div>
+    <div class="row" style="margin-top:10px">
       <label class="f">Ngưỡng nền <input type="range" id="tol" min="10" max="150" value="60" aria-label="Ngưỡng nhận nền"><span id="tolV">60</span></label>
       <label class="f">Mềm biên <input type="range" id="soft" min="0" max="120" value="40" aria-label="Độ mềm biên cắt"><span id="softV">40</span></label>
       <label class="f">Khử viền <input type="range" id="spill" min="0" max="100" value="80" aria-label="Mức khử viền màu"><span id="spillV">80</span></label>
@@ -92,17 +90,18 @@
   </div>
 
   <div class="card">
-    <h2>3 · Các lớp</h2>
+    <h2>3 · Các lớp tách được</h2>
     <div class="layers" id="layers"><div class="empty">Chưa có lớp nào.</div></div>
   </div>
 
   <div class="card">
-    <h2>4 · Ghép lại</h2>
+    <h2>4 · Xem thử / xuất</h2>
     <div class="row" style="margin-bottom:11px">
       <label class="f">Rộng <input type="number" id="outW" value="1024" min="16" max="8192" aria-label="Chiều rộng ảnh ghép"></label>
       <label class="f">Cao <input type="number" id="outH" value="1024" min="16" max="8192" aria-label="Chiều cao ảnh ghép"></label>
       <button id="fit" class="mini">Vừa khít các lớp</button>
-      <button id="download" class="primary" disabled>Tải PNG</button>
+      <button id="downloadAll" class="primary" disabled>Tải TỪNG lớp (.png)</button>
+      <button id="download" disabled>Tải bản ghép</button>
     </div>
     <canvas id="stage" width="1024" height="1024"></canvas>
     <p class="hint">
@@ -115,6 +114,7 @@
 <script src="../src/core/ErrorCatalog.js"></script>
 <script src="../src/core/StructuredLogger.js"></script>
 <script src="../src/layers/LayerPrompt.js"></script>
+<script src="../src/layers/LayerDecompose.js"></script>
 <script src="../src/layers/LayerCutout.js"></script>
 <script src="../src/layers/LayerStack.js"></script>
 <script src="../scripts/layer-tool.js"></script>
