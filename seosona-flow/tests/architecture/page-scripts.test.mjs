@@ -49,7 +49,18 @@ test('boundary: all scripts are CSP-safe local references', () => {
 // 183 -> 184: DownloadPrefs.js — nguồn chân lý cho mức tải về, nạp ở CẢ sidebar lẫn content
 // script của Flow để hai bên không còn tự chép mặc định mỗi nơi một kiểu.
 test('negative: sidebar keeps its full ordered script list', () => {
-  assert.equal(config.pages['pages/sidebar.html'].length, 185);
+  // 185 -> 183: GỠ gwr-bundle.js (616 KB) + WatermarkRemover.js (31 KB). Bảng bên không gọi
+  // GWR/WatermarkRemover ở đâu cả — công cụ Xoá watermark chạy trong IFRAME tới
+  // pages/watermark-tool.html (có script riêng), đường tự động chạy ở content script. 7,80 → 7,17 MB.
+  assert.equal(config.pages['pages/sidebar.html'].length, 183);
+  // Khoá lại: đừng nạp bộ xoá watermark vào bảng bên lần nữa.
+  const side = config.pages['pages/sidebar.html'];
+  assert.ok(!side.some((s) => s.includes('gwr-bundle')), 'gwr-bundle không thuộc bảng bên');
+  assert.ok(!side.some((s) => s.includes('WatermarkRemover')), 'WatermarkRemover không thuộc bảng bên');
+  // Nhưng trang công cụ PHẢI còn đủ, nếu không là gỡ nhầm.
+  const tool = config.pages['pages/watermark-tool.html'];
+  assert.ok(tool.some((s) => s.includes('gwr-bundle')), 'trang công cụ vẫn phải có gwr-bundle');
+  assert.ok(tool.some((s) => s.includes('WatermarkRemover')), 'trang công cụ vẫn phải có WatermarkRemover');
   assert.equal(config.pages['pages/sidebar.html'][0], '../src/core/ErrorCatalog.js');
 });
 

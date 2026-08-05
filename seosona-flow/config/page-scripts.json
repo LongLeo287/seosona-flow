@@ -224,8 +224,6 @@
       "../src/core/FileUploader.js",
       "../src/core/MediaRegistry.js",
       "../src/core/watermark-alpha-data.js",
-      "../src/core/gwr-bundle.js",
-      "../src/core/WatermarkRemover.js",
       "../src/core/TextOverlay.js",
       "../src/core/ImageComposite.js",
       "../src/core/TextIntegrity.js",

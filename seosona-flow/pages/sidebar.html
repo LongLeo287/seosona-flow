@@ -1797,8 +1797,6 @@
 <script src="../src/core/FileUploader.js"></script>
 <script src="../src/core/MediaRegistry.js"></script>
 <script src="../src/core/watermark-alpha-data.js"></script>
-<script src="../src/core/gwr-bundle.js"></script>
-<script src="../src/core/WatermarkRemover.js"></script>
 <script src="../src/core/TextOverlay.js"></script>
 <script src="../src/core/ImageComposite.js"></script>
 <script src="../src/core/TextIntegrity.js"></script>
@@ -1845,7 +1843,14 @@
 <script src="../src/core/QueueMonitor.js"></script>
 <!-- Phân loại lỗi + backoff + cầu chì — PHẢI nạp TRƯỚC WorkflowExecutor. -->
 <script src="../src/workflow/RetryPolicy.js"></script>
-<script src="../src/core/MetadataScrubber.js"></script>
+  <!-- gwr-bundle.js (616 KB) + WatermarkRemover.js (31 KB) ĐÃ GỠ khỏi bảng bên (2026-08-04).
+       Bảng bên không gọi GWR hay WatermarkRemover ở bất cứ đâu: công cụ Xoá watermark mở trong
+       IFRAME trỏ tới pages/watermark-tool.html — trang đó có danh sách script riêng và đã nạp
+       đủ cả hai. Đường tự động thì chạy ở content_scripts/watermark-inject.js, ngữ cảnh khác hẳn.
+       Nghĩa là mỗi lần mở bảng bên, trình duyệt phân tích 647 KB cho việc không bao giờ xảy ra ở đó.
+       MetadataScrubber.js thì GIỮ — cổng scrubbedDownloadUrl được gọi từ các đường tải trong
+       chính bảng bên. -->
+  <script src="../src/core/MetadataScrubber.js"></script>
 <script src="../src/core/WorkflowExecutor.js"></script>
 <script src="../src/core/BatchQueue.js"></script>
 <script src="../src/core/MessageBridge.js"></script>
