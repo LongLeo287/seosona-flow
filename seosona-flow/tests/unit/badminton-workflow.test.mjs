@@ -27,7 +27,8 @@ test('positive: đồ thị phụ thuộc hợp lệ — không bước nào c�
 
 test('positive: 5 bước chạy được ngay tính từ đầu', () => {
   const p = W.runnablePrefix();
-  assert.deepEqual(p, ['src', 'lock', 'preset'], 'dừng đúng ở reframe — bước chưa viết');
+  assert.deepEqual(p, ['src', 'lock', 'preset', 'reframe', 'ref'],
+    'chạy được tới ref; dừng ở mask — bước đầu tiên cần engine cục bộ');
 });
 
 test('negative: nêu ĐÚNG bước nào chờ engine, không mập mờ', () => {
@@ -40,7 +41,8 @@ test('negative: nêu ĐÚNG bước nào chờ engine, không mập mờ', () =>
 });
 
 test('positive: bước làm được ngay mà chưa viết được liệt kê riêng', () => {
-  assert.deepEqual(W.todoNoEngine(), ['reframe'], 'reframe là toán canvas, không cần engine');
+  // reframe đã xây xong → không còn bước nào 'làm được ngay mà chưa viết'.
+  assert.deepEqual(W.todoNoEngine(), [], 'Lát 1 đã hết việc không cần engine');
 });
 
 test('regression: 5 bước ready phải trỏ tới impl CÓ THẬT', () => {

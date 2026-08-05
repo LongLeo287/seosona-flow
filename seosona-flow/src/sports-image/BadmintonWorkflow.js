@@ -40,12 +40,13 @@
       params: { preset: 'badminton.v1' },
     },
     {
-      id: 'reframe', node: 'canvas_reframe', engine: 'none', ready: false,
+      id: 'reframe', node: 'canvas_reframe', engine: 'none', ready: true,
       role: 'Cắt/giãn về dọc 9:16 theo quy tắc bố cục §11. Sinh mask.border cho vùng mở rộng.',
       needs: ['lock', 'preset'],
       out: ['image.asset', 'mask.border'],
-      impl: null,
-      note: 'Toán thuần trên canvas — làm được ngay, chỉ là CHƯA viết. Không cần engine.',
+      impl: 'SEOSONA_CanvasReframe.plan',
+      note: 'Chỉ TÍNH hình học và trả mask viền — không bịa pixel. Phần mở rộng là vùng DUY NHẤT '
+        + 'được phép outpaint, và cũng là vùng duy nhất compare_diff được loại trừ khi đo trôi.',
     },
     {
       id: 'ref', node: 'image_reference', engine: 'none', ready: true,
