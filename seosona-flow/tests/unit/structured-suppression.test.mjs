@@ -73,9 +73,19 @@ test('boundary: vòng đệm hữu hạn — không rò bộ nhớ khi chạy d�
   assert.ok(g.SEOSONA_ErrorCatalog.suppressions().length <= 500, 'mảng phẳng cũng vậy');
 });
 
-test('regression: 4 module chết đã gỡ khỏi repo', () => {
-  for (const m of ['ConnectorStatus', 'FlowApiGateway', 'MessageSchemas', 'DownloadExecutor']) {
+// SỬA LẠI: lần đầu tôi gỡ 4 module vì "0 nơi tham chiếu", nhưng ConnectorStatus và
+// MessageSchemas là GIÀN GIÁO cho kế hoạch đang chờ làm (docs/superpowers/plans/
+// 2026-08-04-...upgrade.md nhắc mỗi cái 6 lần, cùng bộ với VisualPickerCore/BatchCollectorCore
+// cũng đang 0 nơi dùng). Chưa-nối-dây KHÁC với đã-lỗi-thời. Đã khôi phục cả hai.
+// Chỉ FlowApiGateway và DownloadExecutor là chết thật: không kế hoạch nào nhắc tới, và
+// DownloadExecutor còn trùng lặp với đường tải đang chạy trong content.js.
+test('regression: chỉ gỡ module chết THẬT, giữ giàn giáo của kế hoạch', () => {
+  for (const m of ['FlowApiGateway', 'DownloadExecutor']) {
     assert.ok(!existsSync(join(root, `src/core/${m}.js`)), `${m}.js phải đã xoá`);
+  }
+  for (const m of ['ConnectorStatus', 'MessageSchemas']) {
+    assert.ok(existsSync(join(root, `src/core/${m}.js`)),
+      `${m}.js PHẢI CÒN — kế hoạch nâng cấp đang chờ nối dây nó`);
   }
 });
 
