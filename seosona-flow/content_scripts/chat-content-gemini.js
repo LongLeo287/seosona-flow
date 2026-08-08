@@ -1160,6 +1160,164 @@
       return true; // async sendResponse
     }
 
+  /**
+   * Bật chế độ Tạo ảnh: Công cụ → Tạo ảnh.
+   *
+   * Đã bật sẵn thì thôi — bấm lần nữa là TẮT, và lỗi đó rất khó nhận ra vì Gemini vẫn trả lời
+   * bình thường, chỉ là trả chữ thay vì ảnh.
+   */
+  async function _enableGeminiImageMode() {
+    try {
+      const already = _queryWithFallback('tools_image_gen_item');
+      if (already && (already.getAttribute('aria-pressed') === 'true'
+        || (already.className || '').indexOf('is-selected') >= 0)) return true;
+
+      const toolsBtn = _queryWithFallback('tools_button');
+      if (toolsBtn) { toolsBtn.click(); await sleep(400); }
+
+      const item = _queryWithFallback('tools_image_gen_item');
+      if (!item) {
+        // Menu có thể đã mở sẵn từ trước → đóng lại rồi thử một lần nữa.
+        if (toolsBtn) { toolsBtn.click(); await sleep(300); toolsBtn.click(); await sleep(400); }
+        const retry = _queryWithFallback('tools_image_gen_item');
+        if (!retry) return false;
+        retry.click(); await sleep(500);
+        return true;
+      }
+      item.click();
+      await sleep(500);
+      return true;
+    } catch (_e) {
+      globalThis.SEOSONA_swallow?.('gemini#_enableImageMode', _e);
+      return false;
+    }
+  }
+
+  /**
+   * Chờ ảnh MỚI hiện ra, so với mốc chụp trước khi gửi.
+   *
+   * Hai cái bẫy đã tính tới:
+   *   · Gemini hiện ảnh mờ (placeholder) trước rồi mới thay bằng ảnh thật — nên đòi ảnh phải
+   *     có kích thước thật (naturalWidth) chứ không chỉ có src.
+   *   · Ảnh xuất hiện dần từng cái. Thấy cái đầu tiên là dừng thì mất các cái sau, nên chờ
+   *     thêm một nhịp yên tĩnh rồi mới chốt.
+   */
+  function _waitForGeminiImages(before, timeout) {
+    return new Promise(function (resolve) {
+      const t0 = Date.now();
+      let lastCount = 0;
+      let stableSince = 0;
+      const timer = setInterval(function () {
+        if (isGeminiAbort() || Date.now() - t0 > timeout) {
+          clearInterval(timer);
+          resolve(_collectNewGeminiImages(before));
+          return;
+        }
+        const found = _collectNewGeminiImages(before);
+        if (found.length && found.length === lastCount) {
+          // Không thêm ảnh nào trong 2,5 giây → coi như xong.
+          if (stableSince && Date.now() - stableSince > 2500) {
+            clearInterval(timer);
+            resolve(found);
+            return;
+          }
+          if (!stableSince) stableSince = Date.now();
+        } else {
+          lastCount = found.length;
+          stableSince = found.length ? Date.now() : 0;
+        }
+      }, 700);
+    });
+  }
+
+  function _collectNewGeminiImages(before) {
+    const out = [];
+    try {
+      _queryAllWithFallback('generated_image').forEach(function (im) {
+        const u = im.currentSrc || im.src || im.getAttribute('data-src');
+        if (!u || before.has(u)) return;
+        // Ảnh mờ tạm thời chưa có kích thước thật — bỏ qua, chờ bản thật.
+        if (im.naturalWidth && im.naturalWidth < 64) return;
+        if (out.indexOf(u) < 0) out.push(u);
+      });
+    } catch (_e) { globalThis.SEOSONA_swallow?.('gemini#_collectNewImages', _e); }
+    return out;
+  }
+
+    // ── gemini:generateImage — SINH ẢNH trên Gemini ────────────────────────────────────
+    //
+    // Bộ chọn DOM cho việc này ĐÃ CÓ SẴN trong config từ trước (generated_image,
+    // tools_image_gen_item, tools_button, image_preview) — chỉ chưa có mã dùng tới. Nên đây là
+    // nối dây, không phải dò DOM từ đầu.
+    //
+    // Khác gemini:submitAndWait ở hai điểm:
+    //   · phải BẬT chế độ tạo ảnh trước (Công cụ → Tạo ảnh), nếu không Gemini trả chữ;
+    //   · chờ ẢNH hiện chứ không chờ chữ.
+    // Payload: { action, text, images?, timeout }
+    if (message.action === 'gemini:generateImage') {
+      __geminiCallStartAt = Date.now();
+      __geminiAbort = false; __geminiAbortAt = 0;
+      (async () => {
+        try {
+          if (detectGeminiChallenge()) {
+            const resolved = await waitForGeminiChallengeResolved(120000);
+            if (!resolved) {
+              sendResponse({ success: false, error: 'CHALLENGE_TIMEOUT',
+                message: 'Gemini yêu cầu xác minh. Mở tab Gemini, xác minh xong rồi chạy lại.' });
+              return;
+            }
+          }
+
+          // Ảnh ĐÃ CÓ trước khi gửi — để sau còn biết cái nào là mới.
+          // Không chụp mốc này thì lần chạy thứ hai sẽ nhặt lại ảnh của lần một.
+          const before = new Set();
+          _queryAllWithFallback('generated_image').forEach(function (im) {
+            const u = im.currentSrc || im.src || im.getAttribute('data-src');
+            if (u) before.add(u);
+          });
+
+          // 1. Bật chế độ tạo ảnh. Bỏ bước này là Gemini trả CHỮ mô tả ảnh, không phải ảnh.
+          const enabled = await _enableGeminiImageMode();
+          if (!enabled) {
+            sendResponse({ success: false, error: 'IMAGE_MODE_NOT_FOUND',
+              message: 'Không tìm thấy nút Công cụ → Tạo ảnh. Giao diện Gemini có thể đã đổi — chạy Chẩn đoán selector.' });
+            return;
+          }
+
+          // 2. Ảnh tham chiếu (nếu có) — dùng lại đường upload đã chạy được.
+          if (Array.isArray(message.images) && message.images.length > 0) {
+            const uploaded = await uploadImages(message.images);
+            if (!uploaded) {
+              sendResponse({ success: false, error: 'REF_UPLOAD_FAILED' });
+              return;
+            }
+            await sleep(500);
+          }
+
+          // 3. Chèn prompt NGUYÊN VĂN — KHÔNG thêm enhancePrefix.
+          //    Prefix đó bắt model trả prompt dạng chữ, đúng thứ ta không muốn ở đây.
+          const inserted = await insertText(message.text || '');
+          if (!inserted) { sendResponse({ success: false, error: 'INSERT_FAILED' }); return; }
+
+          await sleep(500);
+          const submitted = await clickSubmit();
+          if (!submitted) { sendResponse({ success: false, error: 'SEND_BUTTON_NOT_FOUND' }); return; }
+
+          // 4. Chờ ảnh MỚI xuất hiện.
+          const urls = await _waitForGeminiImages(before, message.timeout || 180000);
+          if (!urls.length) {
+            sendResponse({ success: false, error: 'NO_IMAGE',
+              message: 'Gemini không trả ảnh trong thời gian chờ. Có thể nó đã trả chữ — kiểm tra chế độ Tạo ảnh.' });
+            return;
+          }
+          sendResponse({ success: true, images: urls, count: urls.length });
+        } catch (err) {
+          sendResponse({ success: false, error: 'EXCEPTION', message: err.message || 'Lỗi không xác định' });
+        }
+      })();
+      return true;
+    }
+
     // Image-to-Prompt (2026-06-15): upload ảnh + gửi template phân tích + đọc text response.
     // KHÁC gemini:submitAndWait: KHÔNG chèn getEnhancePrefix — gửi ĐÚNG message.text (template I2P).
     // Payload: { action, text, images:[{base64,name,type}], timeout, deleteAfter }
