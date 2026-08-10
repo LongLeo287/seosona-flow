@@ -14,6 +14,7 @@ const ASPECTS = ['9:16', '16:9', '1:1', '4:3', '3:4'];
 const SCENE_TYPES = ['hook', 'body', 'outro'];
 const INPUT_SOURCES = ['flow_gen_image', 'flow_gen_video', 'flow_run_workflow', 'flow_asset', 'local'];
 const ASSET_KINDS = ['image', 'video'];
+const QUALITY_ACTIONS = ['accept', 'trim', 'regen_image', 'rewrite_prompt', 'review_manually'];
 
 const isObj = (v) => v && typeof v === 'object' && !Array.isArray(v);
 const isStr = (v) => typeof v === 'string' && v.length > 0;
@@ -31,12 +32,32 @@ export function validateSceneInput(inp, path) {
   return e;
 }
 
+export function validateQuality(q, path) {
+  const e = [];
+  if (!isObj(q)) return [`${path}: must be an object`];
+  if (typeof q.judged !== 'boolean') e.push(`${path}.judged: required boolean`);
+  if (q.pass !== null && typeof q.pass !== 'boolean') e.push(`${path}.pass: must be boolean or null`);
+  if (q.score !== null && !(typeof q.score === 'number' && q.score >= 0 && q.score <= 10)) {
+    e.push(`${path}.score: must be a number 0..10 or null`);
+  }
+  if (!isStr(q.verdict)) e.push(`${path}.verdict: required string`);
+  if (!QUALITY_ACTIONS.includes(q.action)) e.push(`${path}.action: must be one of ${QUALITY_ACTIONS.join(' | ')}`);
+  if (q.critical != null && !Array.isArray(q.critical)) e.push(`${path}.critical: must be an array`);
+  // Ba tổ hợp vô nghĩa. Bắt ở đây vì chúng lặng lẽ dẫn tới hành vi sai ở phía đọc:
+  // một verdict "chưa chấm" mà mang pass=true sẽ được coi là đã duyệt.
+  if (q.judged === false && q.pass === true) e.push(`${path}: judged=false cannot carry pass=true`);
+  if (q.judged === false && q.score !== null) e.push(`${path}: judged=false cannot carry a score`);
+  if (q.judged === true && q.pass === null) e.push(`${path}: judged=true must state pass true/false`);
+  return e;
+}
+
 export function validateFlowAsset(a, path) {
   const e = [];
   if (!isObj(a)) return [`${path}: must be an object`];
   if (!isStr(a.asset_id)) e.push(`${path}.asset_id: required string`);
   if (!ASSET_KINDS.includes(a.kind)) e.push(`${path}.kind: must be image | video`);
   if (!isStr(a.url)) e.push(`${path}.url: required string`);
+  if (a.quality != null) e.push(...validateQuality(a.quality, `${path}.quality`));
   return e;
 }
 

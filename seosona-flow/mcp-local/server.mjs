@@ -54,8 +54,8 @@ const PORT = Number(process.env.SEOSONA_LOCAL_MCP_PORT) || 8765;
 const TOKEN = process.env.SEOSONA_LOCAL_MCP_TOKEN || '';
 const GEN_TIMEOUT_MS = Number(process.env.SEOSONA_LOCAL_MCP_TIMEOUT_MS) || 300000;
 
-const SERVER_VERSION = '0.5.0';
-const CONTRACT_VERSION = '1.0.0';   // bump when flow-asset.schema.json shape changes (see seosona://contract)
+const SERVER_VERSION = '0.6.0';
+const CONTRACT_VERSION = '1.1.0';   // bump when flow-asset.schema.json shape changes (see seosona://contract)
 
 const log = (...a) => console.error('[seosona-local-mcp]', ...a);
 
@@ -101,6 +101,54 @@ function rememberClientRef(ref, env) {
   byClientRef.set(ref, env);
   while (byClientRef.size > CLIENTREF_MAX) byClientRef.delete(byClientRef.keys().next().value);
   saveStateSoon();
+}
+
+/** Drop the per-response marker so it never gets written back into the cache as if it were data. */
+function stripHit(env) {
+  const { idempotent_hit, ...rest } = env;
+  void idempotent_hit;
+  return rest;
+}
+
+/**
+ * Judge the assets of an already-cached envelope, without regenerating anything.
+ *
+ * Returns null when there is nothing to do (quality not requested, no assets, or every asset
+ * already carries a verdict) so the caller can serve the cache untouched.
+ *
+ * Judging is best-effort by design: it needs a logged-in vision tab, and the assets in hand are
+ * already paid for. A failure here must never turn a good cache hit into an error.
+ */
+async function backfillQuality(cachedEnv, a, progressToken) {
+  if (!a || !a.quality_gate) return null;
+  const assets = Array.isArray(cachedEnv.assets) ? cachedEnv.assets : [];
+  if (!assets.length) return null;
+  const missing = assets.filter((x) => x && x.quality == null);
+  if (!missing.length) return null;
+
+  const cfg = (typeof a.quality_gate === 'object' && a.quality_gate) || {};
+  let judged;
+  try {
+    const body = await runCommand('judge_assets', {
+      assets: missing.map((x) => ({ asset_id: x.asset_id, url: x.url, kind: x.kind })),
+      provider: cfg.provider, threshold: cfg.threshold, focus: cfg.focus,
+    }, progressToken);
+    judged = body && body.data && Array.isArray(body.data.judged) ? body.data.judged : null;
+  } catch (e) {
+    log(`backfillQuality failed (serving cache unjudged): ${e && e.message}`);
+    return null;
+  }
+  if (!judged) return null;
+
+  const byId = new Map(judged.map((j) => [j.asset_id, j.quality]));
+  return {
+    ...cachedEnv,
+    assets: assets.map((x) => {
+      if (x.quality != null) return x;
+      const q = toQuality(byId.get(x.asset_id));
+      return q ? { ...x, quality: q } : x;
+    }),
+  };
 }
 
 loadState();
@@ -224,6 +272,25 @@ function runCommand(command, args, progressToken) {
 // Ratio enum shared by gen tools.
 const RATIO_DESC = '16:9 | 9:16 | 1:1 | 4:3 | 3:4 | landscape | portrait | square. Default 9:16.';
 
+// Shared by gen_image / gen_video. Judging is opt-in because it costs one extra vision call per
+// asset, and it never regenerates on a fail — the verdict comes back and the caller decides,
+// so a retry is always the caller knowingly spending their own quota.
+const QUALITY_GATE_PARAM = {
+  type: ['boolean', 'object'],
+  description:
+    'Opt-in: have Flow judge each generated asset and return `quality` on every FlowAsset '
+    + '(see resource seosona://contract). `true` uses defaults; an object accepts '
+    + '{provider, threshold, focus}. Costs ONE extra vision call per asset and needs a logged-in '
+    + 'vision tab (ChatGPT by default). Flow reports the verdict and NEVER auto-regenerates. '
+    + 'ALWAYS check `quality.judged` before trusting `quality.pass` — judged=false means judging '
+    + 'was unavailable and nobody looked at the pixels.',
+  properties: {
+    provider: { type: 'string', description: 'Vision provider used to judge (default "chatgpt").' },
+    threshold: { type: 'number', minimum: 0, maximum: 10, description: 'Pass mark, default 7.5.' },
+    focus: { type: 'string', description: 'Extra instruction for the judge, e.g. "check the racket grip".' },
+  },
+};
+
 const TOOLS = [
   // ── Generation ────────────────────────────────────────────────────────────
   {
@@ -241,6 +308,7 @@ const TOOLS = [
         count: { type: 'integer', minimum: 1, maximum: 4, description: 'Images per prompt (1..4). Default 1.' },
         refs: { type: 'array', items: { type: 'string' }, description: 'Optional reference images: public image URLs (open without login).' },
         client_ref: { type: 'string', description: 'Idempotency key (e.g. scene id). A repeat call with the same client_ref returns the cached result WITHOUT regenerating or re-spending quota — safe for resumable pipelines.' },
+        quality_gate: { ...QUALITY_GATE_PARAM },
       },
       required: ['prompt'],
     },
@@ -262,6 +330,7 @@ const TOOLS = [
         voice: { type: 'string', description: 'OPTIONAL voice slug (see list_voices). Bakes voiceover into the clip via Veo. Omit for silent b-roll (recommended for V2).' },
         refs: { type: 'array', items: { type: 'string' }, description: 'Optional reference images: public image URLs.' },
         client_ref: { type: 'string', description: 'Idempotency key (e.g. scene id) — a repeat returns the cached result without regenerating. See gen_image.' },
+        quality_gate: { ...QUALITY_GATE_PARAM },
       },
       required: ['prompt'],
     },
@@ -409,7 +478,7 @@ const TOOLS = [
 
 // Result-normalization lives in a side-effect-free module so it can be unit-tested without booting
 // this WebSocket server (see contracts/normalize.test.mjs).
-import { normalizeResult } from './contracts/normalize.mjs';
+import { normalizeResult, toQuality } from './contracts/normalize.mjs';
 
 // #2 — every tool declares the FlowResult output schema + returns structuredContent, so an MCP client
 // (Video AI V2) can validate responses natively instead of parsing free text. Permissive on purpose.
@@ -484,7 +553,14 @@ mcp.setRequestHandler(CallToolRequestSchema, async (req) => {
     // Idempotency (#1): a repeat gen with the same client_ref returns the cached envelope — no re-gen, no quota.
     if (IDEMPOTENT_TOOLS.has(name) && a.client_ref && byClientRef.has(a.client_ref)) {
       log(`idempotent hit: ${name} client_ref=${a.client_ref}`);
-      return toolResult({ ...byClientRef.get(a.client_ref), idempotent_hit: true });
+      const cached = { ...byClientRef.get(a.client_ref), idempotent_hit: true };
+      // A first run without quality_gate followed by a run with it would otherwise return the
+      // cached envelope silently missing `quality` — and that second run is the normal case for a
+      // resumable weekly pipeline. Judge the assets we already have instead: no image is
+      // regenerated, so the whole point of client_ref (never re-spend image quota) still holds.
+      const judged = await backfillQuality(cached, a, progressToken);
+      if (judged) rememberClientRef(a.client_ref, stripHit(judged));
+      return toolResult(judged || cached);
     }
     // Everything else maps 1:1 to an extension command over the WS bridge, wrapped into the FlowResult envelope.
     const body = await runCommand(name, a, progressToken);

@@ -19,7 +19,10 @@ user's own logged-in extension. Read these before calling tools.
    open on a logged-in `labs.google/fx` project tab.
 3. Generate: `gen_image` / `gen_video` (silent) / `run_workflow`. **Pass `client_ref` (a scene id)** so a
    retry/resume returns the cached result instead of re-generating and re-spending quota. Read `assets[]`
-   from the envelope (also available as `structuredContent`).
+   from the envelope (also available as `structuredContent`). Add `quality_gate: true` to have Flow
+   judge each asset — then **check `asset.quality.judged` before `asset.quality.pass`**: `judged:false`
+   means nobody looked at the pixels, so `pass` is `null` and a human has to. Flow reports `action` and
+   never regenerates on a fail; re-gen is your call and your quota.
 4. **Get the file to edit**: images come back as inline base64; for **videos call `export_asset(video_url)`**
    and read the file from `Downloads/<folder>/<file_name>` (`path_hint`) — the video URL needs the Google
    session, so only the extension can fetch it.

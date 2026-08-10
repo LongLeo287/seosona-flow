@@ -3,91 +3,320 @@
   "$id": "seosona://contract",
   "title": "SEOSONA Flow ↔ Video AI V2 — data contract",
   "description": "One source of truth for the data exchanged between SEOSONA Flow (visual generation, this MCP server) and SEOSONA Video AI V2 (voice/edit/render). Flow produces SILENT visual assets; V2 owns the script + voiceover and muxes Flow assets into the final video. This keeps content↔voice aligned. Optional link: if the MCP server is present, V2 pulls assets through it; otherwise both products run independently.",
-  "contractVersion": "1.0.0",
+  "contractVersion": "1.1.0",
   "$defs": {
     "Download": {
       "type": "object",
       "description": "Result of export_asset — where the extension saved the full asset on the user's disk (Chrome cannot expose an absolute path, so V2 reads it under the Downloads folder).",
-      "required": ["file_name", "path_hint"],
+      "required": [
+        "file_name",
+        "path_hint"
+      ],
       "properties": {
-        "folder": { "type": "string", "description": "Subfolder under the user's Downloads directory." },
-        "file_name": { "type": "string" },
-        "path_hint": { "type": "string", "description": "e.g. \"Downloads/seosonaflow_mcp/asset_123.mp4\" — resolve against the OS Downloads dir." },
-        "status": { "type": "string", "enum": ["completed"] }
+        "folder": {
+          "type": "string",
+          "description": "Subfolder under the user's Downloads directory."
+        },
+        "file_name": {
+          "type": "string"
+        },
+        "path_hint": {
+          "type": "string",
+          "description": "e.g. \"Downloads/seosonaflow_mcp/asset_123.mp4\" — resolve against the OS Downloads dir."
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "completed"
+          ]
+        }
       }
     },
     "FlowAsset": {
       "type": "object",
       "description": "A single generated visual asset returned by gen_image / gen_video / run_workflow.",
-      "required": ["asset_id", "kind", "url"],
+      "required": [
+        "asset_id",
+        "kind",
+        "url"
+      ],
       "properties": {
-        "asset_id": { "type": "string", "description": "Stable id for referencing this asset from a scene (Flow file_name / tile_id when available)." },
-        "kind": { "type": "string", "enum": ["image", "video"] },
-        "url": { "type": "string", "description": "Full-resolution asset URL (video_url for videos). May require the user's Google session to fetch." },
-        "thumbnail_url": { "type": "string", "description": "Preview URL (always cheap to fetch)." },
-        "file_name": { "type": "string", "description": "Flow file name — reuse as a ref in later gens." },
-        "provider": { "type": "string", "enum": ["flow", "chatgpt", "grok"], "default": "flow" }
+        "asset_id": {
+          "type": "string",
+          "description": "Stable id for referencing this asset from a scene (Flow file_name / tile_id when available)."
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "image",
+            "video"
+          ]
+        },
+        "url": {
+          "type": "string",
+          "description": "Full-resolution asset URL (video_url for videos). May require the user's Google session to fetch."
+        },
+        "thumbnail_url": {
+          "type": "string",
+          "description": "Preview URL (always cheap to fetch)."
+        },
+        "file_name": {
+          "type": "string",
+          "description": "Flow file name — reuse as a ref in later gens."
+        },
+        "provider": {
+          "type": "string",
+          "enum": [
+            "flow",
+            "chatgpt",
+            "grok"
+          ],
+          "default": "flow"
+        },
+        "quality": {
+          "$ref": "#/$defs/Quality"
+        }
       }
     },
     "FlowResult": {
       "type": "object",
       "description": "Envelope returned by every MCP tool call (see server.mjs normalizeResult).",
-      "required": ["ok", "tool", "status"],
+      "required": [
+        "ok",
+        "tool",
+        "status"
+      ],
       "properties": {
-        "ok": { "type": "boolean" },
-        "tool": { "type": "string" },
-        "status": { "type": "string", "enum": ["completed", "failed"] },
-        "assets": { "type": "array", "items": { "$ref": "#/$defs/FlowAsset" }, "description": "Present for gen_image / gen_video / run_workflow." },
-        "batch": { "type": "object", "description": "Per-prompt success/fail detail for multi-prompt calls." },
-        "data": { "type": "object", "description": "Present for discovery / project / memory tools (domain fields)." },
-        "idempotent_hit": { "type": "boolean", "description": "true when this envelope was returned from the client_ref cache without regenerating (see gen_* client_ref)." },
-        "error_code": { "type": "string", "description": "e.g. PROVIDER_NOT_LOGGED_IN, WRONG_PROJECT, DAILY_QUOTA_EXCEEDED, EXTENSION_BUSY, VALIDATION_ERROR." },
-        "error_message": { "type": "string" }
+        "ok": {
+          "type": "boolean"
+        },
+        "tool": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "completed",
+            "failed"
+          ]
+        },
+        "assets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FlowAsset"
+          },
+          "description": "Present for gen_image / gen_video / run_workflow."
+        },
+        "batch": {
+          "type": "object",
+          "description": "Per-prompt success/fail detail for multi-prompt calls."
+        },
+        "data": {
+          "type": "object",
+          "description": "Present for discovery / project / memory tools (domain fields)."
+        },
+        "idempotent_hit": {
+          "type": "boolean",
+          "description": "true when this envelope was returned from the client_ref cache without regenerating (see gen_* client_ref)."
+        },
+        "error_code": {
+          "type": "string",
+          "description": "e.g. PROVIDER_NOT_LOGGED_IN, WRONG_PROJECT, DAILY_QUOTA_EXCEEDED, EXTENSION_BUSY, VALIDATION_ERROR."
+        },
+        "error_message": {
+          "type": "string"
+        }
       }
     },
     "SceneInput": {
       "type": "object",
       "description": "How a V2 script.json scene requests a visual from Flow. V2 resolves this to an MCP tool call, then fills scene.asset with the returned FlowAsset.",
-      "required": ["source"],
+      "required": [
+        "source"
+      ],
       "properties": {
-        "source": { "type": "string", "enum": ["flow_gen_image", "flow_gen_video", "flow_run_workflow", "flow_asset", "local"], "description": "flow_asset = reuse an already-generated asset_id." },
-        "prompt": { "type": "string", "description": "For flow_gen_image / flow_gen_video." },
-        "wf_id": { "type": "string", "description": "For flow_run_workflow." },
-        "asset_id": { "type": "string", "description": "For flow_asset (reuse)." },
-        "model": { "type": "string" },
-        "ratio": { "type": "string" },
-        "refs": { "type": "array", "items": { "type": "string" } }
+        "source": {
+          "type": "string",
+          "enum": [
+            "flow_gen_image",
+            "flow_gen_video",
+            "flow_run_workflow",
+            "flow_asset",
+            "local"
+          ],
+          "description": "flow_asset = reuse an already-generated asset_id."
+        },
+        "prompt": {
+          "type": "string",
+          "description": "For flow_gen_image / flow_gen_video."
+        },
+        "wf_id": {
+          "type": "string",
+          "description": "For flow_run_workflow."
+        },
+        "asset_id": {
+          "type": "string",
+          "description": "For flow_asset (reuse)."
+        },
+        "model": {
+          "type": "string"
+        },
+        "ratio": {
+          "type": "string"
+        },
+        "refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
       }
     },
     "script": {
       "type": "object",
       "description": "V2's render script.json — V2 OWNS this. Flow never generates or reads voiceText; it only fulfills scene.inputs via SceneInput. Mirrors the video-ai-v2-pipeline skill.",
-      "required": ["version", "aspect", "scenes"],
+      "required": [
+        "version",
+        "aspect",
+        "scenes"
+      ],
       "properties": {
-        "version": { "type": "string" },
-        "renderer": { "type": "string" },
-        "aspect": { "type": "string", "enum": ["9:16", "16:9", "1:1", "4:3", "3:4"] },
-        "metadata": { "type": "object" },
+        "version": {
+          "type": "string"
+        },
+        "renderer": {
+          "type": "string"
+        },
+        "aspect": {
+          "type": "string",
+          "enum": [
+            "9:16",
+            "16:9",
+            "1:1",
+            "4:3",
+            "3:4"
+          ]
+        },
+        "metadata": {
+          "type": "object"
+        },
         "voice": {
           "type": "object",
           "description": "V2-owned voice (NOT Flow). Provider is V2's TTS (sidecar), not Veo.",
-          "properties": { "provider": { "type": "string" }, "speed": { "type": "number" } }
+          "properties": {
+            "provider": {
+              "type": "string"
+            },
+            "speed": {
+              "type": "number"
+            }
+          }
         },
         "scenes": {
           "type": "array",
           "minItems": 1,
           "items": {
             "type": "object",
-            "required": ["id", "type", "voiceText"],
+            "required": [
+              "id",
+              "type",
+              "voiceText"
+            ],
             "properties": {
-              "id": { "type": "string" },
-              "type": { "type": "string", "enum": ["hook", "body", "outro"] },
-              "voiceText": { "type": "string", "description": "V2 TTS reads this — the master clock. Flow is blind to it." },
-              "templateId": { "type": "string" },
-              "inputs": { "type": "array", "items": { "$ref": "#/$defs/SceneInput" } },
-              "asset": { "$ref": "#/$defs/FlowAsset", "description": "Filled by V2 after resolving inputs through the MCP server." }
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "hook",
+                  "body",
+                  "outro"
+                ]
+              },
+              "voiceText": {
+                "type": "string",
+                "description": "V2 TTS reads this — the master clock. Flow is blind to it."
+              },
+              "templateId": {
+                "type": "string"
+              },
+              "inputs": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/SceneInput"
+                }
+              },
+              "asset": {
+                "$ref": "#/$defs/FlowAsset",
+                "description": "Filled by V2 after resolving inputs through the MCP server."
+              }
             }
           }
+        }
+      }
+    },
+    "Quality": {
+      "type": "object",
+      "description": "Verdict from Flow-side judging (QualityGate + QualityJudge). Present only when the call asked for quality_gate. ALWAYS check judged before trusting pass: judged=false means nobody looked at the pixels, so pass is null and the asset needs a human. Flow never regenerates on a fail — it reports action and lets the caller decide, so a retry is always the caller spending their own quota knowingly.",
+      "required": [
+        "judged",
+        "pass",
+        "score",
+        "verdict",
+        "action"
+      ],
+      "properties": {
+        "judged": {
+          "type": "boolean",
+          "description": "true = a judge actually ran. false = judging was unavailable (no vision tab, model returned no JSON, timeout)."
+        },
+        "pass": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Passed the threshold. null when judged=false."
+        },
+        "score": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 10,
+          "description": "Weighted 0-10 across the applicable dimensions. Motion and temporal dimensions are omitted for images. null when judged=false."
+        },
+        "verdict": {
+          "type": "string",
+          "enum": [
+            "excellent",
+            "good",
+            "acceptable",
+            "poor",
+            "unusable",
+            "critical_fail",
+            "unjudged"
+          ],
+          "description": "critical_fail = a CRITICAL defect was found; it fails regardless of the average score, because averaging hides a six-fingered hand behind good composition."
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "accept",
+            "trim",
+            "regen_image",
+            "rewrite_prompt",
+            "review_manually"
+          ],
+          "description": "What the caller should do next. review_manually is what an unjudged asset gets."
+        },
+        "critical": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Human-readable critical defects, empty when none."
         }
       }
     }

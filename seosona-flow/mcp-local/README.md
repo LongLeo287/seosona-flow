@@ -24,8 +24,8 @@ SSE path used — so all the existing validation/queueing still applies. Results
 
 | Tool | Args | Notes |
 |------|------|-------|
-| `gen_image` | `prompt` (req), `prompts[]`, `model`, `ratio`, `count` (1..4), `refs[]` (public URLs) | Google Flow image gen |
-| `gen_video` | `prompt` (req), `prompts[]`, `model`, `ratio`, `duration`, `voice?`, `refs[]` | Flow video / b-roll. **Omit `voice` for silent b-roll** (recommended for V2). `voice` bakes a Veo voiceover in. |
+| `gen_image` | `prompt` (req), `prompts[]`, `model`, `ratio`, `count` (1..4), `refs[]` (public URLs), `quality_gate?` | Google Flow image gen |
+| `gen_video` | `prompt` (req), `prompts[]`, `model`, `ratio`, `duration`, `voice?`, `refs[]`, `quality_gate?` | Flow video / b-roll. **Omit `voice` for silent b-roll** (recommended for V2). `voice` bakes a Veo voiceover in. |
 | `run_workflow` | `wf_id` (req) | Run a saved workflow graph → collected assets |
 | `upload_ref` | `url` (req) | Upload a public/`data:` image into the current project as a reusable ref |
 | `export_asset` | `url`\|`video_url`, `file_name?`, `folder?`, `kind?` | **Download an asset to disk** so an external app can read the file. **Required for VIDEO** (URL needs the Google session). Returns `{download:{folder,file_name,path_hint}}`. |
