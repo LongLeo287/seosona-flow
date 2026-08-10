@@ -375,8 +375,10 @@ class McpExecutor {
     const promptList = (Array.isArray(prompts) && prompts.length) ? prompts.filter(Boolean) : (prompt ? [prompt] : []);
     if (!promptList.length) throw this._err('GEN_FAILED', 'Thiếu prompt/prompts.');
 
-    if (!window.PromptQueue || !PromptQueue.isEnabled?.()) {
-      throw this._err('GEN_FAILED', 'PromptQueue chưa sẵn sàng (cần bật pipeline queue).');
+    // MCP is an explicit execution request and owns this queue job. The user-facing
+    // pipeline toggle only chooses the interactive UI path; it must not disable MCP.
+    if (!window.PromptQueue) {
+      throw this._err('GEN_FAILED', 'PromptQueue chưa được nạp trong extension.');
     }
 
     // Pre-check: Flow gen BẮT BUỘC có tab Flow MỞ + đang TRONG 1 project (editor chỉ tồn tại trong project).
