@@ -3,7 +3,7 @@
   "framework": null,
   "installCommand": "echo 'khong can cai dat'",
   "buildCommand": "echo 'trang tinh, khong can build'",
-  "outputDirectory": "landing",
+  "outputDirectory": ".",
   "cleanUrls": true,
   "trailingSlash": false,
   "headers": [
