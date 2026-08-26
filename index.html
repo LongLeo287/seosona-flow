@@ -288,49 +288,44 @@
       white-space: nowrap;
     }
 
-    /* Language Switcher */
-    .lang-switcher {
+    /* Icon Buttons (GitHub, Language Toggle) */
+    .nav-icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-glass-subtle);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-muted);
       display: inline-flex;
       align-items: center;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--border-glass-subtle);
-      border-radius: var(--radius-full);
-      padding: 2px;
-      gap: 2px;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--dur-fast) var(--ease-hud);
       flex-shrink: 0;
+      text-decoration: none;
     }
-    .lang-btn {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 700;
-      padding: 4px 9px;
-      border-radius: var(--radius-full);
-      color: var(--text-muted);
-      transition: all var(--dur-fast);
-      white-space: nowrap;
-    }
-    .lang-btn.active {
-      background: var(--cyan);
-      color: #04060a;
-      box-shadow: 0 0 10px rgba(0, 242, 254, 0.4);
-    }
-
-    .btn-sound {
-      width: 36px;
-      height: 36px;
-      border-radius: var(--radius-full);
-      border: 1px solid var(--border-glass-subtle);
-      background: rgba(255,255,255,0.03);
-      color: var(--text-muted);
-      display: grid;
-      place-items: center;
-      transition: all var(--dur-fast);
-      flex-shrink: 0;
-    }
-    .btn-sound:hover {
+    .nav-icon-btn:hover {
       color: var(--cyan);
-      border-color: var(--cyan);
-      box-shadow: 0 0 12px var(--cyan-dim);
+      border-color: rgba(0, 242, 254, 0.4);
+      background: rgba(0, 242, 254, 0.08);
+      box-shadow: 0 0 14px rgba(0, 242, 254, 0.25);
+      transform: translateY(-1px);
+    }
+    .lang-toggle-btn {
+      width: auto;
+      padding: 0 12px;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #f1f5f9;
+    }
+    .lang-toggle-btn .flag-icon {
+      font-size: 15px;
+      line-height: 1;
+    }
+    .lang-toggle-btn .lang-text {
+      letter-spacing: 0.05em;
     }
 
     .btn-primary {
@@ -2168,24 +2163,21 @@
       </nav>
 
       <div class="nav-actions">
-        <!-- Bilingual Toggle -->
-        <div class="lang-switcher">
-          <button class="lang-btn active" data-lang="vi">VN</button>
-          <button class="lang-btn" data-lang="en">EN</button>
-        </div>
-
-        <button class="btn-sound" id="btnSound" aria-label="Toggle Sound" title="Bật/Tắt âm thanh Cyber">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+        <!-- 1-Click Language Flag Toggle -->
+        <button class="nav-icon-btn lang-toggle-btn" id="langToggleBtn" aria-label="Toggle Language" title="Đổi ngôn ngữ (VI / EN)">
+          <span class="flag-icon" id="flagIcon">🇻🇳</span>
+          <span class="lang-text" id="langText">VI</span>
         </button>
 
-        <a href="https://github.com/LongLeo287/seosona-flow" target="_blank" rel="noopener" class="btn-secondary">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
-          GitHub
+        <!-- GitHub Icon Button -->
+        <a href="https://github.com/LongLeo287/seosona-flow" target="_blank" rel="noopener" class="nav-icon-btn" aria-label="GitHub Repository" title="GitHub Repository">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
         </a>
 
-        <a href="https://github.com/LongLeo287/seosona-flow/archive/refs/heads/main.zip" class="btn-primary" data-i18n="btn_download">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Tải Extension .zip
+        <!-- Chrome Extension CTA Button with Puzzle Icon -->
+        <a href="https://github.com/LongLeo287/seosona-flow/archive/refs/heads/main.zip" class="btn-primary" title="Tải Extension Chrome (Zip)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2a2 2 0 0 1 2 2v2a2 2 0 0 0 2 2h2a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-2a2 2 0 0 0-2 2v2a2 2 0 0 1-2 2h-3a2 2 0 0 1-2-2v-2a2 2 0 0 0-2-2H5a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h2a2 2 0 0 0 2-2V4a2 2 0 0 1 2-2h3z"/></svg>
+          <span data-i18n="btn_download">Tải Extension .zip</span>
         </a>
 
         <button class="menu-toggle-btn" id="menuToggle" aria-label="Toggle Navigation Menu">☰</button>
@@ -3653,6 +3645,12 @@
         if (dict[key]) el.innerHTML = dict[key];
       });
 
+      // Update Flag & Language text badge
+      const flagEl = document.getElementById('flagIcon');
+      const langTextEl = document.getElementById('langText');
+      if (flagEl) flagEl.textContent = lang === 'vi' ? '🇻🇳' : '🇬🇧';
+      if (langTextEl) langTextEl.textContent = lang === 'vi' ? 'VI' : 'EN';
+
       // Update dynamic elements with data-vi and data-en
       document.querySelectorAll('[data-vi]').forEach(el => {
         el.textContent = el.dataset[lang] || el.dataset.vi;
@@ -3663,49 +3661,47 @@
       renderNodes(activeGroup);
     }
 
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
+    const langToggleBtn = document.getElementById('langToggleBtn');
+    if (langToggleBtn) {
+      langToggleBtn.addEventListener('click', function() {
         playCyberSound('click');
-        setLanguage(this.dataset.lang);
+        const nextLang = currentLang === 'vi' ? 'en' : 'vi';
+        setLanguage(nextLang);
       });
-    });
+    }
 
-    // 3. Audio Synthesizer (Web Audio API Cyber FX)
-    let soundEnabled = false;
+    // 3. Audio Synthesizer (Web Audio API Cyber FX - Mặc định bật)
+    let soundEnabled = true;
     let audioCtx = null;
 
     function playCyberSound(type) {
       if (!soundEnabled) return;
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
 
-      const now = audioCtx.currentTime;
-      if (type === 'click') {
-        osc.frequency.setValueAtTime(800, now);
-        osc.frequency.exponentialRampToValueAtTime(1400, now + 0.06);
-        gain.gain.setValueAtTime(0.08, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
-        osc.start(now);
-        osc.stop(now + 0.06);
-      } else if (type === 'success') {
-        osc.frequency.setValueAtTime(440, now);
-        osc.frequency.setValueAtTime(880, now + 0.08);
-        gain.gain.setValueAtTime(0.1, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
-        osc.start(now);
-        osc.stop(now + 0.2);
-      }
+        const now = audioCtx.currentTime;
+        if (type === 'click') {
+          osc.frequency.setValueAtTime(800, now);
+          osc.frequency.exponentialRampToValueAtTime(1400, now + 0.06);
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+          osc.start(now);
+          osc.stop(now + 0.06);
+        } else if (type === 'success') {
+          osc.frequency.setValueAtTime(440, now);
+          osc.frequency.setValueAtTime(880, now + 0.08);
+          gain.gain.setValueAtTime(0.1, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+          osc.start(now);
+          osc.stop(now + 0.2);
+        }
+      } catch(e) {}
     }
-
-    document.getElementById('btnSound').addEventListener('click', function() {
-      soundEnabled = !soundEnabled;
-      this.style.color = soundEnabled ? 'var(--cyan)' : 'var(--text-muted)';
-      this.style.borderColor = soundEnabled ? 'var(--cyan)' : 'var(--border-glass-subtle)';
-      if (soundEnabled) playCyberSound('click');
-    });
 
     // 4. 3D Dashboard Mockup Tilt Effect
     const mockup = document.getElementById('heroDashMockup');
