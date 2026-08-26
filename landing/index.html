@@ -219,84 +219,95 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 74px;
+      height: 72px;
+      gap: 16px;
     }
     .brand-group {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
+      flex-shrink: 0;
+      white-space: nowrap;
     }
     .brand-logo-icon {
-      width: 40px;
-      height: 40px;
+      width: 38px;
+      height: 38px;
       border-radius: var(--radius-md);
       background: linear-gradient(135deg, rgba(0, 242, 254, 0.25), rgba(121, 40, 202, 0.45));
       border: 1px solid var(--border-glass);
       display: grid;
       place-items: center;
-      box-shadow: 0 0 20px rgba(0, 242, 254, 0.25);
+      box-shadow: 0 0 16px rgba(0, 242, 254, 0.25);
+      flex-shrink: 0;
     }
     .brand-title {
       font-family: var(--font-display);
-      font-size: 20px;
+      font-size: 19px;
       font-weight: 800;
       letter-spacing: -0.02em;
+      white-space: nowrap;
+      display: inline-block;
     }
     .brand-version {
       font-family: var(--font-mono);
       font-size: 11px;
       color: var(--cyan);
       background: var(--cyan-dim);
-      padding: 3px 9px;
+      padding: 2px 8px;
       border-radius: var(--radius-full);
       border: 1px solid rgba(0,242,254,0.3);
+      flex-shrink: 0;
     }
 
     .nav-links {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
+      flex-shrink: 0;
+      white-space: nowrap;
     }
     .nav-link {
-      font-size: 14px;
+      font-size: 13.5px;
       font-weight: 600;
       color: var(--text-muted);
-      padding: 8px 14px;
+      padding: 6px 11px;
       border-radius: var(--radius-sm);
+      white-space: nowrap;
       transition: all var(--dur-fast) var(--ease-hud);
     }
     .nav-link:hover {
       color: var(--text);
       background: rgba(255, 255, 255, 0.06);
     }
-    @media (max-width: 980px) {
-      .nav-links { display: none; }
-    }
 
     .nav-actions {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
+      flex-shrink: 0;
+      white-space: nowrap;
     }
 
     /* Language Switcher */
     .lang-switcher {
-      display: flex;
+      display: inline-flex;
       align-items: center;
       background: rgba(255,255,255,0.05);
       border: 1px solid var(--border-glass-subtle);
       border-radius: var(--radius-full);
-      padding: 3px;
+      padding: 2px;
       gap: 2px;
+      flex-shrink: 0;
     }
     .lang-btn {
       font-family: var(--font-mono);
       font-size: 11px;
       font-weight: 700;
-      padding: 4px 10px;
+      padding: 4px 9px;
       border-radius: var(--radius-full);
       color: var(--text-muted);
       transition: all var(--dur-fast);
+      white-space: nowrap;
     }
     .lang-btn.active {
       background: var(--cyan);
@@ -305,8 +316,8 @@
     }
 
     .btn-sound {
-      width: 38px;
-      height: 38px;
+      width: 36px;
+      height: 36px;
       border-radius: var(--radius-full);
       border: 1px solid var(--border-glass-subtle);
       background: rgba(255,255,255,0.03);
@@ -314,6 +325,7 @@
       display: grid;
       place-items: center;
       transition: all var(--dur-fast);
+      flex-shrink: 0;
     }
     .btn-sound:hover {
       color: var(--cyan);
@@ -324,37 +336,95 @@
     .btn-primary {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       background: linear-gradient(135deg, var(--cyan), #00b4d8);
       color: #04060a;
-      font-size: 14px;
+      font-size: 13.5px;
       font-weight: 700;
-      padding: 10px 22px;
+      padding: 8px 18px;
       border-radius: var(--radius-full);
-      box-shadow: 0 0 24px rgba(0, 242, 254, 0.4);
+      box-shadow: 0 0 20px rgba(0, 242, 254, 0.35);
+      white-space: nowrap;
+      flex-shrink: 0;
       transition: all var(--dur-fast) var(--ease-hud);
     }
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 0 32px rgba(0, 242, 254, 0.65);
+      box-shadow: 0 0 28px rgba(0, 242, 254, 0.6);
     }
     .btn-secondary {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--border-glass-subtle);
       color: var(--text);
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
-      padding: 10px 20px;
+      padding: 8px 14px;
       border-radius: var(--radius-full);
       backdrop-filter: blur(10px);
+      white-space: nowrap;
+      flex-shrink: 0;
       transition: all var(--dur-fast) var(--ease-hud);
     }
     .btn-secondary:hover {
       background: rgba(255, 255, 255, 0.1);
       border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    /* Mobile Hamburger Menu */
+    .menu-toggle-btn {
+      display: none;
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-glass-subtle);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      font-size: 20px;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .mobile-drawer {
+      display: none;
+      position: fixed;
+      top: 72px;
+      left: 0;
+      width: 100%;
+      background: rgba(6, 8, 14, 0.96);
+      backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--border-glass);
+      padding: 20px 24px;
+      z-index: 490;
+      flex-direction: column;
+      gap: 12px;
+      transform: translateY(-100%);
+      opacity: 0;
+      transition: all 0.3s var(--ease-hud);
+    }
+    .mobile-drawer.open {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    .mobile-drawer a {
+      padding: 10px 14px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-radius: var(--radius-sm);
+    }
+    .mobile-drawer a:hover {
+      color: var(--cyan);
+      background: var(--cyan-dim);
+    }
+
+    @media (max-width: 1120px) {
+      .nav-links { display: none; }
+      .btn-secondary { display: none; }
+      .menu-toggle-btn { display: flex; }
+      .mobile-drawer { display: flex; }
     }
 
     /* ==========================================================================
@@ -1559,7 +1629,20 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Tải Extension .zip
         </a>
+
+        <button class="menu-toggle-btn" id="menuToggle" aria-label="Toggle Navigation Menu">☰</button>
       </div>
+    </div>
+
+    <!-- Mobile Navigation Drawer -->
+    <div class="mobile-drawer" id="mobileDrawer">
+      <a href="#gallery" class="mobile-link" data-i18n="nav_gallery">Thư viện mẫu</a>
+      <a href="#simulator" class="mobile-link" data-i18n="nav_sim">Mô phỏng</a>
+      <a href="#nodes" class="mobile-link" data-i18n="nav_nodes">26 Node Workflow</a>
+      <a href="#compare" class="mobile-link" data-i18n="nav_compare">So sánh</a>
+      <a href="#prompts" class="mobile-link" data-i18n="nav_prompts">Kho Prompts</a>
+      <a href="#faq" class="mobile-link" data-i18n="nav_faq">FAQ</a>
+      <a href="https://github.com/LongLeo287/seosona-flow" target="_blank" rel="noopener" style="color:var(--cyan);">GitHub Repository ↗</a>
     </div>
   </header>
 
@@ -2881,6 +2964,25 @@
         botChatBody.appendChild(botBubble);
         botChatBody.scrollTop = botChatBody.scrollHeight;
       }, 400);
+    }
+
+    // 15. Mobile Menu Drawer Toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const mobileDrawer = document.getElementById('mobileDrawer');
+    if (menuToggle && mobileDrawer) {
+      menuToggle.addEventListener('click', () => {
+        playCyberSound('click');
+        mobileDrawer.classList.toggle('open');
+        menuToggle.textContent = mobileDrawer.classList.contains('open') ? '✕' : '☰';
+      });
+
+      document.querySelectorAll('.mobile-link').forEach(link => {
+        link.addEventListener('click', () => {
+          playCyberSound('click');
+          mobileDrawer.classList.remove('open');
+          menuToggle.textContent = '☰';
+        });
+      });
     }
   </script>
 </body>
