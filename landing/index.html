@@ -1530,7 +1530,170 @@
     }
 
     /* ==========================================================================
-       9. PROMPT LIBRARY & SEARCH EXPLORER
+       9. GETTING STARTED 3-STEP GUIDE
+       ========================================================================== */
+    .guide-section {
+      padding: 50px 0 90px;
+    }
+    .guide-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 22px;
+    }
+    .guide-card {
+      background: var(--bg-glass-card);
+      border: 1px solid var(--border-glass-subtle);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      backdrop-filter: blur(14px);
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+      transition: all var(--dur-norm) var(--ease-hud);
+    }
+    .guide-card:hover {
+      border-color: var(--cyan);
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(0, 242, 254, 0.16);
+    }
+    .guide-step-num {
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--cyan);
+      line-height: 1;
+    }
+    .guide-card-title {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .guide-card-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* ==========================================================================
+       10. AI AGENT MCP & TELEGRAM REMOTE CONTROL
+       ========================================================================== */
+    .integration-section {
+      padding: 50px 0 90px;
+    }
+    .integration-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 26px;
+    }
+    @media (max-width: 960px) {
+      .integration-grid { grid-template-columns: 1fr; }
+    }
+    .integration-box {
+      background: var(--bg-glass-card);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      backdrop-filter: blur(20px);
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .code-hud-box {
+      background: #03060a;
+      border: 1px solid var(--border-glass-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      position: relative;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: #94a3b8;
+      overflow-x: auto;
+    }
+    .btn-copy-code {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 242, 254, 0.1);
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      transition: all var(--dur-fast);
+    }
+    .btn-copy-code:hover {
+      background: var(--cyan);
+      color: #04060a;
+    }
+    .tg-cmd-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 8px;
+    }
+    .tg-cmd-badge {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border-glass-subtle);
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text);
+    }
+
+    /* ==========================================================================
+       11. 5-TIER RESILIENCE & SMART SELF-HEALING
+       ========================================================================== */
+    .resilience-section {
+      padding: 50px 0 90px;
+    }
+    .resilience-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .tier-card {
+      background: var(--bg-glass-card);
+      border: 1px solid var(--border-glass-subtle);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      text-align: left;
+      transition: all var(--dur-norm) var(--ease-hud);
+    }
+    .tier-card:hover {
+      border-color: var(--emerald);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(16, 185, 129, 0.15);
+    }
+    .tier-badge {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--emerald);
+      background: rgba(16, 185, 129, 0.12);
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+    .tier-title {
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .tier-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ==========================================================================
+       12. PROMPT LIBRARY & SEARCH EXPLORER
        ========================================================================== */
     .prompt-section {
       padding: 40px 0 100px;
@@ -1912,9 +2075,11 @@
       </div>
 
       <nav class="nav-links">
+        <a href="#guide" class="nav-link" data-i18n="nav_guide">Hướng dẫn</a>
         <a href="#gallery" class="nav-link" data-i18n="nav_gallery">Thư viện mẫu</a>
         <a href="#simulator" class="nav-link" data-i18n="nav_sim">Mô phỏng</a>
         <a href="#nodes" class="nav-link" data-i18n="nav_nodes">26 Node Workflow</a>
+        <a href="#integrations" class="nav-link" data-i18n="nav_mcp">Agent & Bot</a>
         <a href="#compare" class="nav-link" data-i18n="nav_compare">So sánh</a>
         <a href="#prompts" class="nav-link" data-i18n="nav_prompts">Kho Prompts</a>
         <a href="#faq" class="nav-link" data-i18n="nav_faq">FAQ</a>
@@ -1947,9 +2112,11 @@
 
     <!-- Mobile Navigation Drawer -->
     <div class="mobile-drawer" id="mobileDrawer">
+      <a href="#guide" class="mobile-link" data-i18n="nav_guide">Hướng dẫn</a>
       <a href="#gallery" class="mobile-link" data-i18n="nav_gallery">Thư viện mẫu</a>
       <a href="#simulator" class="mobile-link" data-i18n="nav_sim">Mô phỏng</a>
       <a href="#nodes" class="mobile-link" data-i18n="nav_nodes">26 Node Workflow</a>
+      <a href="#integrations" class="mobile-link" data-i18n="nav_mcp">Agent & Bot</a>
       <a href="#compare" class="mobile-link" data-i18n="nav_compare">So sánh</a>
       <a href="#prompts" class="mobile-link" data-i18n="nav_prompts">Kho Prompts</a>
       <a href="#faq" class="mobile-link" data-i18n="nav_faq">FAQ</a>
@@ -2748,7 +2915,168 @@
       </div>
     </section>
 
-    <!-- 6. 410+ PROMPTS EXPLORER -->
+    <!-- 6. GETTING STARTED 3-STEP GUIDE -->
+    <section class="guide-section wrap" id="guide">
+      <div class="section-head">
+        <span class="section-eyebrow" data-i18n="guide_eyebrow">Quick Start Guide</span>
+        <h2 class="section-title" data-i18n="guide_title">3 Bước Cài Đặt & Sử Dụng Ngay (30 Giây)</h2>
+        <p class="section-desc" data-i18n="guide_desc">Không cần tài khoản máy chủ, không cần cấu hình phức tạp — mở Chrome là có ngay bảng điều khiển Side Panel.</p>
+      </div>
+
+      <div class="guide-grid">
+        <div class="guide-card">
+          <div class="guide-step-num">01</div>
+          <div>
+            <h3 class="guide-card-title" data-i18n="g_step1_t">Tải & Giải Nén Extension</h3>
+            <p class="guide-card-desc" data-i18n="g_step1_d">Bấm nút "Tải Extension .zip" ở góc trên hoặc clone repo GitHub về máy. Giải nén vào một thư mục cố định.</p>
+          </div>
+          <div style="font-family:var(--font-mono);font-size:11px;color:var(--cyan);margin-top:auto;">
+            Source: LongLeo287/seosona-flow
+          </div>
+        </div>
+
+        <div class="guide-card">
+          <div class="guide-step-num">02</div>
+          <div>
+            <h3 class="guide-card-title" data-i18n="g_step2_t">Bật Developer Mode & Load Unpacked</h3>
+            <p class="guide-card-desc" data-i18n="g_step2_d">Mở chrome://extensions trên trình duyệt, bật công tắc "Developer mode" ở góc phải, chọn "Load unpacked" và trỏ tới thư mục vừa giải nén.</p>
+          </div>
+          <div style="font-family:var(--font-mono);font-size:11px;color:var(--emerald);margin-top:auto;">
+            Manifest V3 · Local-First
+          </div>
+        </div>
+
+        <div class="guide-card">
+          <div class="guide-step-num">03</div>
+          <div>
+            <h3 class="guide-card-title" data-i18n="g_step3_t">Mở Tab AI & Kích Hoạt Side Panel</h3>
+            <p class="guide-card-desc" data-i18n="g_step3_d">Truy cập Google Flow (labs.google/fx), ChatGPT hoặc Grok. Bấm tổ hợp phím Alt+S hoặc icon trên thanh công cụ để mở Side Panel HUD!</p>
+          </div>
+          <div style="font-family:var(--font-mono);font-size:11px;color:var(--amber);margin-top:auto;">
+            Hotkeys: Alt+S / Alt+G
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. AI AGENT MCP & TELEGRAM INTEGRATION -->
+    <section class="integration-section wrap" id="integrations">
+      <div class="section-head">
+        <span class="section-eyebrow" data-i18n="int_eyebrow">Ecosystem & Connectivity</span>
+        <h2 class="section-title" data-i18n="int_title">Kết Nối MCP Server & Điều Khiển Telegram</h2>
+        <p class="section-desc" data-i18n="int_desc">Mở rộng khả năng tự động hoá cho lập trình viên (Claude Code / Python SDK) và điều khiển sinh media từ xa qua điện thoại.</p>
+      </div>
+
+      <div class="integration-grid">
+        <!-- MCP Box -->
+        <div class="integration-box">
+          <div>
+            <span style="font-family:var(--font-mono);font-size:11px;color:var(--cyan);background:var(--cyan-dim);padding:3px 9px;border-radius:var(--radius-sm);">
+              MODEL CONTEXT PROTOCOL (MCP)
+            </span>
+            <h3 style="font-family:var(--font-display);font-size:20px;font-weight:800;color:var(--text);margin-top:10px;" data-i18n="mcp_box_title">
+              Gọi Trực Tiếp Từ Claude Code / Cursor
+            </h3>
+            <p style="font-size:13px;color:var(--text-muted);margin-top:6px;" data-i18n="mcp_box_desc">
+              Tích hợp SEOSONA Flow MCP Server vào file cấu hình agent để AI tự sinh ảnh, video và dựng pipeline.
+            </p>
+          </div>
+
+          <div class="code-hud-box">
+            <button class="btn-copy-code" onclick="copyPromptText(this.nextElementSibling.textContent, this)">Copy JSON</button>
+            <pre><code>{
+  "mcpServers": {
+    "seosona-flow": {
+      "command": "python",
+      "args": ["-m", "seosona_flow_mcp"],
+      "env": { "FLOW_PORT": "8765" }
+    }
+  }
+}</code></pre>
+          </div>
+
+          <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-dim);display:flex;gap:12px;flex-wrap:wrap;">
+            <span>Tools: gen_image</span>
+            <span>gen_video</span>
+            <span>upload_ref</span>
+            <span>get_status</span>
+          </div>
+        </div>
+
+        <!-- Telegram Box -->
+        <div class="integration-box">
+          <div>
+            <span style="font-family:var(--font-mono);font-size:11px;color:#38bdf8;background:rgba(56,189,248,0.12);padding:3px 9px;border-radius:var(--radius-sm);">
+              TELEGRAM REMOTE BOT
+            </span>
+            <h3 style="font-family:var(--font-display);font-size:20px;font-weight:800;color:var(--text);margin-top:10px;" data-i18n="tg_box_title">
+              Điều Khiển Sinh Media Từ Xa Qua Điện Thoại
+            </h3>
+            <p style="font-size:13px;color:var(--text-muted);margin-top:6px;" data-i18n="tg_box_desc">
+              Nhắn tin với Bot Telegram để kích hoạt extension trên máy tính chạy mẻ và tự động gửi thành phẩm về điện thoại.
+            </p>
+          </div>
+
+          <div class="tg-cmd-grid">
+            <div class="tg-cmd-badge"><code>/image [prompt]</code></div>
+            <div class="tg-cmd-badge"><code>/video [prompt]</code></div>
+            <div class="tg-cmd-badge"><code>/workflow [id]</code></div>
+            <div class="tg-cmd-badge"><code>/status</code></div>
+            <div class="tg-cmd-badge"><code>/queue</code></div>
+            <div class="tg-cmd-badge"><code>/stop</code></div>
+            <div class="tg-cmd-badge"><code>/quota</code></div>
+            <div class="tg-cmd-badge"><code>/link</code></div>
+          </div>
+
+          <div style="font-family:var(--font-mono);font-size:12px;color:var(--emerald);margin-top:auto;">
+            ● Webhook 2 chiều mã hoá AES-256 an toàn tuyệt đối
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. 5-TIER SMART RESILIENCE -->
+    <section class="resilience-section wrap" id="resilience">
+      <div class="section-head">
+        <span class="section-eyebrow" data-i18n="res_eyebrow">Bulletproof Reliability</span>
+        <h2 class="section-title" data-i18n="res_title">Cơ Chế 5 Tầng Phục Hồi & Tự Động Sửa Lỗi</h2>
+        <p class="section-desc" data-i18n="res_desc">Đảm bảo mẻ chạy 100 tác vụ không bao giờ bị dừng giữa chừng nhờ 5 lớp fallback thông minh.</p>
+      </div>
+
+      <div class="resilience-grid">
+        <div class="tier-card">
+          <span class="tier-badge">Tier 1</span>
+          <h3 class="tier-title">File ID Direct</h3>
+          <p class="tier-desc" data-i18n="t1_d">Tái sử dụng trực tiếp ID ảnh từ session trình duyệt đang mở để gửi request tức thì không tốn băng thông.</p>
+        </div>
+
+        <div class="tier-card">
+          <span class="tier-badge">Tier 2</span>
+          <h3 class="tier-title">Filename Match</h3>
+          <p class="tier-desc" data-i18n="t2_d">Tự động đối chiếu tên file gốc trong pool tài nguyên cục bộ khi đổi sang project mới.</p>
+        </div>
+
+        <div class="tier-card">
+          <span class="tier-badge">Tier 3</span>
+          <h3 class="tier-title">Thumbnail Re-Upload</h3>
+          <p class="tier-desc" data-i18n="t3_d">Tự nạp lại thumbnail chuẩn tỉ lệ nếu nền tảng xoá mất cache tạm thời.</p>
+        </div>
+
+        <div class="tier-card">
+          <span class="tier-badge">Tier 4</span>
+          <h3 class="tier-title">IndexedDB (7 Days)</h3>
+          <p class="tier-desc" data-i18n="t4_d">Bộ nhớ đệm cục bộ 7 ngày lưu trữ mọi prompt, metadata và ảnh tham chiếu.</p>
+        </div>
+
+        <div class="tier-card">
+          <span class="tier-badge">Tier 5</span>
+          <h3 class="tier-title">CDN Fallback</h3>
+          <p class="tier-desc" data-i18n="t5_d">Tải an toàn từ cloud backup riêng của bạn nếu toàn bộ dữ liệu máy tính bị mất.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. 410+ PROMPTS EXPLORER -->
     <section class="prompt-section wrap" id="prompts">
       <div class="section-head">
         <span class="section-eyebrow" data-i18n="prompt_eyebrow">Offline Bundled Library</span>
@@ -2970,9 +3298,11 @@
     // 2. Bilingual Dictionary
     const I18N_DICT = {
       "vi": {
+        "nav_guide": "Hướng dẫn",
         "nav_gallery": "Thư viện mẫu",
         "nav_sim": "Mô phỏng",
         "nav_nodes": "26 Node Workflow",
+        "nav_mcp": "Agent & Bot",
         "nav_compare": "So sánh",
         "nav_prompts": "Kho Prompts",
         "nav_faq": "FAQ",
@@ -3027,6 +3357,30 @@
         "th_task": "Tác Vụ",
         "th_manual": "Thao Tác Thủ Công",
         "th_flow": "SEOSONA Flow Extension",
+        "guide_eyebrow": "Quick Start Guide",
+        "guide_title": "3 Bước Cài Đặt & Sử Dụng Ngay (30 Giây)",
+        "guide_desc": "Không cần tài khoản máy chủ, không cần cấu hình phức tạp — mở Chrome là có ngay bảng điều khiển Side Panel.",
+        "g_step1_t": "Tải & Giải Nén Extension",
+        "g_step1_d": "Bấm nút 'Tải Extension .zip' ở góc trên hoặc clone repo GitHub về máy. Giải nén vào một thư mục cố định.",
+        "g_step2_t": "Bật Developer Mode & Load Unpacked",
+        "g_step2_d": "Mở chrome://extensions trên trình duyệt, bật công tắc 'Developer mode' ở góc phải, chọn 'Load unpacked' và trỏ tới thư mục vừa giải nén.",
+        "g_step3_t": "Mở Tab AI & Kích Hoạt Side Panel",
+        "g_step3_d": "Truy cập Google Flow (labs.google/fx), ChatGPT hoặc Grok. Bấm tổ hợp phím Alt+S hoặc icon trên thanh công cụ để mở Side Panel HUD!",
+        "int_eyebrow": "Ecosystem & Connectivity",
+        "int_title": "Kết Nối MCP Server & Điều Khiển Telegram",
+        "int_desc": "Mở rộng khả năng tự động hoá cho lập trình viên (Claude Code / Python SDK) và điều khiển sinh media từ xa qua điện thoại.",
+        "mcp_box_title": "Gọi Trực Tiếp Từ Claude Code / Cursor",
+        "mcp_box_desc": "Tích hợp SEOSONA Flow MCP Server vào file cấu hình agent để AI tự sinh ảnh, video và dựng pipeline.",
+        "tg_box_title": "Điều Khiển Sinh Media Từ Xa Qua Điện Thoại",
+        "tg_box_desc": "Nhắn tin với Bot Telegram để kích hoạt extension trên máy tính chạy mẻ và tự động gửi thành phẩm về điện thoại.",
+        "res_eyebrow": "Bulletproof Reliability",
+        "res_title": "Cơ Chế 5 Tầng Phục Hồi & Tự Động Sửa Lỗi",
+        "res_desc": "Đảm bảo mẻ chạy 100 tác vụ không bao giờ bị dừng giữa chừng nhờ 5 lớp fallback thông minh.",
+        "t1_d": "Tái sử dụng trực tiếp ID ảnh từ session trình duyệt đang mở để gửi request tức thì không tốn băng thông.",
+        "t2_d": "Tự động đối chiếu tên file gốc trong pool tài nguyên cục bộ khi đổi sang project mới.",
+        "t3_d": "Tự nạp lại thumbnail chuẩn tỉ lệ nếu nền tảng xoá mất cache tạm thời.",
+        "t4_d": "Bộ nhớ đệm cục bộ 7 ngày lưu trữ mọi prompt, metadata và ảnh tham chiếu.",
+        "t5_d": "Tải an toàn từ cloud backup riêng của bạn nếu toàn bộ dữ liệu máy tính bị mất.",
         "prompt_eyebrow": "Offline Bundled Library",
         "prompt_title": "Kho 410+ Prompt Đóng Gói Sẵn",
         "prompt_desc": "Được phân loại theo 7 danh mục chuyên sâu: Prompt ảnh điện ảnh, video chuyển động, kịch bản ngắn, SEO, thương mại điện tử.",
@@ -3042,9 +3396,11 @@
         "footer_port": "Trở về Portfolio Chính ↗"
       },
       "en": {
+        "nav_guide": "Guide",
         "nav_gallery": "Showcase Gallery",
         "nav_sim": "Live Simulator",
         "nav_nodes": "26 Workflow Nodes",
+        "nav_mcp": "Agent & Bot",
         "nav_compare": "Comparison",
         "nav_prompts": "Prompt Library",
         "nav_faq": "FAQ",
@@ -3099,6 +3455,30 @@
         "th_task": "Workflow Task",
         "th_manual": "Manual Effort",
         "th_flow": "SEOSONA Flow Extension",
+        "guide_eyebrow": "Quick Start Guide",
+        "guide_title": "3-Step Setup & Ready in 30 Seconds",
+        "guide_desc": "Zero server fees, zero complicated configuration — open Chrome and start your Side Panel HUD.",
+        "g_step1_t": "Download & Extract Extension",
+        "g_step1_d": "Click 'Download .zip' above or clone the GitHub repo to your machine. Extract to a permanent folder.",
+        "g_step2_t": "Enable Developer Mode & Load Unpacked",
+        "g_step2_d": "Open chrome://extensions in your browser, toggle 'Developer mode' on the top right, click 'Load unpacked' and select the folder.",
+        "g_step3_t": "Open AI Tab & Launch Side Panel",
+        "g_step3_d": "Visit Google Flow (labs.google/fx), ChatGPT, or Grok. Press Alt+S or click the extension toolbar icon to open Side Panel HUD!",
+        "int_eyebrow": "Ecosystem & Connectivity",
+        "int_title": "MCP Server Integration & Telegram Control",
+        "int_desc": "Extend automation capabilities for developers (Claude Code / Python SDK) and control batch media rendering remotely.",
+        "mcp_box_title": "Directly Call From Claude Code / Cursor",
+        "mcp_box_desc": "Plug SEOSONA Flow MCP Server into your agent config file to let AI write prompts, run workflows, and generate media.",
+        "tg_box_title": "Remote Mobile Control via Telegram Bot",
+        "tg_box_desc": "Message the Telegram Bot to trigger batch generation on your desktop extension and auto-receive finished media on mobile.",
+        "res_eyebrow": "Bulletproof Reliability",
+        "res_title": "5-Tier Self-Healing & Auto-Retry Architecture",
+        "res_desc": "Ensure 100-job batches never fail mid-way with 5 intelligent fallback safety layers.",
+        "t1_d": "Directly re-uses active session image IDs to send immediate generation requests without bandwidth overhead.",
+        "t2_d": "Automatically matches local asset filenames when transitioning between projects.",
+        "t3_d": "Re-uploads scaled aspect ratio thumbnails if cloud temporary cache expires.",
+        "t4_d": "7-day local IndexedDB cache stores all prompts, metadata, and reference assets.",
+        "t5_d": "Securely fetches from your private cloud backup if local computer storage is wiped.",
         "prompt_eyebrow": "Offline Bundled Library",
         "prompt_title": "410+ Production-Ready Prompts",
         "prompt_desc": "Categorized into 7 domains: cinematic visuals, video motion, viral hooks, SEO marketing, and e-commerce ads.",
