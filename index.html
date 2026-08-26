@@ -693,7 +693,7 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       gap: 18px;
-      margin-bottom: 90px;
+      margin-bottom: 50px;
     }
     .stat-card {
       background: var(--bg-glass-card);
@@ -738,6 +738,317 @@
     .stat-sub {
       font-size: 13px;
       color: var(--text-dim);
+    }
+
+    /* ==========================================================================
+       MARQUEE RIBBON OF AI PLATFORMS
+       ========================================================================== */
+    .marquee-wrap {
+      overflow: hidden;
+      white-space: nowrap;
+      padding: 16px 0;
+      border-top: 1px solid var(--border-glass-subtle);
+      border-bottom: 1px solid var(--border-glass-subtle);
+      background: rgba(4, 7, 13, 0.7);
+      backdrop-filter: blur(12px);
+      position: relative;
+      margin-bottom: 80px;
+    }
+    .marquee-track {
+      display: inline-flex;
+      gap: 36px;
+      animation: marqueeSlide 28s linear infinite;
+    }
+    @keyframes marqueeSlide {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .marquee-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+      transition: color var(--dur-fast);
+    }
+    .marquee-item:hover {
+      color: var(--cyan);
+    }
+
+    /* ==========================================================================
+       INTERACTIVE CHARACTER CONSISTENCY NODE CANVAS
+       ========================================================================== */
+    .node-canvas-section {
+      padding: 40px 0 90px;
+    }
+    .dot-grid-canvas {
+      background: #060911;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.12) 1.2px, transparent 1.2px);
+      background-size: 24px 24px;
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-xl);
+      padding: 40px 24px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.8), 0 0 45px rgba(0, 242, 254, 0.15);
+      backdrop-filter: blur(20px);
+    }
+    .node-flow-layout {
+      display: grid;
+      grid-template-columns: 280px 300px 1fr;
+      gap: 32px;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+    }
+    @media (max-width: 1040px) {
+      .node-flow-layout { grid-template-columns: 1fr; gap: 24px; }
+    }
+
+    .v-node-card {
+      background: rgba(13, 18, 30, 0.88);
+      border: 1px solid var(--border-glass-subtle);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(16px);
+      position: relative;
+      transition: all var(--dur-norm) var(--ease-hud);
+      text-align: left;
+    }
+    .v-node-card:hover {
+      border-color: var(--cyan);
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(0, 242, 254, 0.2);
+    }
+    .v-node-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .v-node-img-wrap {
+      width: 100%;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      position: relative;
+      background: #020408;
+    }
+    .v-node-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .v-node-prompt-text {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 10px;
+      border-radius: var(--radius-sm);
+      border-left: 2px solid var(--cyan);
+    }
+    .v-node-port {
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #090d16;
+      border: 2px solid var(--cyan);
+      color: var(--cyan);
+      font-size: 10px;
+      font-weight: 800;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 0 10px var(--cyan);
+      z-index: 5;
+    }
+    .port-right { right: -11px; top: 50%; transform: translateY(-50%); }
+    .port-left { left: -11px; top: 50%; transform: translateY(-50%); }
+
+    /* ==========================================================================
+       3-STEP INTERACTIVE PRODUCTION SHOWCASE
+       ========================================================================== */
+    .steps-flow-section {
+      padding: 50px 0 90px;
+    }
+    .step-pills-nav {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 34px;
+    }
+    .step-pill-btn {
+      padding: 10px 22px;
+      border-radius: var(--radius-full);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-glass-subtle);
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all var(--dur-fast);
+    }
+    .step-pill-btn.active {
+      background: var(--cyan-dim);
+      border-color: var(--cyan);
+      color: var(--cyan);
+      box-shadow: 0 0 20px var(--cyan-dim);
+    }
+
+    .step-window-box {
+      background: #080c14;
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.8), 0 0 45px rgba(0, 242, 254, 0.15);
+      backdrop-filter: blur(24px);
+    }
+    .step-window-topbar {
+      background: #05080e;
+      border-bottom: 1px solid var(--border-glass-subtle);
+      padding: 14px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .step-content-pane {
+      padding: 36px 28px;
+      display: none;
+      text-align: left;
+    }
+    .step-content-pane.active {
+      display: block;
+    }
+
+    /* Step 1 Items */
+    .prompt-queue-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+    .prompt-queue-row {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-glass-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 14px;
+      color: #e2e8f0;
+      transition: all var(--dur-fast);
+    }
+    .prompt-queue-row:hover {
+      border-color: var(--cyan);
+      background: rgba(0, 242, 254, 0.04);
+    }
+    .prompt-num-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--cyan-dim);
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      font-weight: 800;
+      font-size: 12px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+
+    /* Step 2 Buttons */
+    .platform-action-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      padding: 30px 0;
+    }
+    .platform-pills-row {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .platform-choose-btn {
+      padding: 12px 24px;
+      border-radius: var(--radius-full);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-glass-subtle);
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all var(--dur-fast);
+    }
+    .platform-choose-btn.active {
+      background: linear-gradient(135deg, var(--cyan), #00b4d8);
+      color: #04060a;
+      box-shadow: 0 0 25px rgba(0, 242, 254, 0.5);
+    }
+    .btn-big-run {
+      background: linear-gradient(135deg, #a3e635, #84cc16);
+      color: #091202;
+      font-size: 16px;
+      font-weight: 800;
+      padding: 16px 36px;
+      border-radius: var(--radius-full);
+      box-shadow: 0 0 35px rgba(163, 230, 53, 0.55);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: all var(--dur-fast);
+    }
+    .btn-big-run:hover {
+      transform: scale(1.04);
+      box-shadow: 0 0 45px rgba(163, 230, 53, 0.8);
+    }
+
+    /* Step 3 12-Slot Parallel Grid */
+    .parallel-render-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 14px;
+    }
+    @media (max-width: 960px) {
+      .parallel-render-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    .render-slot-card {
+      background: rgba(0,0,0,0.5);
+      border: 1px solid var(--border-glass-subtle);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      aspect-ratio: 9 / 16;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .render-slot-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .render-slot-card.active-slot {
+      border: 2px solid #a3e635;
+      box-shadow: 0 0 20px rgba(163, 230, 53, 0.35);
     }
 
     /* ==========================================================================
@@ -1797,7 +2108,239 @@
       </div>
     </section>
 
-    <!-- 2. SHOWCASE GALLERY SECTION -->
+    <!-- MARQUEE RIBBON -->
+    <div class="marquee-wrap">
+      <div class="marquee-track">
+        <div class="marquee-item"><span>🌊</span> Google Flow</div>
+        <div class="marquee-item"><span>🧠</span> ChatGPT Plus</div>
+        <div class="marquee-item"><span>⚡</span> Grok 2 (xAI)</div>
+        <div class="marquee-item"><span>✨</span> Gemini 2.0 Flash</div>
+        <div class="marquee-item"><span>📹</span> Veo 3.1 4K</div>
+        <div class="marquee-item"><span>🍌</span> Nano Banana Pro</div>
+        <div class="marquee-item"><span>🍌</span> Nano Banana 2</div>
+        <div class="marquee-item"><span>🎥</span> Omni Flash</div>
+        <div class="marquee-item"><span>🎨</span> Flux 1.1 Pro</div>
+        <div class="marquee-item"><span>🎬</span> Sora 2.0 Fast</div>
+        <!-- Duplicated for seamless loop -->
+        <div class="marquee-item"><span>🌊</span> Google Flow</div>
+        <div class="marquee-item"><span>🧠</span> ChatGPT Plus</div>
+        <div class="marquee-item"><span>⚡</span> Grok 2 (xAI)</div>
+        <div class="marquee-item"><span>✨</span> Gemini 2.0 Flash</div>
+        <div class="marquee-item"><span>📹</span> Veo 3.1 4K</div>
+        <div class="marquee-item"><span>🍌</span> Nano Banana Pro</div>
+        <div class="marquee-item"><span>🍌</span> Nano Banana 2</div>
+        <div class="marquee-item"><span>🎥</span> Omni Flash</div>
+        <div class="marquee-item"><span>🎨</span> Flux 1.1 Pro</div>
+        <div class="marquee-item"><span>🎬</span> Sora 2.0 Fast</div>
+      </div>
+    </div>
+
+    <!-- 2. INTERACTIVE CHARACTER CONSISTENCY NODE CANVAS -->
+    <section class="node-canvas-section wrap" id="node-canvas">
+      <div class="section-head">
+        <span class="section-eyebrow" data-i18n="canvas_eyebrow">Visual Consistency Engine</span>
+        <h2 class="section-title" data-i18n="canvas_title">Khóa Nhất Quán Nhân Vật Đa Nền Tảng</h2>
+        <p class="section-desc" data-i18n="canvas_desc">Từ một ảnh gốc, tự động truyền nhận dạng sang ChatGPT, Google Flow và Grok để sinh video 4K và bộ ảnh đồng nhất 100%.</p>
+      </div>
+
+      <div class="dot-grid-canvas">
+        <div class="node-flow-layout">
+          <!-- Col 1: Reference Node -->
+          <div class="v-node-card">
+            <div class="v-node-port port-right">🖼️</div>
+            <div class="v-node-head">
+              <span>🖼️ Reference Image</span>
+              <span style="font-family:var(--font-mono);font-size:11px;color:var(--cyan);">SOURCE</span>
+            </div>
+            <div class="v-node-img-wrap" style="aspect-ratio:3/4;">
+              <img src="gallery/g01-480.webp" onerror="this.src='landing/gallery/g01-480.webp'" alt="Character Reference" loading="lazy" />
+            </div>
+            <div style="margin-top:10px;font-size:12px;color:var(--text-muted);font-family:var(--font-mono);">
+              Locked Entity: Character #1003
+            </div>
+          </div>
+
+          <!-- Col 2: Prompts & ChatGPT Node -->
+          <div style="display:flex;flex-direction:column;gap:18px;">
+            <!-- Prompt Top -->
+            <div class="v-node-card">
+              <div class="v-node-port port-left">T</div>
+              <div class="v-node-port port-right">T</div>
+              <div class="v-node-head">
+                <span>📝 Prompt (Motion)</span>
+                <span style="font-size:11px;color:var(--emerald);">NLP OK</span>
+              </div>
+              <div class="v-node-prompt-text">
+                "Animate reference character into 8s cinematic video. Smooth gimbal dolly in, volumetric lighting, lock outfit across frames."
+              </div>
+            </div>
+
+            <!-- ChatGPT Center -->
+            <div class="v-node-card">
+              <div class="v-node-port port-left">🖼️</div>
+              <div class="v-node-port port-right">🎬</div>
+              <div class="v-node-head">
+                <span>🧠 ChatGPT Plus</span>
+                <span style="font-size:11px;color:#10a37f;">GPT-4o</span>
+              </div>
+              <div class="v-node-img-wrap" style="aspect-ratio:16/9;">
+                <img src="gallery/g12-480.webp" onerror="this.src='landing/gallery/g12-480.webp'" alt="Scene 2" loading="lazy" />
+              </div>
+            </div>
+
+            <!-- Prompt Bottom -->
+            <div class="v-node-card">
+              <div class="v-node-port port-left">T</div>
+              <div class="v-node-port port-right">T</div>
+              <div class="v-node-head">
+                <span>📝 Prompt (Poster)</span>
+                <span style="font-size:11px;color:var(--amber);">POSTER</span>
+              </div>
+              <div class="v-node-prompt-text">
+                "Reimagine reference subject as bold neon billboard poster in rainy Times Square. High-contrast studio rim light."
+              </div>
+            </div>
+          </div>
+
+          <!-- Col 3: Final Video & Poster Render -->
+          <div style="display:flex;flex-direction:column;gap:18px;">
+            <!-- Flow Video -->
+            <div class="v-node-card">
+              <div class="v-node-port port-left">🎬</div>
+              <div class="v-node-head">
+                <span>🌊 Google Flow — Video (Veo 3.1)</span>
+                <span style="color:var(--cyan);font-family:var(--font-mono);font-size:11px;">1080P · 60FPS</span>
+              </div>
+              <div class="v-node-img-wrap" style="aspect-ratio:16/9;position:relative;">
+                <img src="gallery/g03-480.webp" onerror="this.src='landing/gallery/g03-480.webp'" alt="Veo 3.1 Video" loading="lazy" />
+                <div style="position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,0.3);">
+                  <div style="width:44px;height:44px;border-radius:50%;background:rgba(0,242,254,0.85);color:#04060a;display:grid;place-items:center;font-size:16px;box-shadow:0 0 20px var(--cyan);">▶</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Grok Poster -->
+            <div class="v-node-card">
+              <div class="v-node-port port-left">🖼️</div>
+              <div class="v-node-head">
+                <span>⚡ Grok 2 — Times Square Poster</span>
+                <span style="color:var(--amber);font-family:var(--font-mono);font-size:11px;">FLUX 1.1 PRO</span>
+              </div>
+              <div class="v-node-img-wrap" style="aspect-ratio:16/9;">
+                <img src="gallery/g06-480.webp" onerror="this.src='landing/gallery/g06-480.webp'" alt="Grok Image" loading="lazy" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. INTERACTIVE 3-STEP PRODUCTION SHOWCASE -->
+    <section class="steps-flow-section wrap" id="production-steps">
+      <div class="section-head">
+        <span class="section-eyebrow" data-i18n="steps_eyebrow">End-to-End Automation</span>
+        <h2 class="section-title" data-i18n="steps_title">Quy Trình 3 Bước Sản Xuất Hàng Loạt</h2>
+        <p class="section-desc" data-i18n="steps_desc">Tối ưu hoá năng suất gấp 20 lần: Dán prompt danh sách -> Chọn AI Platform -> Bấm 1 nút để hệ thống tự động sinh và tải về.</p>
+      </div>
+
+      <div class="step-pills-nav" id="stepPillsNav">
+        <button class="step-pill-btn active" data-step="1">
+          <span>📋</span> <span data-i18n="step_1_btn">Bước 1: Dán prompt hàng loạt</span>
+        </button>
+        <button class="step-pill-btn" data-step="2">
+          <span>📚</span> <span data-i18n="step_2_btn">Bước 2: Chọn AI Platform & Bấm chạy</span>
+        </button>
+        <button class="step-pill-btn" data-step="3">
+          <span>✨</span> <span data-i18n="step_3_btn">Bước 3: Gen tự động song song</span>
+        </button>
+      </div>
+
+      <div class="step-window-box">
+        <div class="step-window-topbar">
+          <div class="sim-dots">
+            <span class="sim-dot red"></span>
+            <span class="sim-dot yellow"></span>
+            <span class="sim-dot green"></span>
+          </div>
+          <div style="font-family:var(--font-mono);font-size:12px;color:var(--text-muted);" id="stepWindowHeader">
+            Hàng đợi prompt (5 prompts)
+          </div>
+          <div style="font-family:var(--font-mono);font-size:11px;color:var(--emerald);">● EXTENSION V3</div>
+        </div>
+
+        <!-- Step 1 Pane -->
+        <div class="step-content-pane active" id="stepPane1">
+          <div class="prompt-queue-list">
+            <div class="prompt-queue-row">
+              <span class="prompt-num-badge">1</span>
+              <span>phố đêm điện ảnh, đèn neon, 9:16</span>
+            </div>
+            <div class="prompt-queue-row">
+              <span class="prompt-num-badge">2</span>
+              <span>chân dung phi hành gia, ánh sáng studio</span>
+            </div>
+            <div class="prompt-queue-row">
+              <span class="prompt-num-badge">3</span>
+              <span>ảnh sản phẩm, tối giản, bóng đổ mềm</span>
+            </div>
+            <div class="prompt-queue-row">
+              <span class="prompt-num-badge">4</span>
+              <span>nhân vật anime, dáng động, rực rỡ</span>
+            </div>
+            <div class="prompt-queue-row">
+              <span class="prompt-num-badge">5</span>
+              <span>chân dung, ánh sáng vàng</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2 Pane -->
+        <div class="step-content-pane" id="stepPane2">
+          <div class="platform-action-box">
+            <div class="platform-pills-row">
+              <button class="platform-choose-btn active"><span>✦</span> Google Flow</button>
+              <button class="platform-choose-btn"><span>🧠</span> ChatGPT</button>
+              <button class="platform-choose-btn"><span>⚡</span> Grok</button>
+            </div>
+            <button class="btn-big-run" onclick="playCyberSound('click'); document.querySelector('[data-step=\'3\']').click();">
+              <span>▶</span> <span data-i18n="btn_run_batch">Chạy batch</span>
+            </button>
+            <div style="font-family:var(--font-mono);font-size:13px;color:var(--text-muted);display:flex;align-items:center;gap:8px;">
+              <span style="color:#a3e635;">○</span> <span data-i18n="step_sending_status">Đang gửi 12 prompt sang Google Flow...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3 Pane -->
+        <div class="step-content-pane" id="stepPane3">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;font-family:var(--font-mono);font-size:13px;">
+            <span>Google Flow · 9:16</span>
+            <span style="color:var(--cyan);">9 / 12 Hoàn thành</span>
+          </div>
+          <div class="parallel-render-grid">
+            <div class="render-slot-card"><img src="gallery/g01-480.webp" onerror="this.src='landing/gallery/g01-480.webp'" alt="slot 1" loading="lazy" width="200" height="350" /></div>
+            <div class="render-slot-card"><img src="gallery/g02-480.webp" onerror="this.src='landing/gallery/g02-480.webp'" alt="slot 2" loading="lazy" width="200" height="350" /></div>
+            <div class="render-slot-card"><img src="gallery/g03-480.webp" onerror="this.src='landing/gallery/g03-480.webp'" alt="slot 3" loading="lazy" width="200" height="350" /></div>
+            <div class="render-slot-card"><img src="gallery/g04-480.webp" onerror="this.src='landing/gallery/g04-480.webp'" alt="slot 4" loading="lazy" width="200" height="350" /></div>
+            <div class="render-slot-card"><img src="gallery/g05-480.webp" onerror="this.src='landing/gallery/g05-480.webp'" alt="slot 5" loading="lazy" width="200" height="350" /></div>
+            <div class="render-slot-card"><img src="gallery/g06-480.webp" onerror="this.src='landing/gallery/g06-480.webp'" alt="slot 6" loading="lazy" width="200" height="350" /></div>
+            <div class="render-slot-card"><img src="gallery/g07-480.webp" onerror="this.src='landing/gallery/g07-480.webp'" alt="slot 7" loading="lazy" width="200" height="350" /></div>
+            <div class="render-slot-card"><img src="gallery/g08-480.webp" onerror="this.src='landing/gallery/g08-480.webp'" alt="slot 8" loading="lazy" width="200" height="350" /></div>
+            <div class="render-slot-card"><img src="gallery/g09-480.webp" onerror="this.src='landing/gallery/g09-480.webp'" alt="slot 9" loading="lazy" width="200" height="350" /></div>
+            <div class="render-slot-card active-slot">
+              <div style="font-family:var(--font-mono);font-size:11px;color:#a3e635;text-align:center;">
+                <div style="font-size:18px;margin-bottom:4px;">○</div>
+                <span>Đang gen</span>
+              </div>
+            </div>
+            <div class="render-slot-card" style="opacity:0.3;"></div>
+            <div class="render-slot-card" style="opacity:0.2;"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. SHOWCASE GALLERY SECTION -->
     <section class="gallery-section wrap" id="gallery">
       <div class="section-head">
         <span class="section-eyebrow" data-i18n="gal_eyebrow">Production Showcase</span>
@@ -2447,6 +2990,17 @@
         "stat_3_s": "Tối ưu sẵn cho từng dòng model",
         "stat_4_l": "Chi phí phát sinh",
         "stat_4_s": "Dùng trực tiếp quota tài khoản bạn",
+        "canvas_eyebrow": "Visual Consistency Engine",
+        "canvas_title": "Khóa Nhất Quán Nhân Vật Đa Nền Tảng",
+        "canvas_desc": "Từ một ảnh gốc, tự động truyền nhận dạng sang ChatGPT, Google Flow và Grok để sinh video 4K và bộ ảnh đồng nhất 100%.",
+        "steps_eyebrow": "End-to-End Automation",
+        "steps_title": "Quy Trình 3 Bước Sản Xuất Hàng Loạt",
+        "steps_desc": "Tối ưu hoá năng suất gấp 20 lần: Dán prompt danh sách -> Chọn AI Platform -> Bấm 1 nút để hệ thống tự động sinh và tải về.",
+        "step_1_btn": "Bước 1: Dán prompt hàng loạt",
+        "step_2_btn": "Bước 2: Chọn AI Platform & Bấm chạy",
+        "step_3_btn": "Bước 3: Gen tự động song song",
+        "btn_run_batch": "Chạy batch",
+        "step_sending_status": "Đang gửi 12 prompt sang Google Flow...",
         "gal_eyebrow": "Production Showcase",
         "gal_title": "Mẫu Thật Do Chính Extension Tạo Ra",
         "gal_desc": "12 bộ mẫu điển hình được sinh tự động qua SEOSONA Flow: từ concept nhân vật, lookbook thời trang, kiến trúc tới hình ảnh thương mại.",
@@ -2508,6 +3062,17 @@
         "stat_3_s": "Optimized across top AI models",
         "stat_4_l": "Additional Server Fees",
         "stat_4_s": "Directly uses your active account quota",
+        "canvas_eyebrow": "Visual Consistency Engine",
+        "canvas_title": "Cross-Platform Character Consistency",
+        "canvas_desc": "Anchor character identity from a reference image, then seamlessly generate 4K videos and matching posters across Google Flow, ChatGPT, and Grok.",
+        "steps_eyebrow": "End-to-End Automation",
+        "steps_title": "3-Step Automated Batch Production",
+        "steps_desc": "Boost production throughput 20x: Paste prompt list -> Select AI platform -> Run batch with 1-click auto-download.",
+        "step_1_btn": "Step 1: Paste Batch Prompts",
+        "step_2_btn": "Step 2: Choose Platform & Run",
+        "step_3_btn": "Step 3: Parallel Batch Render",
+        "btn_run_batch": "Run Batch",
+        "step_sending_status": "Sending 12 prompts to Google Flow...",
         "gal_eyebrow": "Production Showcase",
         "gal_title": "Real Media Generated by Extension",
         "gal_desc": "12 flagship templates generated via SEOSONA Flow: character concepts, fashion lookbooks, architecture & commercial ads.",
@@ -2863,6 +3428,26 @@
         document.querySelectorAll('.node-tab-btn').forEach(b => b.classList.remove('active'));
         this.classList.add('active');
         renderNodes(this.dataset.group);
+      });
+    });
+
+    // 10b. 3-Step Production Showcase Switcher
+    document.querySelectorAll('.step-pill-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        playCyberSound('click');
+        document.querySelectorAll('.step-pill-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        const step = this.dataset.step;
+        document.querySelectorAll('.step-content-pane').forEach(p => p.classList.remove('active'));
+        const target = document.getElementById('stepPane' + step);
+        if (target) target.classList.add('active');
+        const headers = {
+          '1': currentLang === 'vi' ? 'Hàng đợi prompt (5 prompts)' : 'Prompt Queue (5 prompts)',
+          '2': currentLang === 'vi' ? 'Chọn AI Platform & Bấm chạy' : 'Select AI Platform & Run',
+          '3': currentLang === 'vi' ? 'Google Flow · 9:16 (9/12 Hoàn thành)' : 'Google Flow · 9:16 (9/12 Completed)'
+        };
+        const headerEl = document.getElementById('stepWindowHeader');
+        if (headerEl) headerEl.textContent = headers[step] || 'Extension HUD';
       });
     });
 
