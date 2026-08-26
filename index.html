@@ -778,100 +778,182 @@
     }
 
     /* ==========================================================================
-       INTERACTIVE CHARACTER CONSISTENCY NODE CANVAS
+       INTERACTIVE CHARACTER CONSISTENCY NODE CANVAS (N8N / HIGGSFIELD / MAGNIFIC STYLE)
        ========================================================================== */
     .node-canvas-section {
-      padding: 40px 0 90px;
+      padding: 40px 0 100px;
     }
     .dot-grid-canvas {
-      background: #060911;
-      background-image: radial-gradient(rgba(255, 255, 255, 0.12) 1.2px, transparent 1.2px);
-      background-size: 24px 24px;
-      border: 1px solid var(--border-glass);
-      border-radius: var(--radius-xl);
-      padding: 40px 24px;
+      background-color: #05070c;
+      background-image: 
+        radial-gradient(rgba(255, 255, 255, 0.12) 1.2px, transparent 1.2px),
+        radial-gradient(circle at 50% 30%, rgba(0, 242, 254, 0.04) 0%, transparent 60%);
+      background-size: 24px 24px, 100% 100%;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 24px;
+      padding: 40px 30px;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.8), 0 0 45px rgba(0, 242, 254, 0.15);
-      backdrop-filter: blur(20px);
+      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.85), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
     }
-    .node-flow-layout {
+    .canvas-svg-overlay {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .cable-path {
+      fill: none;
+      stroke: rgba(168, 85, 247, 0.45);
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.6));
+    }
+    .cable-path-pulse {
+      fill: none;
+      stroke: #00f2fe;
+      stroke-width: 2.4;
+      stroke-dasharray: 8 20;
+      stroke-linecap: round;
+      filter: drop-shadow(0 0 8px #00f2fe);
+      animation: cablePhoton 2.4s linear infinite;
+    }
+    @keyframes cablePhoton {
+      0% { stroke-dashoffset: 56; }
+      100% { stroke-dashoffset: 0; }
+    }
+
+    .node-graph-grid {
       display: grid;
-      grid-template-columns: 280px 300px 1fr;
-      gap: 32px;
-      align-items: center;
+      grid-template-columns: 240px 300px 1fr;
+      gap: 36px;
+      align-items: start;
       position: relative;
       z-index: 2;
     }
-    @media (max-width: 1040px) {
-      .node-flow-layout { grid-template-columns: 1fr; gap: 24px; }
+    @media (max-width: 1080px) {
+      .node-graph-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+      .canvas-svg-overlay { display: none; }
     }
 
-    .v-node-card {
-      background: rgba(13, 18, 30, 0.88);
-      border: 1px solid var(--border-glass-subtle);
-      border-radius: var(--radius-lg);
-      padding: 16px;
-      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(16px);
+    .n-node-card {
+      background: rgba(14, 19, 31, 0.94);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 14px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
       position: relative;
-      transition: all var(--dur-norm) var(--ease-hud);
       text-align: left;
+      transition: all var(--dur-norm) var(--ease-hud);
     }
-    .v-node-card:hover {
-      border-color: var(--cyan);
-      transform: translateY(-4px);
-      box-shadow: 0 16px 40px rgba(0, 242, 254, 0.2);
+    .n-node-card:hover {
+      border-color: rgba(0, 242, 254, 0.6);
+      transform: translateY(-3px);
+      box-shadow: 0 20px 50px rgba(0, 242, 254, 0.15);
     }
-    .v-node-head {
+    .n-node-head {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       font-size: 13px;
       font-weight: 700;
-      color: var(--text);
+      color: #f1f5f9;
     }
-    .v-node-img-wrap {
+    .n-node-tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+    }
+    .n-node-img-box {
       width: 100%;
-      border-radius: var(--radius-md);
+      border-radius: 10px;
       overflow: hidden;
       position: relative;
-      background: #020408;
+      background: #020306;
     }
-    .v-node-img-wrap img {
+    .n-node-img-box img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
     }
-    .v-node-prompt-text {
-      font-family: var(--font-mono);
+    .n-node-zoom-btn {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      display: grid;
+      place-items: center;
       font-size: 12px;
-      color: var(--text-muted);
+      cursor: pointer;
+    }
+    .n-node-prompt-body {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      color: #cbd5e1;
       line-height: 1.5;
-      background: rgba(0, 0, 0, 0.4);
-      padding: 10px;
-      border-radius: var(--radius-sm);
+      background: rgba(0, 0, 0, 0.35);
+      padding: 10px 12px;
+      border-radius: 8px;
       border-left: 2px solid var(--cyan);
     }
-    .v-node-port {
+    .n-node-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-dim);
+    }
+    .n-node-port {
       position: absolute;
-      width: 22px;
-      height: 22px;
+      width: 24px;
+      height: 24px;
       border-radius: 50%;
-      background: #090d16;
-      border: 2px solid var(--cyan);
-      color: var(--cyan);
+      background: #090e1a;
+      border: 2px solid #00f2fe;
+      color: #00f2fe;
       font-size: 10px;
       font-weight: 800;
       display: grid;
       place-items: center;
-      box-shadow: 0 0 10px var(--cyan);
-      z-index: 5;
+      box-shadow: 0 0 10px rgba(0, 242, 254, 0.6);
+      z-index: 6;
+      cursor: pointer;
+      transition: all var(--dur-fast);
     }
-    .port-right { right: -11px; top: 50%; transform: translateY(-50%); }
-    .port-left { left: -11px; top: 50%; transform: translateY(-50%); }
+    .n-node-port:hover {
+      transform: translateY(-50%) scale(1.15);
+      box-shadow: 0 0 16px #00f2fe;
+    }
+    .n-port-r { right: -12px; top: 50%; transform: translateY(-50%); }
+    .n-port-l { left: -12px; top: 50%; transform: translateY(-50%); }
+    .n-port-purple {
+      border-color: #a855f7;
+      color: #c084fc;
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.6);
+    }
+    .n-port-purple:hover {
+      box-shadow: 0 0 16px #a855f7;
+    }
 
     /* ==========================================================================
        3-STEP INTERACTIVE PRODUCTION SHOWCASE
@@ -2311,60 +2393,123 @@
       </div>
 
       <div class="dot-grid-canvas">
-        <div class="node-flow-layout">
+        <!-- Glowing SVG Bézier Spline Overlay with animated photons -->
+        <svg class="canvas-svg-overlay" viewBox="0 0 1140 680" fill="none" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#a855f7" stop-opacity="0.8" />
+              <stop offset="100%" stop-color="#00f2fe" stop-opacity="0.9" />
+            </linearGradient>
+            <filter id="glowFilt" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+          </defs>
+
+          <!-- Cable 1: Ref Image (Right Port) -> Prompt Top (Left Port) -->
+          <path class="cable-path" d="M 240 180 C 275 180, 270 70, 310 70" />
+          <path class="cable-path-pulse" d="M 240 180 C 275 180, 270 70, 310 70" />
+
+          <!-- Cable 2: Ref Image (Right Port) -> ChatGPT Center (Left Port) -->
+          <path class="cable-path" d="M 240 180 C 275 180, 270 240, 310 240" />
+          <path class="cable-path-pulse" d="M 240 180 C 275 180, 270 240, 310 240" />
+
+          <!-- Cable 3: Ref Image (Right Port) -> Prompt Bottom (Left Port) -->
+          <path class="cable-path" d="M 240 180 C 275 180, 270 510, 310 510" />
+          <path class="cable-path-pulse" d="M 240 180 C 275 180, 270 510, 310 510" />
+
+          <!-- Cable 4: Prompt Top (Right Port) -> Flow Video (Left Port) -->
+          <path class="cable-path" d="M 610 70 C 650 70, 640 100, 680 100" />
+          <path class="cable-path-pulse" d="M 610 70 C 650 70, 640 100, 680 100" />
+
+          <!-- Cable 5: ChatGPT (Right Port 1) -> Flow Video (Left Port) -->
+          <path class="cable-path" d="M 610 230 C 650 230, 640 150, 680 150" />
+          <path class="cable-path-pulse" d="M 610 230 C 650 230, 640 150, 680 150" />
+
+          <!-- Cable 6: ChatGPT (Right Port 2) -> Grok Poster (Left Port) -->
+          <path class="cable-path" d="M 610 260 C 650 260, 640 430, 680 430" />
+          <path class="cable-path-pulse" d="M 610 260 C 650 260, 640 430, 680 430" />
+
+          <!-- Cable 7: Prompt Bottom (Right Port) -> Grok Poster (Left Port) -->
+          <path class="cable-path" d="M 610 510 C 650 510, 640 490, 680 490" />
+          <path class="cable-path-pulse" d="M 610 510 C 650 510, 640 490, 680 490" />
+        </svg>
+
+        <div class="node-graph-grid">
           <!-- Col 1: Reference Node -->
-          <div class="v-node-card">
-            <div class="v-node-port port-right">🖼️</div>
-            <div class="v-node-head">
-              <span>🖼️ Reference Image</span>
-              <span style="font-family:var(--font-mono);font-size:11px;color:var(--cyan);">SOURCE</span>
+          <div class="n-node-card">
+            <div class="n-node-port n-port-r n-port-purple" title="Output: Identity Embeddings">🖼️</div>
+            <div class="n-node-head">
+              <span style="display:flex;align-items:center;gap:6px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                Reference Image
+              </span>
+              <span class="n-node-tag" style="color:#c084fc;border-color:rgba(168,85,247,0.3);">SOURCE</span>
             </div>
-            <div class="v-node-img-wrap" style="aspect-ratio:3/4;">
-              <img src="gallery/g01-480.webp" onerror="this.src='landing/gallery/g01-480.webp'" alt="Character Reference" loading="lazy" />
+            <div class="n-node-img-box" style="aspect-ratio: 3/4;">
+              <img src="assets/char_ref.webp" onerror="this.src='landing/assets/char_ref.webp'" alt="Character Reference" loading="lazy" width="240" height="320" />
+              <div class="n-node-zoom-btn">🔍</div>
             </div>
-            <div style="margin-top:10px;font-size:12px;color:var(--text-muted);font-family:var(--font-mono);">
-              Locked Entity: Character #1003
+            <div class="n-node-footer">
+              <span style="color:#a3e635;">● Active Lock</span>
+              <span>Entity #OID-Boy</span>
             </div>
           </div>
 
           <!-- Col 2: Prompts & ChatGPT Node -->
           <div style="display:flex;flex-direction:column;gap:18px;">
             <!-- Prompt Top -->
-            <div class="v-node-card">
-              <div class="v-node-port port-left">T</div>
-              <div class="v-node-port port-right">T</div>
-              <div class="v-node-head">
+            <div class="n-node-card">
+              <div class="n-node-port n-port-l" style="top:50%;">T</div>
+              <div class="n-node-port n-port-r" style="top:50%;">T</div>
+              <div class="n-node-head">
                 <span>📝 Prompt (Motion)</span>
-                <span style="font-size:11px;color:var(--emerald);">NLP OK</span>
+                <span class="n-node-tag">484/40,000</span>
               </div>
-              <div class="v-node-prompt-text">
-                "Animate reference character into 8s cinematic video. Smooth gimbal dolly in, volumetric lighting, lock outfit across frames."
+              <div class="n-node-prompt-body">
+                Animate the reference character into an 8-second cinematic video. Slow dolly-in toward the subject with smooth gimbal motion. Hair and fabric react gently to a soft breeze. Warm golden-hour lighting with volumetric light rays.
+              </div>
+              <div class="n-node-footer">
+                <span style="color:var(--cyan);">Plain</span>
+                <span>Veo 3.1 Syntax</span>
               </div>
             </div>
 
             <!-- ChatGPT Center -->
-            <div class="v-node-card">
-              <div class="v-node-port port-left">🖼️</div>
-              <div class="v-node-port port-right">🎬</div>
-              <div class="v-node-head">
-                <span>🧠 ChatGPT Plus</span>
-                <span style="font-size:11px;color:#10a37f;">GPT-4o</span>
+            <div class="n-node-card">
+              <div class="n-node-port n-port-l n-port-purple" style="top:50%;">🖼️</div>
+              <div class="n-node-port n-port-r" style="top:35%;">🎬</div>
+              <div class="n-node-port n-port-r n-port-purple" style="top:65%;">🖼️</div>
+              <div class="n-node-head">
+                <span style="display:flex;align-items:center;gap:6px;">
+                  <span style="color:#10a37f;">🧠</span> ChatGPT
+                </span>
+                <span class="n-node-tag" style="color:#10a37f;border-color:rgba(16,163,127,0.3);">GPT-4o</span>
               </div>
-              <div class="v-node-img-wrap" style="aspect-ratio:16/9;">
-                <img src="gallery/g12-480.webp" onerror="this.src='landing/gallery/g12-480.webp'" alt="Scene 2" loading="lazy" />
+              <div class="n-node-img-box" style="aspect-ratio: 16/9;">
+                <img src="assets/char_nyc.webp" onerror="this.src='landing/assets/char_nyc.webp'" alt="ChatGPT Scene" loading="lazy" width="300" height="170" />
+                <div class="n-node-zoom-btn">🔍</div>
+              </div>
+              <div class="n-node-footer">
+                <span style="color:#10a37f;">● Direct Identity Pass</span>
+                <span>NYC Day Scene</span>
               </div>
             </div>
 
             <!-- Prompt Bottom -->
-            <div class="v-node-card">
-              <div class="v-node-port port-left">T</div>
-              <div class="v-node-port port-right">T</div>
-              <div class="v-node-head">
+            <div class="n-node-card">
+              <div class="n-node-port n-port-l" style="top:50%;">T</div>
+              <div class="n-node-port n-port-r" style="top:50%;">T</div>
+              <div class="n-node-head">
                 <span>📝 Prompt (Poster)</span>
-                <span style="font-size:11px;color:var(--amber);">POSTER</span>
+                <span class="n-node-tag">490/40,000</span>
               </div>
-              <div class="v-node-prompt-text">
-                "Reimagine reference subject as bold neon billboard poster in rainy Times Square. High-contrast studio rim light."
+              <div class="n-node-prompt-body">
+                Reimagine the reference subject as a bold poster shot. High-contrast studio lighting with dramatic shadows. Vibrant accent colors and crisp clean edges. Confident pose with a direct gaze to camera. Sharp focus and fine detail on textures.
+              </div>
+              <div class="n-node-footer">
+                <span style="color:var(--amber);">Plain</span>
+                <span>Flux 1.1 Pro</span>
               </div>
             </div>
           </div>
@@ -2372,29 +2517,44 @@
           <!-- Col 3: Final Video & Poster Render -->
           <div style="display:flex;flex-direction:column;gap:18px;">
             <!-- Flow Video -->
-            <div class="v-node-card">
-              <div class="v-node-port port-left">🎬</div>
-              <div class="v-node-head">
-                <span>🌊 Google Flow — Video (Veo 3.1)</span>
-                <span style="color:var(--cyan);font-family:var(--font-mono);font-size:11px;">1080P · 60FPS</span>
+            <div class="n-node-card">
+              <div class="n-node-port n-port-l" style="top:30%;">🎬</div>
+              <div class="n-node-port n-port-l" style="top:70%;">T</div>
+              <div class="n-node-head">
+                <span style="display:flex;align-items:center;gap:6px;">
+                  <span style="color:var(--cyan);">📹</span> Flow — Video
+                </span>
+                <span class="n-node-tag" style="color:var(--cyan);border-color:rgba(0,242,254,0.3);">Google Flow · Veo 3.1</span>
               </div>
-              <div class="v-node-img-wrap" style="aspect-ratio:16/9;position:relative;">
-                <img src="gallery/g03-480.webp" onerror="this.src='landing/gallery/g03-480.webp'" alt="Veo 3.1 Video" loading="lazy" />
-                <div style="position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,0.3);">
-                  <div style="width:44px;height:44px;border-radius:50%;background:rgba(0,242,254,0.85);color:#04060a;display:grid;place-items:center;font-size:16px;box-shadow:0 0 20px var(--cyan);">▶</div>
+              <div class="n-node-img-box" style="aspect-ratio: 16/9;position:relative;">
+                <img src="assets/char_nyc.webp" onerror="this.src='landing/assets/char_nyc.webp'" alt="Veo 3.1 Video Render" loading="lazy" width="560" height="315" />
+                <div style="position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,0.25);">
+                  <div style="width:48px;height:48px;border-radius:50%;background:rgba(0,242,254,0.9);color:#030712;display:grid;place-items:center;font-size:18px;box-shadow:0 0 25px var(--cyan);cursor:pointer;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">▶</div>
                 </div>
+              </div>
+              <div class="n-node-footer">
+                <span style="color:var(--cyan);">● 1080P · 60FPS · 8s</span>
+                <span>Output Ready</span>
               </div>
             </div>
 
             <!-- Grok Poster -->
-            <div class="v-node-card">
-              <div class="v-node-port port-left">🖼️</div>
-              <div class="v-node-head">
-                <span>⚡ Grok 2 — Times Square Poster</span>
-                <span style="color:var(--amber);font-family:var(--font-mono);font-size:11px;">FLUX 1.1 PRO</span>
+            <div class="n-node-card">
+              <div class="n-node-port n-port-l n-port-purple" style="top:35%;">🖼️</div>
+              <div class="n-node-port n-port-l" style="top:65%;">T</div>
+              <div class="n-node-head">
+                <span style="display:flex;align-items:center;gap:6px;">
+                  <span style="color:var(--amber);">⚡</span> Grok — Image
+                </span>
+                <span class="n-node-tag" style="color:var(--amber);border-color:rgba(251,191,36,0.3);">xAI · Flux 1.1 Pro</span>
               </div>
-              <div class="v-node-img-wrap" style="aspect-ratio:16/9;">
-                <img src="gallery/g06-480.webp" onerror="this.src='landing/gallery/g06-480.webp'" alt="Grok Image" loading="lazy" />
+              <div class="n-node-img-box" style="aspect-ratio: 16/9;">
+                <img src="assets/char_ts.webp" onerror="this.src='landing/assets/char_ts.webp'" alt="Grok Times Square Render" loading="lazy" width="560" height="315" />
+                <div class="n-node-zoom-btn">🔍</div>
+              </div>
+              <div class="n-node-footer">
+                <span style="color:var(--amber);">● Times Square Neon 4K</span>
+                <span>Poster Complete</span>
               </div>
             </div>
           </div>
