@@ -5,7 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SEOSONA Flow — Chrome Extension Tự Động Hóa AI Đa Nền Tảng</title>
   <meta name="description" content="Tự động hoá tạo ảnh và video AI hàng loạt ngay trong Chrome — Google Flow, ChatGPT, Gemini, Grok. Không backend, không tốn API key, 100% offline." />
-  <meta name="theme-color" content="#07090e" />
+  <meta name="theme-color" content="#06080e" />
+
+  <!-- Canonical & SEO -->
+  <link rel="canonical" href="https://seosona-flow.vercel.app" />
+  <link rel="alternate" hreflang="vi" href="https://seosona-flow.vercel.app/" />
+  <link rel="alternate" hreflang="en" href="https://seosona-flow.vercel.app/?lang=en" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
@@ -14,23 +19,21 @@
   <meta property="og:url" content="https://seosona-flow.vercel.app" />
   <meta property="og:image" content="https://seosona-flow.vercel.app/cover.jpg" />
 
-  <link rel="canonical" href="https://seosona-flow.vercel.app" />
-
-  <!-- Fonts: Syne (Futuristic Display) + JetBrains Mono (Tech/HUD) + Inter (Clean Text) -->
+  <!-- Fonts: Outfit (Chuẩn tiếng Việt 100%, cực kỳ hiện đại & sắc nét) + Plus Jakarta Sans + Space Grotesk + JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 
   <style>
     /* ==========================================================================
        1. DESIGN TOKENS & CYBER-GLASS SYSTEM
        ========================================================================== */
     :root {
-      --bg: #07090e;
-      --bg-alt: #0d111a;
-      --bg-glass: rgba(13, 17, 26, 0.72);
-      --bg-glass-card: rgba(18, 24, 38, 0.65);
-      --border-glass: rgba(0, 242, 254, 0.18);
+      --bg: #06080e;
+      --bg-alt: #0a0e17;
+      --bg-glass: rgba(10, 14, 23, 0.78);
+      --bg-glass-card: rgba(15, 21, 35, 0.65);
+      --border-glass: rgba(0, 242, 254, 0.22);
       --border-glass-subtle: rgba(255, 255, 255, 0.08);
 
       --cyan: #00f2fe;
@@ -45,9 +48,11 @@
       --text-muted: #94a3b8;
       --text-dim: #788a9e;
 
-      --font-display: 'Syne', sans-serif;
+      /* Phông chữ chuẩn tiếng Việt 100% không lỗi dấu */
+      --font-display: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-heading: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
-      --font-sans: 'Plus Jakarta Sans', sans-serif;
 
       --radius-sm: 8px;
       --radius-md: 14px;
@@ -83,10 +88,11 @@
     body {
       min-height: 100vh;
       overflow-x: hidden;
-      background: radial-gradient(circle at 50% 0%, rgba(121, 40, 202, 0.15) 0%, transparent 60%),
-                  radial-gradient(circle at 10% 40%, rgba(0, 242, 254, 0.08) 0%, transparent 50%),
+      background: radial-gradient(circle at 50% -10%, rgba(121, 40, 202, 0.22) 0%, transparent 65%),
+                  radial-gradient(circle at 10% 35%, rgba(0, 242, 254, 0.12) 0%, transparent 55%),
+                  radial-gradient(circle at 90% 70%, rgba(168, 85, 247, 0.1) 0%, transparent 50%),
                   var(--bg);
-      line-height: 1.6;
+      line-height: 1.65;
       -webkit-font-smoothing: antialiased;
     }
 
@@ -99,11 +105,11 @@
       height: 100vh;
       pointer-events: none;
       z-index: 0;
-      opacity: 0.45;
+      opacity: 0.55;
     }
 
     .wrap {
-      width: min(1200px, 100% - 3rem);
+      width: min(1240px, 100% - 3rem);
       margin-inline: auto;
       position: relative;
       z-index: 1;
@@ -113,12 +119,12 @@
     button { cursor: pointer; font-family: inherit; border: none; background: none; }
 
     /* ==========================================================================
-       2. CINEMATIC LOADER
+       2. CINEMATIC HUD LOADER
        ========================================================================== */
     #hudLoader {
       position: fixed;
       inset: 0;
-      background: #05070a;
+      background: #04060a;
       z-index: 9999;
       display: flex;
       flex-direction: column;
@@ -132,24 +138,24 @@
       pointer-events: none;
     }
     .loader-box {
-      width: 320px;
-      padding: 24px;
+      width: 340px;
+      padding: 28px;
       border-radius: var(--radius-lg);
       background: var(--bg-glass-card);
       border: 1px solid var(--border-glass);
-      backdrop-filter: blur(20px);
-      box-shadow: 0 0 50px rgba(0, 242, 254, 0.2);
+      backdrop-filter: blur(24px);
+      box-shadow: 0 0 60px rgba(0, 242, 254, 0.25);
       text-align: center;
     }
     .loader-brand {
       font-family: var(--font-display);
-      font-size: 22px;
-      font-weight: 800;
+      font-size: 24px;
+      font-weight: 900;
       letter-spacing: -0.02em;
-      background: linear-gradient(135deg, var(--cyan), #fff);
+      background: linear-gradient(135deg, var(--cyan), #ffffff);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
     .loader-tag {
       font-family: var(--font-mono);
@@ -157,7 +163,7 @@
       color: var(--cyan);
       text-transform: uppercase;
       letter-spacing: 0.15em;
-      margin-bottom: 20px;
+      margin-bottom: 22px;
       display: block;
     }
     .loader-bar-wrap {
@@ -172,7 +178,7 @@
       height: 100%;
       width: 0%;
       background: linear-gradient(90deg, var(--violet), var(--cyan));
-      box-shadow: 0 0 12px var(--cyan);
+      box-shadow: 0 0 14px var(--cyan);
       transition: width 0.05s ease-out;
     }
     .loader-status {
@@ -185,7 +191,7 @@
     }
 
     /* ==========================================================================
-       3. NAVIGATION BAR & PROGRESS
+       3. TOP PROGRESS & NAVBAR WITH LANGUAGE SWITCHER
        ========================================================================== */
     .top-progress {
       position: fixed;
@@ -204,8 +210,8 @@
       top: 0;
       z-index: 500;
       background: var(--bg-glass);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
       border-bottom: 1px solid var(--border-glass-subtle);
       transition: all var(--dur-norm) var(--ease-hud);
     }
@@ -213,7 +219,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 72px;
+      height: 74px;
     }
     .brand-group {
       display: flex;
@@ -221,18 +227,18 @@
       gap: 12px;
     }
     .brand-logo-icon {
-      width: 38px;
-      height: 38px;
+      width: 40px;
+      height: 40px;
       border-radius: var(--radius-md);
-      background: linear-gradient(135deg, rgba(0, 242, 254, 0.2), rgba(121, 40, 202, 0.4));
+      background: linear-gradient(135deg, rgba(0, 242, 254, 0.25), rgba(121, 40, 202, 0.45));
       border: 1px solid var(--border-glass);
       display: grid;
       place-items: center;
-      box-shadow: 0 0 20px rgba(0, 242, 254, 0.2);
+      box-shadow: 0 0 20px rgba(0, 242, 254, 0.25);
     }
     .brand-title {
       font-family: var(--font-display);
-      font-size: 19px;
+      font-size: 20px;
       font-weight: 800;
       letter-spacing: -0.02em;
     }
@@ -241,7 +247,7 @@
       font-size: 11px;
       color: var(--cyan);
       background: var(--cyan-dim);
-      padding: 2px 8px;
+      padding: 3px 9px;
       border-radius: var(--radius-full);
       border: 1px solid rgba(0,242,254,0.3);
     }
@@ -249,11 +255,11 @@
     .nav-links {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
     .nav-link {
       font-size: 14px;
-      font-weight: 500;
+      font-weight: 600;
       color: var(--text-muted);
       padding: 8px 14px;
       border-radius: var(--radius-sm);
@@ -261,13 +267,43 @@
     }
     .nav-link:hover {
       color: var(--text);
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.06);
     }
+    @media (max-width: 980px) {
+      .nav-links { display: none; }
+    }
+
     .nav-actions {
       display: flex;
       align-items: center;
       gap: 12px;
     }
+
+    /* Language Switcher */
+    .lang-switcher {
+      display: flex;
+      align-items: center;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border-glass-subtle);
+      border-radius: var(--radius-full);
+      padding: 3px;
+      gap: 2px;
+    }
+    .lang-btn {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      color: var(--text-muted);
+      transition: all var(--dur-fast);
+    }
+    .lang-btn.active {
+      background: var(--cyan);
+      color: #04060a;
+      box-shadow: 0 0 10px rgba(0, 242, 254, 0.4);
+    }
+
     .btn-sound {
       width: 38px;
       height: 38px;
@@ -284,22 +320,23 @@
       border-color: var(--cyan);
       box-shadow: 0 0 12px var(--cyan-dim);
     }
+
     .btn-primary {
       display: inline-flex;
       align-items: center;
       gap: 8px;
       background: linear-gradient(135deg, var(--cyan), #00b4d8);
-      color: #05070a;
+      color: #04060a;
       font-size: 14px;
       font-weight: 700;
-      padding: 10px 20px;
+      padding: 10px 22px;
       border-radius: var(--radius-full);
-      box-shadow: 0 0 24px rgba(0, 242, 254, 0.35);
+      box-shadow: 0 0 24px rgba(0, 242, 254, 0.4);
       transition: all var(--dur-fast) var(--ease-hud);
     }
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 0 32px rgba(0, 242, 254, 0.55);
+      box-shadow: 0 0 32px rgba(0, 242, 254, 0.65);
     }
     .btn-secondary {
       display: inline-flex;
@@ -317,14 +354,14 @@
     }
     .btn-secondary:hover {
       background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.25);
     }
 
     /* ==========================================================================
-       4. HERO SECTION
+       4. HERO SECTION & 3D INTERACTIVE BROWSER DASHBOARD
        ========================================================================== */
     .hero {
-      padding: 80px 0 60px;
+      padding: 70px 0 50px;
       text-align: center;
       position: relative;
     }
@@ -332,35 +369,36 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 6px 16px;
+      padding: 6px 18px;
       border-radius: var(--radius-full);
       background: var(--cyan-dim);
-      border: 1px solid rgba(0, 242, 254, 0.3);
+      border: 1px solid rgba(0, 242, 254, 0.35);
       color: var(--cyan);
       font-family: var(--font-mono);
       font-size: 12px;
+      font-weight: 600;
       margin-bottom: 24px;
       box-shadow: 0 0 20px var(--cyan-dim);
     }
     .hero-title {
       font-family: var(--font-display);
-      font-size: clamp(38px, 6vw, 68px);
+      font-size: clamp(36px, 5.5vw, 64px);
       font-weight: 800;
-      line-height: 1.1;
-      letter-spacing: -0.03em;
-      margin-bottom: 24px;
+      line-height: 1.15;
+      letter-spacing: -0.025em;
+      margin-bottom: 22px;
     }
     .gradient-cyan {
-      background: linear-gradient(135deg, #ffffff 30%, var(--cyan) 80%, #7928ca 100%);
+      background: linear-gradient(135deg, #ffffff 20%, var(--cyan) 75%, #a855f7 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
     .hero-desc {
       font-size: clamp(16px, 2vw, 19px);
       color: var(--text-muted);
-      max-width: 780px;
-      margin: 0 auto 36px;
-      line-height: 1.6;
+      max-width: 820px;
+      margin: 0 auto 34px;
+      line-height: 1.65;
     }
     .hero-cta-row {
       display: flex;
@@ -368,15 +406,224 @@
       justify-content: center;
       gap: 16px;
       flex-wrap: wrap;
-      margin-bottom: 60px;
+      margin-bottom: 50px;
+    }
+
+    /* --- 3D INTERACTIVE BROWSER DASHBOARD MOCKUP --- */
+    .hero-dashboard-wrap {
+      perspective: 1200px;
+      margin-bottom: 70px;
+    }
+    .hero-dashboard {
+      background: var(--bg-glass-card);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-xl);
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.8), 0 0 50px rgba(0, 242, 254, 0.2);
+      backdrop-filter: blur(24px);
+      overflow: hidden;
+      transform-style: preserve-3d;
+      transition: transform 0.25s ease-out;
+    }
+    .dash-topbar {
+      background: #090d16;
+      border-bottom: 1px solid var(--border-glass-subtle);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .dash-window-ctrls {
+      display: flex;
+      gap: 6px;
+    }
+    .dash-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+    }
+    .dash-dot.red { background: #ef4444; }
+    .dash-dot.yellow { background: #f59e0b; }
+    .dash-dot.green { background: #10b981; }
+
+    .dash-url-bar {
+      flex: 1;
+      max-width: 480px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border-glass-subtle);
+      border-radius: var(--radius-full);
+      padding: 6px 18px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .dash-url-lock { color: var(--emerald); }
+
+    .dash-body-grid {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      min-height: 480px;
+    }
+    @media (max-width: 960px) {
+      .dash-body-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Main Tab Canvas (Trái) */
+    .dash-main-canvas {
+      padding: 24px;
+      background: radial-gradient(circle at 30% 20%, rgba(0, 242, 254, 0.08), transparent 60%), #070a10;
+      border-right: 1px solid var(--border-glass-subtle);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      text-align: left;
+      position: relative;
+    }
+    .dash-active-provider-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      background: rgba(0, 242, 254, 0.12);
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      color: var(--cyan);
+      font-size: 12px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      margin-bottom: 20px;
+    }
+    .dash-visual-preview {
+      background: rgba(0,0,0,0.5);
+      border: 1px solid rgba(0, 242, 254, 0.2);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+    .dash-visual-preview::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      animation: scanLaser 3s infinite linear;
+    }
+    @keyframes scanLaser {
+      0% { transform: translateY(0); opacity: 0; }
+      15% { opacity: 1; }
+      85% { opacity: 1; }
+      100% { transform: translateY(180px); opacity: 0; }
+    }
+    .dash-preview-tag {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+    .dash-preview-prompt {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: #e2e8f0;
+      background: rgba(255,255,255,0.03);
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      border-left: 3px solid var(--cyan);
+    }
+    .dash-preview-chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .dash-chip {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      background: rgba(255,255,255,0.06);
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+    }
+
+    /* Side Panel HUD (Phải) */
+    .dash-sidepanel-hud {
+      padding: 24px;
+      background: #090d16;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      text-align: left;
+    }
+    .sidepanel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-glass-subtle);
+      padding-bottom: 12px;
+    }
+    .sidepanel-title {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sidepanel-queue-box {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .dash-queue-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border-glass-subtle);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .dash-queue-top {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .dash-progress-wrap {
+      height: 4px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .dash-progress-bar {
+      height: 100%;
+      width: 100%;
+      transform-origin: left;
+      background: linear-gradient(90deg, var(--violet), var(--cyan));
+      box-shadow: 0 0 10px var(--cyan);
+      animation: queueAnim 2.5s infinite ease-in-out;
+    }
+    @keyframes queueAnim {
+      0% { transform: scaleX(0.15); }
+      50% { transform: scaleX(0.85); }
+      100% { transform: scaleX(1); }
     }
 
     /* Stats Grid */
     .stats-bar {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
-      margin-bottom: 80px;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px;
+      margin-bottom: 90px;
     }
     .stat-card {
       background: var(--bg-glass-card);
@@ -384,7 +631,7 @@
       border-radius: var(--radius-lg);
       padding: 24px;
       text-align: left;
-      backdrop-filter: blur(12px);
+      backdrop-filter: blur(14px);
       position: relative;
       overflow: hidden;
       transition: all var(--dur-norm) var(--ease-hud);
@@ -392,7 +639,7 @@
     .stat-card:hover {
       border-color: var(--border-glass);
       transform: translateY(-4px);
-      box-shadow: 0 12px 30px rgba(0, 242, 254, 0.1);
+      box-shadow: 0 14px 35px rgba(0, 242, 254, 0.12);
     }
     .stat-card::before {
       content: '';
@@ -405,42 +652,46 @@
     }
     .stat-val {
       font-family: var(--font-display);
-      font-size: 38px;
-      font-weight: 800;
+      font-size: 40px;
+      font-weight: 900;
       color: var(--text);
       line-height: 1;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
     }
     .stat-label {
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 700;
       color: var(--cyan);
       margin-bottom: 4px;
     }
     .stat-sub {
-      font-size: 12px;
+      font-size: 13px;
       color: var(--text-dim);
     }
 
     /* ==========================================================================
-       5. INTERACTIVE SIDE-PANEL BATCH SIMULATOR
+       5. SHOWCASE GALLERY (12 MẪU THỰC TẾ)
        ========================================================================== */
+    .gallery-section {
+      padding: 50px 0 100px;
+    }
     .section-head {
       text-align: center;
-      margin-bottom: 48px;
+      margin-bottom: 44px;
     }
     .section-eyebrow {
       font-family: var(--font-mono);
       font-size: 12px;
       color: var(--cyan);
       text-transform: uppercase;
-      letter-spacing: 0.15em;
+      letter-spacing: 0.18em;
       margin-bottom: 12px;
       display: inline-block;
     }
     .section-title {
       font-family: var(--font-display);
-      font-size: clamp(28px, 4vw, 42px);
+      font-size: clamp(28px, 4vw, 44px);
       font-weight: 800;
       letter-spacing: -0.02em;
       margin-bottom: 16px;
@@ -448,17 +699,122 @@
     .section-desc {
       color: var(--text-muted);
       font-size: 16px;
-      max-width: 640px;
+      max-width: 720px;
       margin: 0 auto;
+      line-height: 1.6;
     }
 
+    .gal-filter-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 36px;
+    }
+    .gal-tab-btn {
+      padding: 8px 18px;
+      border-radius: var(--radius-full);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border-glass-subtle);
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 600;
+      transition: all var(--dur-fast);
+    }
+    .gal-tab-btn.active {
+      background: var(--cyan-dim);
+      border-color: var(--cyan);
+      color: var(--cyan);
+      box-shadow: 0 0 16px var(--cyan-dim);
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 22px;
+    }
+    .gal-card {
+      background: var(--bg-glass-card);
+      border: 1px solid var(--border-glass-subtle);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+      display: flex;
+      flex-direction: column;
+      transition: all var(--dur-norm) var(--ease-hud);
+    }
+    .gal-card:hover {
+      border-color: var(--cyan);
+      transform: translateY(-6px);
+      box-shadow: 0 16px 40px rgba(0, 242, 254, 0.16);
+    }
+    .gal-img-wrap {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background: #090e18;
+      position: relative;
+      overflow: hidden;
+    }
+    .gal-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s var(--ease-hud);
+    }
+    .gal-card:hover .gal-img-wrap img {
+      transform: scale(1.06);
+    }
+    .gal-body {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex: 1;
+      gap: 12px;
+      text-align: left;
+    }
+    .gal-card-title {
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .gal-card-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .gal-card-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 6px;
+    }
+    .btn-use-tpl {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--cyan);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all var(--dur-fast);
+    }
+    .btn-use-tpl:hover {
+      color: #fff;
+      text-shadow: 0 0 10px var(--cyan);
+    }
+
+    /* ==========================================================================
+       6. INTERACTIVE SIDE-PANEL BATCH SIMULATOR
+       ========================================================================== */
     .simulator-container {
       background: var(--bg-glass-card);
       border: 1px solid var(--border-glass);
       border-radius: var(--radius-xl);
-      padding: 24px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 242, 254, 0.15);
-      backdrop-filter: blur(20px);
+      padding: 26px;
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.7), 0 0 45px rgba(0, 242, 254, 0.15);
+      backdrop-filter: blur(24px);
       margin-bottom: 100px;
     }
     .sim-header {
@@ -467,16 +823,16 @@
       justify-content: space-between;
       border-bottom: 1px solid var(--border-glass-subtle);
       padding-bottom: 16px;
-      margin-bottom: 20px;
+      margin-bottom: 22px;
     }
     .sim-dots {
       display: flex;
       gap: 6px;
     }
     .sim-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: var(--radius-full);
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
     }
     .sim-dot.red { background: #ef4444; }
     .sim-dot.yellow { background: #f59e0b; }
@@ -489,22 +845,22 @@
 
     .sim-grid {
       display: grid;
-      grid-template-columns: 360px 1fr;
-      gap: 24px;
+      grid-template-columns: 380px 1fr;
+      gap: 26px;
     }
-    @media (max-width: 900px) {
+    @media (max-width: 920px) {
       .sim-grid { grid-template-columns: 1fr; }
     }
 
-    /* Side Panel Mock */
     .sim-sidepanel {
-      background: #090d14;
+      background: #080c14;
       border: 1px solid rgba(0, 242, 254, 0.2);
       border-radius: var(--radius-lg);
-      padding: 18px;
+      padding: 20px;
       display: flex;
       flex-direction: column;
       gap: 16px;
+      text-align: left;
     }
     .provider-tabs {
       display: grid;
@@ -531,20 +887,16 @@
       box-shadow: 0 0 14px var(--cyan-dim);
     }
 
-    .sim-prompt-box {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
     .sim-label {
       font-size: 11px;
       font-family: var(--font-mono);
       color: var(--text-dim);
       text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
     .sim-textarea {
       width: 100%;
-      height: 90px;
+      height: 95px;
       background: rgba(255,255,255,0.04);
       border: 1px solid var(--border-glass-subtle);
       border-radius: var(--radius-sm);
@@ -557,7 +909,7 @@
     }
     .sim-textarea:focus {
       border-color: var(--cyan);
-      box-shadow: 0 0 10px var(--cyan-dim);
+      box-shadow: 0 0 12px var(--cyan-dim);
     }
 
     .sim-controls-row {
@@ -566,17 +918,17 @@
       gap: 10px;
     }
     .sim-select {
-      background: rgba(255,255,255,0.05);
+      background: #0d121c;
       border: 1px solid var(--border-glass-subtle);
       border-radius: var(--radius-sm);
       color: var(--text);
       font-size: 12px;
-      padding: 8px;
+      padding: 8px 10px;
       outline: none;
     }
     .sim-run-btn {
       background: linear-gradient(135deg, var(--cyan), #00b4d8);
-      color: #05070a;
+      color: #04060a;
       font-weight: 700;
       font-size: 13px;
       padding: 12px;
@@ -588,18 +940,19 @@
       transition: all var(--dur-fast);
     }
     .sim-run-btn:hover {
-      box-shadow: 0 0 20px var(--cyan);
+      box-shadow: 0 0 22px var(--cyan);
     }
 
     /* Execution View & Live Queue */
     .sim-display {
-      background: #05080e;
+      background: #05070c;
       border: 1px solid var(--border-glass-subtle);
       border-radius: var(--radius-lg);
-      padding: 20px;
+      padding: 22px;
       display: flex;
       flex-direction: column;
       gap: 16px;
+      text-align: left;
     }
     .sim-log-bar {
       display: flex;
@@ -612,14 +965,14 @@
     .sim-queue-list {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      min-height: 220px;
+      gap: 12px;
+      min-height: 240px;
     }
     .queue-item {
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--border-glass-subtle);
       border-radius: var(--radius-md);
-      padding: 12px 16px;
+      padding: 14px 18px;
       display: grid;
       grid-template-columns: auto 1fr auto;
       align-items: center;
@@ -627,9 +980,9 @@
       transition: all var(--dur-fast);
     }
     .queue-status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: var(--radius-full);
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
       background: var(--text-dim);
     }
     .queue-status-dot.active {
@@ -641,15 +994,13 @@
       background: var(--emerald);
       box-shadow: 0 0 10px var(--emerald);
     }
-    .queue-info {
-      font-size: 13px;
-    }
     .queue-name {
       font-weight: 600;
       color: var(--text);
       display: flex;
       align-items: center;
       gap: 8px;
+      font-size: 13px;
     }
     .queue-progress-bar {
       height: 4px;
@@ -666,12 +1017,12 @@
     }
 
     @keyframes pulse {
-      0% { opacity: 0.4; }
+      0% { opacity: 0.35; }
       100% { opacity: 1; }
     }
 
     /* ==========================================================================
-       6. 26-NODE WORKFLOW VISUALIZER
+       7. 26-NODE WORKFLOW VISUALIZER
        ========================================================================== */
     .nodes-section {
       padding: 40px 0 100px;
@@ -714,12 +1065,12 @@
       padding: 20px;
       backdrop-filter: blur(12px);
       transition: all var(--dur-norm) var(--ease-hud);
-      position: relative;
+      text-align: left;
     }
     .node-card:hover {
       border-color: var(--cyan);
       transform: translateY(-4px);
-      box-shadow: 0 10px 30px rgba(0, 242, 254, 0.12);
+      box-shadow: 0 12px 30px rgba(0, 242, 254, 0.12);
     }
     .node-card-head {
       display: flex;
@@ -749,7 +1100,56 @@
     }
 
     /* ==========================================================================
-       7. PROMPT LIBRARY & SEARCH EXPLORER
+       8. COMPARISON MATRIX (BEFORE VS AFTER)
+       ========================================================================== */
+    .compare-section {
+      padding: 40px 0 90px;
+    }
+    .compare-table-wrap {
+      background: var(--bg-glass-card);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      backdrop-filter: blur(20px);
+    }
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 14px;
+    }
+    .compare-table th {
+      padding: 18px 24px;
+      background: rgba(0,0,0,0.4);
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 700;
+      border-bottom: 1px solid var(--border-glass-subtle);
+    }
+    .compare-table th.highlight {
+      color: var(--cyan);
+      background: rgba(0, 242, 254, 0.08);
+      border-left: 1px solid var(--border-glass);
+      border-right: 1px solid var(--border-glass);
+    }
+    .compare-table td {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border-glass-subtle);
+      color: var(--text-muted);
+    }
+    .compare-table td.highlight {
+      color: var(--text);
+      font-weight: 600;
+      background: rgba(0, 242, 254, 0.04);
+      border-left: 1px solid var(--border-glass);
+      border-right: 1px solid var(--border-glass);
+    }
+    .compare-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* ==========================================================================
+       9. PROMPT LIBRARY & SEARCH EXPLORER
        ========================================================================== */
     .prompt-section {
       padding: 40px 0 100px;
@@ -799,6 +1199,7 @@
       justify-content: space-between;
       gap: 16px;
       transition: all var(--dur-fast);
+      text-align: left;
     }
     .prompt-card:hover {
       border-color: var(--border-glass);
@@ -854,7 +1255,7 @@
     }
     .btn-copy-prompt:hover {
       background: var(--cyan);
-      color: #05070a;
+      color: #04060a;
       box-shadow: 0 0 14px var(--cyan);
     }
 
@@ -864,7 +1265,7 @@
       bottom: 30px;
       left: 50%;
       transform: translateX(-50%) translateY(100px);
-      background: #090d14;
+      background: #090d16;
       border: 1px solid var(--cyan);
       box-shadow: 0 0 30px rgba(0, 242, 254, 0.4);
       color: var(--text);
@@ -886,13 +1287,13 @@
     }
 
     /* ==========================================================================
-       8. FAQ ACCORDION
+       10. FAQ ACCORDION
        ========================================================================== */
     .faq-section {
       padding: 40px 0 100px;
     }
     .faq-list {
-      max-width: 780px;
+      max-width: 820px;
       margin: 0 auto;
       display: flex;
       flex-direction: column;
@@ -907,7 +1308,7 @@
     }
     .faq-question {
       width: 100%;
-      padding: 20px;
+      padding: 20px 24px;
       text-align: left;
       font-family: var(--font-display);
       font-size: 16px;
@@ -928,17 +1329,18 @@
       max-height: 0;
       overflow: hidden;
       transition: max-height 0.4s var(--ease-hud);
-      padding: 0 20px;
+      padding: 0 24px;
       color: var(--text-muted);
       font-size: 14px;
-      line-height: 1.6;
+      line-height: 1.65;
+      text-align: left;
     }
     .faq-item.open .faq-answer {
       padding-bottom: 20px;
     }
 
     /* ==========================================================================
-       9. FLOATING ASSISTANT BOT (FlowBot HUD)
+       11. FLOATING ASSISTANT BOT (FlowBot HUD)
        ========================================================================== */
     #flowbotWidget {
       position: fixed;
@@ -966,7 +1368,7 @@
       position: absolute;
       bottom: 70px;
       right: 0;
-      width: 340px;
+      width: 350px;
       background: #090d16;
       border: 1px solid var(--border-glass);
       border-radius: var(--radius-xl);
@@ -980,6 +1382,7 @@
       transform: translateY(20px) scale(0.95);
       transition: all 0.3s var(--ease-hud);
       backdrop-filter: blur(20px);
+      text-align: left;
     }
     .bot-window.active {
       opacity: 1;
@@ -1007,7 +1410,7 @@
     }
     .bot-title {
       font-family: var(--font-display);
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 700;
     }
     .bot-chat-body {
@@ -1075,12 +1478,12 @@
     }
 
     /* ==========================================================================
-       10. FOOTER
+       12. FOOTER
        ========================================================================== */
     .footer {
       border-top: 1px solid var(--border-glass-subtle);
       padding: 60px 0 40px;
-      background: #040609;
+      background: #030508;
       font-size: 13px;
       color: var(--text-dim);
     }
@@ -1121,28 +1524,38 @@
     <div class="wrap nav-inner">
       <div class="brand-group">
         <a href="#hero" class="brand-logo-icon" aria-label="Home">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
         </a>
         <a href="#hero" class="brand-title">SEOSONA Flow</a>
         <span class="brand-version">v1.1.37</span>
       </div>
 
       <nav class="nav-links">
-        <a href="#simulator" class="nav-link">Mô phỏng</a>
-        <a href="#nodes" class="nav-link">26 Node Workflow</a>
-        <a href="#prompts" class="nav-link">410+ Prompts</a>
-        <a href="#faq" class="nav-link">FAQ</a>
+        <a href="#gallery" class="nav-link" data-i18n="nav_gallery">Thư viện mẫu</a>
+        <a href="#simulator" class="nav-link" data-i18n="nav_sim">Mô phỏng</a>
+        <a href="#nodes" class="nav-link" data-i18n="nav_nodes">26 Node Workflow</a>
+        <a href="#compare" class="nav-link" data-i18n="nav_compare">So sánh</a>
+        <a href="#prompts" class="nav-link" data-i18n="nav_prompts">Kho Prompts</a>
+        <a href="#faq" class="nav-link" data-i18n="nav_faq">FAQ</a>
       </nav>
 
       <div class="nav-actions">
+        <!-- Bilingual Toggle -->
+        <div class="lang-switcher">
+          <button class="lang-btn active" data-lang="vi">VN</button>
+          <button class="lang-btn" data-lang="en">EN</button>
+        </div>
+
         <button class="btn-sound" id="btnSound" aria-label="Toggle Sound" title="Bật/Tắt âm thanh Cyber">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
         </button>
+
         <a href="https://github.com/LongLeo287/seosona-flow" target="_blank" rel="noopener" class="btn-secondary">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
           GitHub
         </a>
-        <a href="https://github.com/LongLeo287/seosona-flow/archive/refs/heads/main.zip" class="btn-primary">
+
+        <a href="https://github.com/LongLeo287/seosona-flow/archive/refs/heads/main.zip" class="btn-primary" data-i18n="btn_download">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Tải Extension .zip
         </a>
@@ -1152,62 +1565,385 @@
 
   <main id="mainContent">
 
-    <!-- 1. HERO SECTION -->
+    <!-- 1. HERO SECTION WITH 3D BROWSER DASHBOARD -->
     <section class="hero wrap" id="hero">
       <div class="hero-pill">
         <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan);"></span>
-        CHROME MANIFEST V3 · 100% LOCAL-FIRST
+        <span data-i18n="hero_pill">CHROME MANIFEST V3 · 100% LOCAL-FIRST AUTOMATION</span>
       </div>
-      <h1 class="hero-title">
+
+      <h1 class="hero-title" data-i18n="hero_title">
         Tự Động Hóa Ảnh & Video AI<br>
         <span class="gradient-cyan">Ngay Trong Trình Duyệt Của Bạn</span>
       </h1>
-      <p class="hero-desc">
+
+      <p class="hero-desc" data-i18n="hero_desc">
         Điều khiển <strong>Google Flow, ChatGPT, Gemini, Grok</strong> sinh nội dung hàng loạt theo mẻ.
         Không tốn phí API, không server trung gian, không bước build phức tạp — mở Chrome là chạy.
       </p>
 
       <div class="hero-cta-row">
-        <a href="#simulator" class="btn-primary" style="font-size:16px;padding:14px 28px;">
+        <a href="#simulator" class="btn-primary" style="font-size:15px;padding:13px 28px;" data-i18n="hero_cta_sim">
           ⚡ Trải Nghiệm Mô Phỏng Ngay
         </a>
-        <a href="https://github.com/LongLeo287/seosona-flow#hướng-dẫn-cài-đặt" target="_blank" rel="noopener" class="btn-secondary" style="font-size:16px;padding:14px 28px;">
+        <a href="https://github.com/LongLeo287/seosona-flow#hướng-dẫn-cài-đặt" target="_blank" rel="noopener" class="btn-secondary" style="font-size:15px;padding:13px 26px;" data-i18n="hero_cta_guide">
           📖 Hướng Dẫn Cài Đặt (30s)
         </a>
       </div>
 
+      <!-- 3D Interactive Browser Dashboard Mockup -->
+      <div class="hero-dashboard-wrap">
+        <div class="hero-dashboard" id="heroDashMockup">
+          <div class="dash-topbar">
+            <div class="dash-window-ctrls">
+              <span class="dash-dot red"></span>
+              <span class="dash-dot yellow"></span>
+              <span class="dash-dot green"></span>
+            </div>
+            <div class="dash-url-bar">
+              <span class="dash-url-lock">🔒</span>
+              <span>chrome-extension://seosona-flow/sidepanel.html</span>
+            </div>
+            <div style="font-family:var(--font-mono);font-size:11px;color:var(--cyan);">[ALT+S OPEN]</div>
+          </div>
+
+          <div class="dash-body-grid">
+            <!-- Main Tab Canvas (Trái) -->
+            <div class="dash-main-canvas">
+              <div>
+                <div class="dash-active-provider-badge">
+                  <span>🌊 Google Flow (Veo 3.1 & Imagen 3)</span>
+                  <span style="color:var(--emerald);">● RUNNING 4K</span>
+                </div>
+
+                <div class="dash-visual-preview">
+                  <div class="dash-preview-tag">
+                    <span>LIVE DOM INJECTOR</span>
+                    <span>16:9 · 60 FPS ULTRA</span>
+                  </div>
+                  <div class="dash-preview-prompt">
+                    "Ultra-detailed cinematic FPV drone flight through neon cyber-glass city, puddle reflections, anamorphic lens flare --ar 16:9 --v 6.1"
+                  </div>
+                  <div class="dash-preview-chips">
+                    <span class="dash-chip">✨ Auto-Prompt Enhancer</span>
+                    <span class="dash-chip">🧬 Style Anchor: Locked</span>
+                    <span class="dash-chip">⚡ Veo 3.1 Quality</span>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px;font-size:12px;color:var(--text-muted);font-family:var(--font-mono);">
+                <span>Auto-Download: /Downloads/SEOSONA_Flow/Job_489.webp</span>
+                <span style="color:var(--emerald);">✓ 100% OFFLINE SAFE</span>
+              </div>
+            </div>
+
+            <!-- Side Panel HUD (Phải) -->
+            <div class="dash-sidepanel-hud">
+              <div class="sidepanel-head">
+                <span class="sidepanel-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M15 3v18"/></svg>
+                  SEOSONA HUD
+                </span>
+                <span style="font-family:var(--font-mono);font-size:11px;color:var(--emerald);">READY</span>
+              </div>
+
+              <div class="sidepanel-queue-box">
+                <div class="dash-queue-card">
+                  <div class="dash-queue-top">
+                    <span>Batch #1 (Veo 3.1 - 4K)</span>
+                    <span style="color:var(--cyan);">85%</span>
+                  </div>
+                  <div class="dash-progress-wrap">
+                    <div class="dash-progress-bar"></div>
+                  </div>
+                </div>
+
+                <div class="dash-queue-card" style="opacity:0.75;">
+                  <div class="dash-queue-top">
+                    <span>Batch #2 (GPT Image 2)</span>
+                    <span style="color:var(--text-dim);">Queued</span>
+                  </div>
+                  <div class="dash-progress-wrap">
+                    <div style="height:100%;width:0%;background:var(--text-dim);"></div>
+                  </div>
+                </div>
+
+                <div class="dash-queue-card" style="opacity:0.5;">
+                  <div class="dash-queue-top">
+                    <span>Batch #3 (xAI Grok Fast)</span>
+                    <span style="color:var(--text-dim);">Queued</span>
+                  </div>
+                  <div class="dash-progress-wrap">
+                    <div style="height:100%;width:0%;background:var(--text-dim);"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="margin-top:auto;font-family:var(--font-mono);font-size:11px;color:var(--text-dim);display:flex;justify-content:space-between;">
+                <span>Total Jobs: 12</span>
+                <span style="color:var(--cyan);">0ms API Latency</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Stats Bar -->
       <div class="stats-bar">
-        
         <div class="stat-card">
           <div class="stat-val">4+</div>
-          <div class="stat-label">Nền tảng AI hỗ trợ</div>
-          <div class="stat-sub">Google Flow, ChatGPT, Gemini, Grok</div>
+          <div class="stat-label" data-i18n="stat_1_l">Nền tảng AI hỗ trợ</div>
+          <div class="stat-sub" data-i18n="stat_1_s">Google Flow, ChatGPT, Gemini, Grok</div>
         </div>
         <div class="stat-card">
           <div class="stat-val">26</div>
-          <div class="stat-label">Loại Node Workflow</div>
-          <div class="stat-sub">Dựng pipeline tự động từ A-Z</div>
+          <div class="stat-label" data-i18n="stat_2_l">Loại Node Workflow</div>
+          <div class="stat-sub" data-i18n="stat_2_s">Dựng pipeline tự động từ A-Z</div>
         </div>
         <div class="stat-card">
           <div class="stat-val">410+</div>
-          <div class="stat-label">Prompt & Skill có sẵn</div>
-          <div class="stat-sub">Tối ưu sẵn cho từng dòng model</div>
+          <div class="stat-label" data-i18n="stat_3_l">Prompt & Skill có sẵn</div>
+          <div class="stat-sub" data-i18n="stat_3_s">Tối ưu sẵn cho từng dòng model</div>
         </div>
         <div class="stat-card">
           <div class="stat-val">0đ</div>
-          <div class="stat-label">Chi phí phát sinh</div>
-          <div class="stat-sub">Dùng trực tiếp quota tài khoản bạn</div>
+          <div class="stat-label" data-i18n="stat_4_l">Chi phí phát sinh</div>
+          <div class="stat-sub" data-i18n="stat_4_s">Dùng trực tiếp quota tài khoản bạn</div>
         </div>
       </div>
     </section>
 
-    <!-- 2. INTERACTIVE SIDE-PANEL SIMULATOR -->
+    <!-- 2. SHOWCASE GALLERY SECTION -->
+    <section class="gallery-section wrap" id="gallery">
+      <div class="section-head">
+        <span class="section-eyebrow" data-i18n="gal_eyebrow">Production Showcase</span>
+        <h2 class="section-title" data-i18n="gal_title">Mẫu Thật Do Chính Extension Tạo Ra</h2>
+        <p class="section-desc" data-i18n="gal_desc">12 bộ mẫu điển hình được sinh tự động qua SEOSONA Flow: từ concept nhân vật, lookbook thời trang, kiến trúc tới hình ảnh thương mại.</p>
+      </div>
+
+      <div class="gal-filter-tabs">
+        <button class="gal-tab-btn active" data-filter="all" data-i18n="tab_all">Tất cả (12)</button>
+        <button class="gal-tab-btn" data-filter="character" data-i18n="tab_char">Nhân vật & Thời trang</button>
+        <button class="gal-tab-btn" data-filter="concept" data-i18n="tab_concept">Kiến trúc & Concept</button>
+        <button class="gal-tab-btn" data-filter="product" data-i18n="tab_prod">Sản phẩm & Thương mại</button>
+      </div>
+
+      <div class="gallery-grid" id="galleryGrid">
+        
+        <div class="gal-card" data-cat="character">
+          <div class="gal-img-wrap">
+            <img src="gallery/g01-480.webp" onerror="this.src='landing/gallery/g01-480.webp'" alt="Bảng thiết kế nhân vật" loading="lazy" width="480" height="480" />
+          </div>
+          <div class="gal-body">
+            <div>
+              <div class="gal-card-title" data-vi="Bảng thiết kế nhân vật" data-en="Character Concept Sheet">Bảng thiết kế nhân vật</div>
+              <div class="gal-card-desc" data-vi="6 tư thế từ một thiết kế gốc, khóa phong cách nhân vật" data-en="6 poses from a single base design with locked styling">6 tư thế từ một thiết kế gốc, khóa phong cách nhân vật</div>
+            </div>
+            <div class="gal-card-actions">
+              <span style="font-family:var(--font-mono);font-size:11px;color:var(--cyan);">#1003</span>
+              <button class="btn-use-tpl" onclick="loadSampleToSim('Bảng thiết kế nhân vật - 6 tư thế từ một thiết kế gốc, khóa phong cách nhân vật')">
+                <span data-i18n="btn_use_tpl">Thử mẫu này ↗</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="gal-card" data-cat="concept">
+          <div class="gal-img-wrap">
+            <img src="gallery/g02-480.webp" onerror="this.src='landing/gallery/g02-480.webp'" alt="Phác thảo đến thành phẩm" loading="lazy" width="480" height="480" />
+          </div>
+          <div class="gal-body">
+            <div>
+              <div class="gal-card-title" data-vi="Phác thảo đến thành phẩm" data-en="Sketch to Final Render">Phác thảo đến thành phẩm</div>
+              <div class="gal-card-desc" data-vi="Bốn bước từ nét chì sơ khai tới ảnh điện ảnh 8K" data-en="Four progressive stages from pencil sketch to 8k cinematic">Bốn bước từ nét chì sơ khai tới ảnh điện ảnh 8K</div>
+            </div>
+            <div class="gal-card-actions">
+              <span style="font-family:var(--font-mono);font-size:11px;color:var(--cyan);">#1001</span>
+              <button class="btn-use-tpl" onclick="loadSampleToSim('Phác thảo đến thành phẩm - Bốn bước từ nét chì sơ khai tới ảnh điện ảnh 8K')">
+                <span data-i18n="btn_use_tpl">Thử mẫu này ↗</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="gal-card" data-cat="concept">
+          <div class="gal-img-wrap">
+            <img src="gallery/g03-480.webp" onerror="this.src='landing/gallery/g03-480.webp'" alt="Ba phong cách kiến trúc" loading="lazy" width="480" height="480" />
+          </div>
+          <div class="gal-body">
+            <div>
+              <div class="gal-card-title" data-vi="Ba phong cách kiến trúc" data-en="Tri-Style Architecture">Ba phong cách kiến trúc</div>
+              <div class="gal-card-desc" data-vi="Cyberpunk, Solarpunk và Art Deco trong một khung hình" data-en="Cyberpunk, Solarpunk and Art Deco in a single frame">Cyberpunk, Solarpunk và Art Deco trong một khung hình</div>
+            </div>
+            <div class="gal-card-actions">
+              <span style="font-family:var(--font-mono);font-size:11px;color:var(--cyan);">#1004</span>
+              <button class="btn-use-tpl" onclick="loadSampleToSim('Ba phong cách kiến trúc - Cyberpunk, Solarpunk và Art Deco trong một khung hình')">
+                <span data-i18n="btn_use_tpl">Thử mẫu này ↗</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="gal-card" data-cat="product">
+          <div class="gal-img-wrap">
+            <img src="gallery/g04-480.webp" onerror="this.src='landing/gallery/g04-480.webp'" alt="Quảng cáo nước hoa cao cấp" loading="lazy" width="480" height="480" />
+          </div>
+          <div class="gal-body">
+            <div>
+              <div class="gal-card-title" data-vi="Quảng cáo nước hoa cao cấp" data-en="Luxury Perfume Commercial">Quảng cáo nước hoa cao cấp</div>
+              <div class="gal-card-desc" data-vi="Chụp macro sản phẩm cao cấp và ánh sáng studio" data-en="High-end product macro photography with studio lighting">Chụp macro sản phẩm cao cấp và ánh sáng studio</div>
+            </div>
+            <div class="gal-card-actions">
+              <span style="font-family:var(--font-mono);font-size:11px;color:var(--cyan);">#1006</span>
+              <button class="btn-use-tpl" onclick="loadSampleToSim('Quảng cáo nước hoa cao cấp - Chụp macro sản phẩm cao cấp và ánh sáng studio')">
+                <span data-i18n="btn_use_tpl">Thử mẫu này ↗</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="gal-card" data-cat="concept">
+          <div class="gal-img-wrap">
+            <img src="gallery/g05-480.webp" onerror="this.src='landing/gallery/g05-480.webp'" alt="Bản đồ ý tưởng phát sáng" loading="lazy" width="480" height="480" />
+          </div>
+          <div class="gal-body">
+            <div>
+              <div class="gal-card-title" data-vi="Bản đồ ý tưởng phát sáng" data-en="Holographic Mindmap">Bản đồ ý tưởng phát sáng</div>
+              <div class="gal-card-desc" data-vi="Sơ đồ khám phá tri thức không gian 3 chiều" data-en="3D spatial neural mindmap and creative brainstorm">Sơ đồ khám phá tri thức không gian 3 chiều</div>
+            </div>
+            <div class="gal-card-actions">
+              <span style="font-family:var(--font-mono);font-size:11px;color:var(--cyan);">#1007</span>
+              <button class="btn-use-tpl" onclick="loadSampleToSim('Bản đồ ý tưởng phát sáng - Sơ đồ khám phá tri thức không gian 3 chiều')">
+                <span data-i18n="btn_use_tpl">Thử mẫu này ↗</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="gal-card" data-cat="product">
+          <div class="gal-img-wrap">
+            <img src="gallery/g06-480.webp" onerror="this.src='landing/gallery/g06-480.webp'" alt="Trang bán hàng thời trang" loading="lazy" width="480" height="480" />
+          </div>
+          <div class="gal-body">
+            <div>
+              <div class="gal-card-title" data-vi="Trang bán hàng thời trang" data-en="E-Commerce Fashion Grid">Trang bán hàng thời trang</div>
+              <div class="gal-card-desc" data-vi="Ảnh người mẫu và các góc chụp chi tiết trang phục" data-en="Model lookbook grid with detailed outfit angles">Ảnh người mẫu và các góc chụp chi tiết trang phục</div>
+            </div>
+            <div class="gal-card-actions">
+              <span style="font-family:var(--font-mono);font-size:11px;color:var(--cyan);">#1009</span>
+              <button class="btn-use-tpl" onclick="loadSampleToSim('Trang bán hàng thời trang - Ảnh người mẫu và các góc chụp chi tiết trang phục')">
+                <span data-i18n="btn_use_tpl">Thử mẫu này ↗</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="gal-card" data-cat="product">
+          <div class="gal-img-wrap">
+            <img src="gallery/g07-480.webp" onerror="this.src='landing/gallery/g07-480.webp'" alt="Bộ ảnh ẩm thực 9 món" loading="lazy" width="480" height="480" />
+          </div>
+          <div class="gal-body">
+            <div>
+              <div class="gal-card-title" data-vi="Bộ ảnh ẩm thực 9 món" data-en="Gourmet Food Photography">Bộ ảnh ẩm thực 9 món</div>
+              <div class="gal-card-desc" data-vi="Chín món ăn đồng nhất về góc chụp và nhiệt độ màu" data-en="Nine gourmet dishes with consistent lighting and palette">Chín món ăn đồng nhất về góc chụp và nhiệt độ màu</div>
+            </div>
+            <div class="gal-card-actions">
+              <span style="font-family:var(--font-mono);font-size:11px;color:var(--cyan);">#1010</span>
+              <button class="btn-use-tpl" onclick="loadSampleToSim('Bộ ảnh ẩm thực 9 món - Chín món ăn đồng nhất về góc chụp và nhiệt độ màu')">
+                <span data-i18n="btn_use_tpl">Thử mẫu này ↗</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="gal-card" data-cat="product">
+          <div class="gal-img-wrap">
+            <img src="gallery/g08-480.webp" onerror="this.src='landing/gallery/g08-480.webp'" alt="Bộ nhận diện thương hiệu" loading="lazy" width="480" height="480" />
+          </div>
+          <div class="gal-body">
+            <div>
+              <div class="gal-card-title" data-vi="Bộ nhận diện thương hiệu" data-en="Brand Identity Mockup">Bộ nhận diện thương hiệu</div>
+              <div class="gal-card-desc" data-vi="Danh thiếp, bảng màu, tài liệu văn phòng phẩm" data-en="Business cards, typography tokens, stationery palette">Danh thiếp, bảng màu, tài liệu văn phòng phẩm</div>
+            </div>
+            <div class="gal-card-actions">
+              <span style="font-family:var(--font-mono);font-size:11px;color:var(--cyan);">#1012</span>
+              <button class="btn-use-tpl" onclick="loadSampleToSim('Bộ nhận diện thương hiệu - Danh thiếp, bảng màu, tài liệu văn phòng phẩm')">
+                <span data-i18n="btn_use_tpl">Thử mẫu này ↗</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="gal-card" data-cat="product">
+          <div class="gal-img-wrap">
+            <img src="gallery/g09-480.webp" onerror="this.src='landing/gallery/g09-480.webp'" alt="Giao diện ứng dụng di động" loading="lazy" width="480" height="480" />
+          </div>
+          <div class="gal-body">
+            <div>
+              <div class="gal-card-title" data-vi="Giao diện ứng dụng di động" data-en="Mobile App UI Suite">Giao diện ứng dụng di động</div>
+              <div class="gal-card-desc" data-vi="Ba màn hình ứng dụng phong cách Neo-Glass hiện đại" data-en="Three mobile screens with consistent Neo-Glass aesthetics">Ba màn hình ứng dụng phong cách Neo-Glass hiện đại</div>
+            </div>
+            <div class="gal-card-actions">
+              <span style="font-family:var(--font-mono);font-size:11px;color:var(--cyan);">#1013</span>
+              <button class="btn-use-tpl" onclick="loadSampleToSim('Giao diện ứng dụng di động - Ba màn hình ứng dụng phong cách Neo-Glass hiện đại')">
+                <span data-i18n="btn_use_tpl">Thử mẫu này ↗</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="gal-card" data-cat="concept">
+          <div class="gal-img-wrap">
+            <img src="gallery/g10-480.webp" onerror="this.src='landing/gallery/g10-480.webp'" alt="Ảnh lễ hội truyền thống" loading="lazy" width="480" height="480" />
+          </div>
+          <div class="gal-body">
+            <div>
+              <div class="gal-card-title" data-vi="Ảnh lễ hội truyền thống" data-en="Festive Holiday Aesthetic">Ảnh lễ hội truyền thống</div>
+              <div class="gal-card-desc" data-vi="Hộp quà, lồng đèn, câu đối Tết rực rỡ sắc đỏ vàng" data-en="Gift boxes, lanterns and festive cultural ornaments">Hộp quà, lồng đèn, câu đối Tết rực rỡ sắc đỏ vàng</div>
+            </div>
+            <div class="gal-card-actions">
+              <span style="font-family:var(--font-mono);font-size:11px;color:var(--cyan);">#1014</span>
+              <button class="btn-use-tpl" onclick="loadSampleToSim('Ảnh lễ hội truyền thống - Hộp quà, lồng đèn, câu đối Tết rực rỡ sắc đỏ vàng')">
+                <span data-i18n="btn_use_tpl">Thử mẫu này ↗</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="gal-card" data-cat="character">
+          <div class="gal-img-wrap">
+            <img src="gallery/g11-480.webp" onerror="this.src='landing/gallery/g11-480.webp'" alt="Quy trình làm bánh ngọt" loading="lazy" width="480" height="480" />
+          </div>
+          <div class="gal-body">
+            <div>
+              <div class="gal-card-title" data-vi="Quy trình làm bánh ngọt" data-en="Bakery Craft Step-by-Step">Quy trình làm bánh ngọt</div>
+              <div class="gal-card-desc" data-vi="Bốn khoảnh khắc chuyển tiếp trong một quy trình thủ công" data-en="Four sequential moments in a craft baking workflow">Bốn khoảnh khắc chuyển tiếp trong một quy trình thủ công</div>
+            </div>
+            <div class="gal-card-actions">
+              <span style="font-family:var(--font-mono);font-size:11px;color:var(--cyan);">#1017</span>
+              <button class="btn-use-tpl" onclick="loadSampleToSim('Quy trình làm bánh ngọt - Bốn khoảnh khắc chuyển tiếp trong một quy trình thủ công')">
+                <span data-i18n="btn_use_tpl">Thử mẫu này ↗</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="gal-card" data-cat="character">
+          <div class="gal-img-wrap">
+            <img src="gallery/g12-480.webp" onerror="this.src='landing/gallery/g12-480.webp'" alt="Lookbook thời trang đường phố" loading="lazy" width="480" height="480" />
+          </div>
+          <div class="gal-body">
+            <div>
+              <div class="gal-card-title" data-vi="Lookbook thời trang đường phố" data-en="Streetwear Fashion Lookbook">Lookbook thời trang đường phố</div>
+              <div class="gal-card-desc" data-vi="Bốn bối cảnh thành phố, cùng một người mẫu cố định" data-en="Four urban backdrops featuring the same consistent model">Bốn bối cảnh thành phố, cùng một người mẫu cố định</div>
+            </div>
+            <div class="gal-card-actions">
+              <span style="font-family:var(--font-mono);font-size:11px;color:var(--cyan);">#1018</span>
+              <button class="btn-use-tpl" onclick="loadSampleToSim('Lookbook thời trang đường phố - Bốn bối cảnh thành phố, cùng một người mẫu cố định')">
+                <span data-i18n="btn_use_tpl">Thử mẫu này ↗</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. INTERACTIVE SIDE-PANEL BATCH SIMULATOR -->
     <section class="wrap" id="simulator">
       <div class="section-head">
-        <span class="section-eyebrow">Interactive Live Simulator</span>
-        <h2 class="section-title">Thử Nghiệm Bảng Điều Khiển Batch Run</h2>
-        <p class="section-desc">Chọn nền tảng AI, chọn prompt mẫu hoặc nhập tuỳ ý, sau đó bấm <strong>Chạy Batch</strong> để xem tiến trình tự động tải về máy.</p>
+        <span class="section-eyebrow" data-i18n="sim_eyebrow">Interactive Live Simulator</span>
+        <h2 class="section-title" data-i18n="sim_title">Thử Nghiệm Bảng Điều Khiển Batch Run</h2>
+        <p class="section-desc" data-i18n="sim_desc">Chọn nền tảng AI, chọn prompt mẫu hoặc nhập tuỳ ý, sau đó bấm <strong>Chạy Batch</strong> để xem tiến trình tự động tải về máy.</p>
       </div>
 
       <div class="simulator-container">
@@ -1224,7 +1960,7 @@
         <div class="sim-grid">
           <!-- Sidepanel Config Form -->
           <div class="sim-sidepanel">
-            <div class="sim-label">1. Chọn Nhà Cung Cấp AI</div>
+            <div class="sim-label" data-i18n="sim_step_1">1. Chọn Nhà Cung Cấp AI</div>
             <div class="provider-tabs" id="providerTabs">
               
               <button class="provider-btn active" data-provider="Google Flow" data-color="#00f2fe">
@@ -1246,13 +1982,13 @@
             </div>
 
             <div class="sim-prompt-box">
-              <div class="sim-label">2. Prompt Hoặc Danh Sách Mẻ (Mỗi dòng 1 prompt)</div>
+              <div class="sim-label" data-i18n="sim_step_2">2. Prompt Hoặc Danh Sách Mẻ (Mỗi dòng 1 prompt)</div>
               <textarea class="sim-textarea" id="simPromptInput">Cinematic 8k street view in Neo Saigon, rainy night reflections, cyber-glass neon signs --ar 16:9</textarea>
             </div>
 
             <div class="sim-controls-row">
               <div>
-                <div class="sim-label">Tỉ lệ khung hình</div>
+                <div class="sim-label" data-i18n="sim_ratio">Tỉ lệ khung hình</div>
                 <select class="sim-select" id="simRatio" style="width:100%;">
                   <option value="16:9">16:9 (Landscape)</option>
                   <option value="9:16">9:16 (Shorts/TikTok)</option>
@@ -1260,7 +1996,7 @@
                 </select>
               </div>
               <div>
-                <div class="sim-label">Số lượng batch</div>
+                <div class="sim-label" data-i18n="sim_batch_count">Số lượng batch</div>
                 <select class="sim-select" id="simCount" style="width:100%;">
                   <option value="3">3 Tác vụ liên tiếp</option>
                   <option value="5">5 Tác vụ liên tiếp</option>
@@ -1271,14 +2007,14 @@
 
             <button class="sim-run-btn" id="btnSimRun">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-              ⚡ Bắt Đầu Chạy Mẻ Batch
+              <span data-i18n="sim_btn_run">⚡ Bắt Đầu Chạy Mẻ Batch</span>
             </button>
           </div>
 
           <!-- Live Output View -->
           <div class="sim-display">
             <div class="sim-log-bar">
-              <span>TIẾN TRÌNH THỰC THI (SIDE-PANEL HUD)</span>
+              <span data-i18n="sim_hud_title">TIẾN TRÌNH THỰC THI (SIDE-PANEL HUD)</span>
               <span id="simOverallStatus">Sẵn sàng chờ lệnh</span>
             </div>
 
@@ -1292,7 +2028,7 @@
                   </div>
                   <div class="queue-progress-bar"><div class="queue-progress-fill" style="width:100%;"></div></div>
                 </div>
-                <span style="font-family:var(--font-mono);font-size:11px;color:var(--text-dim);">Tải về: 0.8s</span>
+                <span style="font-family:var(--font-mono);font-size:11px;color:var(--text-dim);">0.8s</span>
               </div>
             </div>
           </div>
@@ -1300,197 +2036,246 @@
       </div>
     </section>
 
-    <!-- 3. 26-NODE WORKFLOW VISUALIZER -->
+    <!-- 4. 26-NODE WORKFLOW VISUALIZER -->
     <section class="nodes-section wrap" id="nodes">
       <div class="section-head">
-        <span class="section-eyebrow">Modular Architecture</span>
-        <h2 class="section-title">26 Loại Node Xây Dựng Quy Trình Tự Động</h2>
-        <p class="section-desc">Kết nối các node như xếp Lego: từ tiếp nhận prompt, khóa phong cách nhân vật, kiểm soát chất lượng QA tới lưu file và bắn tin Telegram.</p>
+        <span class="section-eyebrow" data-i18n="nodes_eyebrow">Modular Architecture</span>
+        <h2 class="section-title" data-i18n="nodes_title">26 Loại Node Xây Dựng Quy Trình Tự Động</h2>
+        <p class="section-desc" data-i18n="nodes_desc">Kết nối các node như xếp Lego: từ tiếp nhận prompt, khóa phong cách nhân vật, kiểm soát chất lượng QA tới lưu file và bắn tin Telegram.</p>
       </div>
 
       <div class="node-tabs-nav" id="nodeGroupTabs">
         
         <button class="node-tab-btn active" data-group="gen">
           <span>🎨</span>
-          <span>Sinh nội dung</span>
+          <span class="node-group-txt" data-vi="Sinh nội dung" data-en="Content Generation">Sinh nội dung</span>
         </button>
         <button class="node-tab-btn " data-group="anchor">
           <span>🧬</span>
-          <span>Giữ nhất quán</span>
+          <span class="node-group-txt" data-vi="Giữ nhất quán" data-en="Consistency Engine">Giữ nhất quán</span>
         </button>
         <button class="node-tab-btn " data-group="flow">
           <span>🔀</span>
-          <span>Điều khiển luồng</span>
+          <span class="node-group-txt" data-vi="Điều khiển luồng" data-en="Flow Control">Điều khiển luồng</span>
         </button>
         <button class="node-tab-btn " data-group="text">
           <span>📝</span>
-          <span>Xử lý chữ</span>
+          <span class="node-group-txt" data-vi="Xử lý chữ" data-en="Text & NLP">Xử lý chữ</span>
         </button>
         <button class="node-tab-btn " data-group="output">
           <span>📤</span>
-          <span>Đầu ra & Tích hợp</span>
+          <span class="node-group-txt" data-vi="Đầu ra & Tích hợp" data-en="Output & Sinks">Đầu ra & Tích hợp</span>
         </button>
       </div>
 
       <div class="nodes-grid" id="nodesGridContainer">
-        <!-- Rendered via JavaScript according to active tab -->
+        <!-- Rendered via JavaScript -->
       </div>
     </section>
 
-    <!-- 4. 410+ PROMPTS EXPLORER -->
+    <!-- 5. BEFORE VS AFTER COMPARISON -->
+    <section class="compare-section wrap" id="compare">
+      <div class="section-head">
+        <span class="section-eyebrow" data-i18n="comp_eyebrow">Why SEOSONA Flow</span>
+        <h2 class="section-title" data-i18n="comp_title">Khác Biệt Vượt Trội So Với Làm Thủ Công</h2>
+        <p class="section-desc" data-i18n="comp_desc">Tối ưu hóa thời gian và quy trình sản xuất media cho creator, agency và studio.</p>
+      </div>
+
+      <div class="compare-table-wrap">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th data-i18n="th_task">Tác Vụ</th>
+              <th data-i18n="th_manual">Thao Tác Thủ Công</th>
+              <th class="highlight" data-i18n="th_flow">SEOSONA Flow Extension</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+            <tr>
+              <td><strong>Tạo 50 ảnh/video theo danh sách</strong></td>
+              <td>Mở từng tab, copy-paste 50 lần (45 phút)</td>
+              <td class="highlight">✨ Dán 1 danh sách, bấm 1 nút chạy tự động (2 phút)</td>
+            </tr>
+            <tr>
+              <td><strong>Giữ nhất quán nhân vật / style</strong></td>
+              <td>Mò lại prompt cũ, gõ lại từng chi tiết</td>
+              <td class="highlight">✨ Node Style Anchor & Bảng thực thể khóa cứng</td>
+            </tr>
+            <tr>
+              <td><strong>Lưu và đặt tên file theo mẻ</strong></td>
+              <td>Bấm chuột phải lưu từng cái, đổi tên tay</td>
+              <td class="highlight">✨ Download Manager tự đặt tên theo dự án & mẻ</td>
+            </tr>
+            <tr>
+              <td><strong>Chi phí & Hạ tầng</strong></td>
+              <td>Mua gói API $20-$100/tháng hoặc nạp token</td>
+              <td class="highlight">✨ 0đ chi phí máy chủ, dùng đúng tài khoản web có sẵn</td>
+            </tr>
+            <tr>
+              <td><strong>Chạy nhiều nền tảng</strong></td>
+              <td>Nhảy qua lại 4 tab trình duyệt rối mắt</td>
+              <td class="highlight">✨ 1 Bảng điều khiển Side Panel duy nhất bên phải</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 6. 410+ PROMPTS EXPLORER -->
     <section class="prompt-section wrap" id="prompts">
       <div class="section-head">
-        <span class="section-eyebrow">Offline Bundled Prompt Library</span>
-        <h2 class="section-title">Kho 410+ Prompt Đóng Gói Sẵn</h2>
-        <p class="section-desc">Được phân loại theo 7 danh mục chuyên sâu: Prompt ảnh điện ảnh, video chuyển động, kịch bản ngắn, SEO, thương mại điện tử.</p>
+        <span class="section-eyebrow" data-i18n="prompt_eyebrow">Offline Bundled Library</span>
+        <h2 class="section-title" data-i18n="prompt_title">Kho 410+ Prompt Đóng Gói Sẵn</h2>
+        <p class="section-desc" data-i18n="prompt_desc">Được phân loại theo 7 danh mục chuyên sâu: Prompt ảnh điện ảnh, video chuyển động, kịch bản ngắn, SEO, thương mại điện tử.</p>
       </div>
 
       <div class="prompt-search-bar">
         <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" class="search-input" id="promptSearchInput" placeholder="Tìm kiếm prompt theo từ khóa (cyberpunk, drone, video, e-commerce...)" />
+        <input type="text" class="search-input" id="promptSearchInput" placeholder="Tìm kiếm prompt (cyberpunk, drone, lookbook, product...)" />
       </div>
 
       <div class="prompt-cards-grid" id="promptCardsGrid">
         
-        <div class="prompt-card" data-title="cinematic cyberpunk street rain" data-text="ultra-detailed 8k street view of futuristic neo-saigon at rainy night, neon cyber-glass signs in vietnamese, holographic advertisements, puddle reflections, cinematic anamorphic lens flare, photorealistic octane render --ar 16:9 --v 6.1">
+        <div class="prompt-card" data-title="cinematic drone fpv laboratory" data-text="fpv high-speed continuous drone shot navigating through a cybernetic robotics laboratory, neon blue and amber reflections, fluid 60fps lighting transition, 4k ultra-realistic motion blur.">
           <div>
             <div class="prompt-top">
-              <span class="prompt-cat">Image/Video Prompting</span>
-              <span class="prompt-model">Google Flow / Midjourney</span>
+              <span class="prompt-cat">Video Generation</span>
+              <span class="prompt-model">Veo 3.1 / Google Flow</span>
             </div>
-            <h3 class="prompt-title" style="margin-top:8px;">Cinematic Cyberpunk Street Rain</h3>
-            <div class="prompt-text" style="margin-top:10px;">Ultra-detailed 8k street view of futuristic Neo-Saigon at rainy night, neon cyber-glass signs in Vietnamese, holographic advertisements, puddle reflections, cinematic anamorphic lens flare, photorealistic octane render --ar 16:9 --v 6.1</div>
+            <h3 class="prompt-title" style="margin-top:8px;">Cinematic Drone FPV Laboratory</h3>
+            <div class="prompt-text" style="margin-top:10px;">FPV high-speed continuous drone shot navigating through a cybernetic robotics laboratory, neon blue and amber reflections, fluid 60fps lighting transition, 4k ultra-realistic motion blur.</div>
           </div>
-          <button class="btn-copy-prompt" onclick="copyPromptText(`Ultra-detailed 8k street view of futuristic Neo-Saigon at rainy night, neon cyber-glass signs in Vietnamese, holographic advertisements, puddle reflections, cinematic anamorphic lens flare, photorealistic octane render --ar 16:9 --v 6.1`, this)">
+          <button class="btn-copy-prompt" onclick="copyPromptText(`FPV high-speed continuous drone shot navigating through a cybernetic robotics laboratory, neon blue and amber reflections, fluid 60fps lighting transition, 4k ultra-realistic motion blur.`, this)">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            Sao Chép Prompt
+            <span data-i18n="btn_copy">Sao Chép Prompt</span>
           </button>
         </div>
-        <div class="prompt-card" data-title="dynamic drone fly-through studio" data-text="fpv hyper-speed drone shot navigating through a high-tech robotic laboratory, smooth continuous cinematic camera movement, 60fps fluid lighting transitions, 4k ultra-realistic motion blur.">
+        <div class="prompt-card" data-title="neo-tokyo cyber samurai 8k" data-text="full body character sheet of a high-tech cyberpunk samurai warrior, glowing cyan katana blade, intricate carbon fiber armor, rainy neo-tokyo street background, anamorphic cinematic lens --ar 16:9">
           <div>
             <div class="prompt-top">
-              <span class="prompt-cat">Video Prompting</span>
-              <span class="prompt-model">Veo 3.1 / Sora</span>
-            </div>
-            <h3 class="prompt-title" style="margin-top:8px;">Dynamic Drone Fly-Through Studio</h3>
-            <div class="prompt-text" style="margin-top:10px;">FPV hyper-speed drone shot navigating through a high-tech robotic laboratory, smooth continuous cinematic camera movement, 60fps fluid lighting transitions, 4k ultra-realistic motion blur.</div>
-          </div>
-          <button class="btn-copy-prompt" onclick="copyPromptText(`FPV hyper-speed drone shot navigating through a high-tech robotic laboratory, smooth continuous cinematic camera movement, 60fps fluid lighting transitions, 4k ultra-realistic motion blur.`, this)">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            Sao Chép Prompt
-          </button>
-        </div>
-        <div class="prompt-card" data-title="viral hook script generator" data-text="act as a viral video producer. create 5 irresistible psychological hook scripts for a 30-second youtube short about automated ai productivity tools. include visual cues and voiceover tonality.">
-          <div>
-            <div class="prompt-top">
-              <span class="prompt-cat">Content Creation</span>
-              <span class="prompt-model">ChatGPT / Gemini</span>
-            </div>
-            <h3 class="prompt-title" style="margin-top:8px;">Viral Hook Script Generator</h3>
-            <div class="prompt-text" style="margin-top:10px;">Act as a viral video producer. Create 5 irresistible psychological hook scripts for a 30-second YouTube Short about automated AI productivity tools. Include visual cues and voiceover tonality.</div>
-          </div>
-          <button class="btn-copy-prompt" onclick="copyPromptText(`Act as a viral video producer. Create 5 irresistible psychological hook scripts for a 30-second YouTube Short about automated AI productivity tools. Include visual cues and voiceover tonality.`, this)">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            Sao Chép Prompt
-          </button>
-        </div>
-        <div class="prompt-card" data-title="self-correcting negative prompting" data-text="analyze previous render outputs: eliminate anatomical deformities, unwanted artifacts, blurry textures, text distortion. apply weighted negative brackets [(extra limbs:1.4), (poorly rendered hands:1.5)].">
-          <div>
-            <div class="prompt-top">
-              <span class="prompt-cat">Agent Skills / Prompt Ops</span>
-              <span class="prompt-model">All Models</span>
-            </div>
-            <h3 class="prompt-title" style="margin-top:8px;">Self-Correcting Negative Prompting</h3>
-            <div class="prompt-text" style="margin-top:10px;">Analyze previous render outputs: eliminate anatomical deformities, unwanted artifacts, blurry textures, text distortion. Apply weighted negative brackets [(extra limbs:1.4), (poorly rendered hands:1.5)].</div>
-          </div>
-          <button class="btn-copy-prompt" onclick="copyPromptText(`Analyze previous render outputs: eliminate anatomical deformities, unwanted artifacts, blurry textures, text distortion. Apply weighted negative brackets [(extra limbs:1.4), (poorly rendered hands:1.5)].`, this)">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            Sao Chép Prompt
-          </button>
-        </div>
-        <div class="prompt-card" data-title="e-commerce luxury product reveal" data-text="macro close-up shot of a sleek matte black smartwatch rotating on obsidian crystal pedestal, laser beams tracing the edges, liquid gold splash in slow motion, studio product lighting, 8k commercial quality.">
-          <div>
-            <div class="prompt-top">
-              <span class="prompt-cat">Ad Video</span>
+              <span class="prompt-cat">Character Design</span>
               <span class="prompt-model">Google Flow / Grok 2</span>
             </div>
-            <h3 class="prompt-title" style="margin-top:8px;">E-Commerce Luxury Product Reveal</h3>
-            <div class="prompt-text" style="margin-top:10px;">Macro close-up shot of a sleek matte black smartwatch rotating on obsidian crystal pedestal, laser beams tracing the edges, liquid gold splash in slow motion, studio product lighting, 8k commercial quality.</div>
+            <h3 class="prompt-title" style="margin-top:8px;">Neo-Tokyo Cyber Samurai 8K</h3>
+            <div class="prompt-text" style="margin-top:10px;">Full body character sheet of a high-tech cyberpunk samurai warrior, glowing cyan katana blade, intricate carbon fiber armor, rainy Neo-Tokyo street background, anamorphic cinematic lens --ar 16:9</div>
           </div>
-          <button class="btn-copy-prompt" onclick="copyPromptText(`Macro close-up shot of a sleek matte black smartwatch rotating on obsidian crystal pedestal, laser beams tracing the edges, liquid gold splash in slow motion, studio product lighting, 8k commercial quality.`, this)">
+          <button class="btn-copy-prompt" onclick="copyPromptText(`Full body character sheet of a high-tech cyberpunk samurai warrior, glowing cyan katana blade, intricate carbon fiber armor, rainy Neo-Tokyo street background, anamorphic cinematic lens --ar 16:9`, this)">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            Sao Chép Prompt
+            <span data-i18n="btn_copy">Sao Chép Prompt</span>
           </button>
         </div>
-        <div class="prompt-card" data-title="minimalist ceramic coffee mug" data-text="high-end scandinavian coffee aesthetic, handcrafted beige ceramic cup on natural walnut wood table, soft morning sunlight casting organic geometric shadows, shallow depth of field, hasselblad capture.">
+        <div class="prompt-card" data-title="minimalist ceramic watch showcase" data-text="commercial studio product photography of a sleek matte black luxury smartwatch resting on an obsidian pedestal, liquid gold droplet splash, soft geometric shadows, hasselblad 8k capture.">
           <div>
             <div class="prompt-top">
-              <span class="prompt-cat">Product Photo</span>
-              <span class="prompt-model">Gemini Imagen 3</span>
+              <span class="prompt-cat">E-Commerce & Product</span>
+              <span class="prompt-model">ChatGPT / Imagen 3</span>
             </div>
-            <h3 class="prompt-title" style="margin-top:8px;">Minimalist Ceramic Coffee Mug</h3>
-            <div class="prompt-text" style="margin-top:10px;">High-end Scandinavian coffee aesthetic, handcrafted beige ceramic cup on natural walnut wood table, soft morning sunlight casting organic geometric shadows, shallow depth of field, Hasselblad capture.</div>
+            <h3 class="prompt-title" style="margin-top:8px;">Minimalist Ceramic Watch Showcase</h3>
+            <div class="prompt-text" style="margin-top:10px;">Commercial studio product photography of a sleek matte black luxury smartwatch resting on an obsidian pedestal, liquid gold droplet splash, soft geometric shadows, Hasselblad 8k capture.</div>
           </div>
-          <button class="btn-copy-prompt" onclick="copyPromptText(`High-end Scandinavian coffee aesthetic, handcrafted beige ceramic cup on natural walnut wood table, soft morning sunlight casting organic geometric shadows, shallow depth of field, Hasselblad capture.`, this)">
+          <button class="btn-copy-prompt" onclick="copyPromptText(`Commercial studio product photography of a sleek matte black luxury smartwatch resting on an obsidian pedestal, liquid gold droplet splash, soft geometric shadows, Hasselblad 8k capture.`, this)">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            Sao Chép Prompt
+            <span data-i18n="btn_copy">Sao Chép Prompt</span>
+          </button>
+        </div>
+        <div class="prompt-card" data-title="elevator mirror outfit check" data-text="cinematic handheld selfie video inside a brushed stainless steel elevator, stylish streetwear model checking outfit in the mirror, natural reflections, realistic fluid motion, 4k 60fps.">
+          <div>
+            <div class="prompt-top">
+              <span class="prompt-cat">Fashion Lookbook</span>
+              <span class="prompt-model">Google Flow / Veo 3.1</span>
+            </div>
+            <h3 class="prompt-title" style="margin-top:8px;">Elevator Mirror Outfit Check</h3>
+            <div class="prompt-text" style="margin-top:10px;">Cinematic handheld selfie video inside a brushed stainless steel elevator, stylish streetwear model checking outfit in the mirror, natural reflections, realistic fluid motion, 4k 60fps.</div>
+          </div>
+          <button class="btn-copy-prompt" onclick="copyPromptText(`Cinematic handheld selfie video inside a brushed stainless steel elevator, stylish streetwear model checking outfit in the mirror, natural reflections, realistic fluid motion, 4k 60fps.`, this)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span data-i18n="btn_copy">Sao Chép Prompt</span>
+          </button>
+        </div>
+        <div class="prompt-card" data-title="3d clay isometric cyber room" data-text="charming 3d isometric clay miniature diorama of a futuristic programmer room, holographic screens, miniature mechanical keyboard, cute robot pet, soft pastel studio lighting.">
+          <div>
+            <div class="prompt-top">
+              <span class="prompt-cat">3D Isometric</span>
+              <span class="prompt-model">Grok 2 / Gemini</span>
+            </div>
+            <h3 class="prompt-title" style="margin-top:8px;">3D Clay Isometric Cyber Room</h3>
+            <div class="prompt-text" style="margin-top:10px;">Charming 3D isometric clay miniature diorama of a futuristic programmer room, holographic screens, miniature mechanical keyboard, cute robot pet, soft pastel studio lighting.</div>
+          </div>
+          <button class="btn-copy-prompt" onclick="copyPromptText(`Charming 3D isometric clay miniature diorama of a futuristic programmer room, holographic screens, miniature mechanical keyboard, cute robot pet, soft pastel studio lighting.`, this)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span data-i18n="btn_copy">Sao Chép Prompt</span>
+          </button>
+        </div>
+        <div class="prompt-card" data-title="viral hook script generator" data-text="act as an elite short-form video director. generate 5 irresistible viral hook scripts for a 30s tiktok about automated ai workflow tools. include visual cues and voiceover tonality.">
+          <div>
+            <div class="prompt-top">
+              <span class="prompt-cat">Creative Workflow</span>
+              <span class="prompt-model">Prompt Assistant (NLP)</span>
+            </div>
+            <h3 class="prompt-title" style="margin-top:8px;">Viral Hook Script Generator</h3>
+            <div class="prompt-text" style="margin-top:10px;">Act as an elite short-form video director. Generate 5 irresistible viral hook scripts for a 30s TikTok about automated AI workflow tools. Include visual cues and voiceover tonality.</div>
+          </div>
+          <button class="btn-copy-prompt" onclick="copyPromptText(`Act as an elite short-form video director. Generate 5 irresistible viral hook scripts for a 30s TikTok about automated AI workflow tools. Include visual cues and voiceover tonality.`, this)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span data-i18n="btn_copy">Sao Chép Prompt</span>
           </button>
         </div>
       </div>
     </section>
 
-    <!-- 5. FAQ ACCORDION -->
+    <!-- 7. FAQ ACCORDION -->
     <section class="faq-section wrap" id="faq">
       <div class="section-head">
-        <span class="section-eyebrow">Clear Answers</span>
-        <h2 class="section-title">Câu Hỏi Thường Gặp</h2>
+        <span class="section-eyebrow" data-i18n="faq_eyebrow">Clear Answers</span>
+        <h2 class="section-title" data-i18n="faq_title">Câu Hỏi Thường Gặp</h2>
       </div>
 
       <div class="faq-list">
         
         <div class="faq-item">
           <button class="faq-question">
-            <span>Có phải trả tiền API hàng tháng không?</span>
+            <span class="faq-q-txt" data-vi="Có phải trả tiền API hàng tháng không?" data-en="Do I need to pay monthly API fees?">Có phải trả tiền API hàng tháng không?</span>
             <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
           <div class="faq-answer">
-            <p>Hoàn toàn KHÔNG. Extension hoạt động trực tiếp trên phiên đăng nhập của bạn tại Google Flow, ChatGPT, Gemini, Grok. Không cần nạp credit trung gian.</p>
+            <p class="faq-a-txt" data-vi="Hoàn toàn KHÔNG. Extension điều khiển trực tiếp phiên đăng nhập sẵn có của bạn trên Google Flow, ChatGPT, Gemini, Grok. Tiêu quota có sẵn của bạn, không phát sinh chi phí trung gian." data-en="Absolutely NOT. The extension operates directly on your existing browser sessions for Google Flow, ChatGPT, Gemini, and Grok. Uses your own account quota with 0 additional fees.">Hoàn toàn KHÔNG. Extension điều khiển trực tiếp phiên đăng nhập sẵn có của bạn trên Google Flow, ChatGPT, Gemini, Grok. Tiêu quota có sẵn của bạn, không phát sinh chi phí trung gian.</p>
           </div>
         </div>
         <div class="faq-item">
           <button class="faq-question">
-            <span>Dữ liệu của tôi có được bảo mật không?</span>
+            <span class="faq-q-txt" data-vi="Dữ liệu và prompt của tôi có được an toàn không?" data-en="Is my data and prompt history secure?">Dữ liệu và prompt của tôi có được an toàn không?</span>
             <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
           <div class="faq-answer">
-            <p>100% Cục bộ (Local-First). Không có bất kỳ telemetry hay server backend nào thu thập prompt của bạn. Mã nguồn sạch, mở công khai trên GitHub.</p>
+            <p class="faq-a-txt" data-vi="100% Cục bộ (Local-First). Không có bất kỳ server backend nào thu thập dữ liệu của bạn. Mọi cấu hình, lịch sử và file tải về đều lưu trên máy tính của bạn." data-en="100% Local-First. Zero remote servers collecting your data. All configs, history, and downloads stay strictly on your local machine.">100% Cục bộ (Local-First). Không có bất kỳ server backend nào thu thập dữ liệu của bạn. Mọi cấu hình, lịch sử và file tải về đều lưu trên máy tính của bạn.</p>
           </div>
         </div>
         <div class="faq-item">
           <button class="faq-question">
-            <span>Cài đặt vào Chrome như thế nào?</span>
+            <span class="faq-q-txt" data-vi="Cài đặt vào Chrome như thế nào?" data-en="How do I install into Google Chrome?">Cài đặt vào Chrome như thế nào?</span>
             <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
           <div class="faq-answer">
-            <p>Chỉ mất 30 giây: Tải repo về -> Mở chrome://extensions -> Bật Developer Mode -> Chọn 'Load unpacked' và chỉ định thư mục seosona-flow.</p>
+            <p class="faq-a-txt" data-vi="Chỉ mất 30 giây: Tải file .zip về máy -> Mở chrome://extensions -> Bật Developer mode ở góc phải -> Bấm 'Load unpacked' và chọn thư mục seosona-flow." data-en="Takes only 30s: Download the .zip -> Open chrome://extensions -> Enable Developer Mode -> Click 'Load unpacked' and select the seosona-flow folder.">Chỉ mất 30 giây: Tải file .zip về máy -> Mở chrome://extensions -> Bật Developer mode ở góc phải -> Bấm 'Load unpacked' và chọn thư mục seosona-flow.</p>
           </div>
         </div>
         <div class="faq-item">
           <button class="faq-question">
-            <span>Có gây nặng máy hoặc đơ tab trình duyệt không?</span>
+            <span class="faq-q-txt" data-vi="Side Panel có tiện hơn cửa sổ Popup không?" data-en="Why Side Panel instead of a popup?">Side Panel có tiện hơn cửa sổ Popup không?</span>
             <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
           <div class="faq-answer">
-            <p>Extension chạy dưới dạng Chrome Side Panel độc lập theo chuẩn Manifest V3 tối tân, tiêu thụ dưới 45MB RAM và không ảnh hưởng tab làm việc chính.</p>
+            <p class="faq-a-txt" data-vi="Side Panel chạy cố định ở cạnh phải trình duyệt, không bao giờ bị tắt khi bạn click ra ngoài tab làm việc, giúp bạn vừa làm việc vừa theo dõi tiến trình sinh ảnh hàng loạt." data-en="The Side Panel docks smoothly on the right edge. It never closes when clicking outside, allowing you to multitask while monitoring batch rendering in realtime.">Side Panel chạy cố định ở cạnh phải trình duyệt, không bao giờ bị tắt khi bạn click ra ngoài tab làm việc, giúp bạn vừa làm việc vừa theo dõi tiến trình sinh ảnh hàng loạt.</p>
           </div>
         </div>
         <div class="faq-item">
           <button class="faq-question">
-            <span>Nếu các trang AI cập nhật giao diện mới thì sao?</span>
+            <span class="faq-q-txt" data-vi="Nếu các trang AI thay đổi giao diện DOM thì sao?" data-en="What happens if AI platforms update their DOM UI?">Nếu các trang AI thay đổi giao diện DOM thì sao?</span>
             <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
           <div class="faq-answer">
-            <p>SEOSONA Flow tích hợp sẵn cơ chế 'Selector Override Engine'. Bạn có thể cập nhật selector giao diện trực tiếp trong cài đặt mà không cần chờ bản vá.</p>
+            <p class="faq-a-txt" data-vi="SEOSONA Flow có sẵn cơ chế 'Selector Override Engine'. Bạn có thể cập nhật bộ chọn CSS trực tiếp trong bảng cài đặt mà không cần phải chờ đợi bản vá cập nhật." data-en="SEOSONA Flow includes a built-in Selector Override Engine. You can update CSS selectors directly in settings without waiting for code patches.">SEOSONA Flow có sẵn cơ chế 'Selector Override Engine'. Bạn có thể cập nhật bộ chọn CSS trực tiếp trong bảng cài đặt mà không cần phải chờ đợi bản vá cập nhật.</p>
           </div>
         </div>
       </div>
@@ -1512,14 +2297,14 @@
         <button id="botCloseBtn" style="color:var(--text-muted);font-size:18px;">&times;</button>
       </div>
       <div class="bot-chat-body" id="botChatBody">
-        <div class="bot-bubble">
+        <div class="bot-bubble" id="botWelcome">
           Xin chào! Tôi là FlowBot. Bạn cần hỗ trợ gì về extension SEOSONA Flow?
         </div>
       </div>
       <div class="bot-quick-actions">
-        <button class="bot-quick-btn" onclick="askBot('Cách cài đặt extension?')">📌 Cách cài đặt extension?</button>
-        <button class="bot-quick-btn" onclick="askBot('Có cần trả phí API không?')">💰 Có cần nạp phí API không?</button>
-        <button class="bot-quick-btn" onclick="askBot('Bảo mật dữ liệu ra sao?')">🛡️ Bảo mật dữ liệu thế nào?</button>
+        <button class="bot-quick-btn" onclick="askBot('install')">📌 <span data-i18n="bot_q1">Cách cài đặt extension?</span></button>
+        <button class="bot-quick-btn" onclick="askBot('cost')">💰 <span data-i18n="bot_q2">Có cần nạp phí API không?</span></button>
+        <button class="bot-quick-btn" onclick="askBot('safety')">🛡️ <span data-i18n="bot_q3">Bảo mật dữ liệu thế nào?</span></button>
       </div>
     </div>
   </div>
@@ -1532,7 +2317,7 @@
   <!-- Copy Toast Notification -->
   <div id="toast">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-    <span>Đã sao chép prompt vào bộ nhớ tạm!</span>
+    <span id="toastMsg">Đã sao chép prompt vào bộ nhớ tạm!</span>
   </div>
 
   <!-- FOOTER -->
@@ -1540,23 +2325,185 @@
     <div class="wrap footer-inner">
       <div>
         <p style="font-weight:700;color:var(--text);font-family:var(--font-display);margin-bottom:4px;">SEOSONA Flow — Created by Hà Đình Long (Long Leo)</p>
-        <p>Phát triển độc lập · Mã nguồn mở MIT License · Không lưu cookie hoặc telemetry</p>
+        <p data-i18n="footer_sub">Phát triển độc lập · Mã nguồn mở MIT License · Không lưu cookie hoặc telemetry</p>
       </div>
       <div style="display:flex;gap:16px;">
-        <a href="https://portfolio-long-leo.vercel.app" target="_blank" rel="noopener" style="color:var(--cyan);">Trở về Portfolio Chính ↗</a>
+        <a href="https://portfolio-long-leo.vercel.app" target="_blank" rel="noopener" style="color:var(--cyan);" data-i18n="footer_port">Trở về Portfolio Chính ↗</a>
         <a href="https://github.com/LongLeo287/seosona-flow" target="_blank" rel="noopener" style="color:var(--text-muted);">GitHub Repository ↗</a>
       </div>
     </div>
   </footer>
 
   <!-- ==========================================================================
-       JAVASCRIPT INTERACTIONS & ENGINE
+       JAVASCRIPT INTERACTIONS & BILINGUAL ENGINE
        ========================================================================== -->
   <script>
     // 1. Data Store for 26 Nodes
-    const NODE_DATA = [{"id": "gen", "icon": "🎨", "title": "Sinh nội dung", "nodes": [{"name": "Tạo ảnh/video", "desc": "Gửi prompt vào provider và thu hồi kết quả", "badge": "Core"}, {"name": "AI Agent", "desc": "Đặc vụ tự suy luận và biến tấu nội dung", "badge": "Smart"}, {"name": "ChatGPT Provider", "desc": "Adapter điều khiển tab ChatGPT DOM", "badge": "Adapter"}, {"name": "Grok Provider", "desc": "Adapter điều khiển tab xAI Grok", "badge": "Adapter"}, {"name": "Image Input", "desc": "Nạp ảnh cục bộ hoặc URL ảnh tham chiếu", "badge": "Input"}, {"name": "Ghép ảnh Canvas", "desc": "Tự động mix nhiều layout theo lưới", "badge": "Utility"}]}, {"id": "anchor", "icon": "🧬", "title": "Giữ nhất quán", "nodes": [{"name": "Style Anchor", "desc": "Khóa chặt phong cách màu và nhân vật qua từng mẻ", "badge": "Anchor"}, {"name": "Bảng thực thể", "desc": "Quản lý nhân vật, trang phục, bối cảnh cố định", "badge": "Entity"}, {"name": "Prompt Sequence", "desc": "Xâu chuỗi kịch bản phân cảnh liền mạch", "badge": "Series"}, {"name": "Variant Expand", "desc": "Tự sinh 10-50 biến thể từ một ý tưởng gốc", "badge": "Batch"}]}, {"id": "flow", "icon": "🔀", "title": "Điều khiển luồng", "nodes": [{"name": "Loop / Batch", "desc": "Chạy lặp theo danh sách tham số tự động", "badge": "Loop"}, {"name": "Condition IF/ELSE", "desc": "Rẽ nhánh dựa trên trạng thái sinh ảnh", "badge": "Logic"}, {"name": "Switch Router", "desc": "Phân phối prompt theo từng provider tối ưu", "badge": "Route"}, {"name": "Merge Junction", "desc": "Gộp nhiều nhánh dữ liệu trước khi xuất", "badge": "Sync"}, {"name": "Random Pick", "desc": "Xáo trộn ngẫu nhiên hạt giống sáng tạo", "badge": "Seed"}, {"name": "Cổng chất lượng QA", "desc": "Chặn ảnh hỏng trước khi lưu về máy", "badge": "Quality"}]}, {"id": "text", "icon": "📝", "title": "Xử lý chữ", "nodes": [{"name": "Text Variable", "desc": "Khai báo biến động thay thế trong prompt", "badge": "Var"}, {"name": "Text Template", "desc": "Khuôn mẫu câu có sẵn các placeholder", "badge": "Tpl"}, {"name": "Text Extract", "desc": "Trích xuất từ khóa chủ đạo từ kịch bản", "badge": "Parser"}, {"name": "Text Overlay", "desc": "Chèn phụ đề, watermark tự động lên video/ảnh", "badge": "Render"}, {"name": "Text QA Polish", "desc": "Tự kiểm tra ngữ pháp tiếng Anh trước khi gửi", "badge": "NLP"}, {"name": "Xuất file Text/SRT", "desc": "Lưu file kịch bản kèm metadata thời gian", "badge": "Export"}]}, {"id": "output", "icon": "📤", "title": "Đầu ra & Tích hợp", "nodes": [{"name": "Download Manager", "desc": "Lưu file vào đúng thư mục dự án với tên chuẩn", "badge": "Local"}, {"name": "Telegram Bot Notify", "desc": "Bắn thông báo kèm ảnh khi chạy xong cả mẻ", "badge": "Webhook"}, {"name": "Human Delay Wait", "desc": "Mô phỏng nhịp nghỉ ngẫu nhiên tránh rate limit", "badge": "Safety"}, {"name": "Ghi chú Workflow", "desc": "Gắn nhãn và tài liệu hóa sơ đồ luồng", "badge": "Doc"}]}];
+    const NODE_DATA = [{"id": "gen", "icon": "🎨", "title_vi": "Sinh nội dung", "title_en": "Content Generation", "nodes": [{"name": "Flow Generate", "desc_vi": "Tạo ảnh/video Google Flow tự động", "desc_en": "Auto generate images/videos on Google Flow", "badge": "Core"}, {"name": "GPT Image 2", "desc_vi": "Điều khiển ChatGPT tạo ảnh mượt mà", "desc_en": "Direct ChatGPT image generation engine", "badge": "Provider"}, {"name": "Grok Generate", "desc_vi": "Sinh ảnh và video trên xAI Grok", "desc_en": "Generate media directly on xAI Grok", "badge": "Provider"}, {"name": "Prompt Assistant", "desc_vi": "Đặc vụ AI nâng cấp và tối ưu hóa prompt", "desc_en": "AI agent to enhance and expand prompts", "badge": "Smart"}, {"name": "Image Reference", "desc_vi": "Nạp ảnh cục bộ làm anchor nhân vật", "desc_en": "Load reference images for character anchoring", "badge": "Input"}, {"name": "Canvas Collage", "desc_vi": "Tự động ghép lưới nhiều ảnh cùng mẻ", "desc_en": "Auto merge multiple outputs into grid canvas", "badge": "Utility"}]}, {"id": "anchor", "icon": "🧬", "title_vi": "Giữ nhất quán", "title_en": "Consistency Engine", "nodes": [{"name": "Style Anchor", "desc_vi": "Khóa chặt phong cách màu sắc và ánh sáng", "desc_en": "Lock visual styles, color temperature & tone", "badge": "Anchor"}, {"name": "Bảng thực thể", "desc_vi": "Quản lý nhân vật, trang phục, gương mặt cố định", "desc_en": "Maintain consistent characters, face & outfits", "badge": "Entity"}, {"name": "Prompt Sequence", "desc_vi": "Xâu chuỗi phân cảnh kịch bản điện ảnh", "desc_en": "Chain cinematic storytelling shot-by-shot", "badge": "Series"}, {"name": "Variant Expand", "desc_vi": "Tự sinh 10-50 biến thể từ một ý tưởng gốc", "desc_en": "Generate 10-50 variations from single prompt", "badge": "Batch"}]}, {"id": "flow", "icon": "🔀", "title_vi": "Điều khiển luồng", "title_en": "Flow Control", "nodes": [{"name": "Loop / Batch", "desc_vi": "Chạy lặp theo danh sách tham số tự động", "desc_en": "Automate iterative loops across parameter lists", "badge": "Loop"}, {"name": "Condition IF/ELSE", "desc_vi": "Rẽ nhánh dữ liệu dựa trên kết quả sinh", "desc_en": "Branch workflow conditionally based on output", "badge": "Logic"}, {"name": "Switch Router", "desc_vi": "Phân phối prompt tới provider tối ưu nhất", "desc_en": "Route prompts to best-suited provider adapter", "badge": "Route"}, {"name": "Cổng chất lượng QA", "desc_vi": "Tự phát hiện và loại bỏ ảnh lỗi giải phẫu", "desc_en": "Detect & filter out deformed/failed render", "badge": "Quality"}]}, {"id": "text", "icon": "📝", "title_vi": "Xử lý chữ", "title_en": "Text & NLP", "nodes": [{"name": "Text Template", "desc_vi": "Khuôn mẫu câu có sẵn các biến động", "desc_en": "Dynamic prompt templating with variable tags", "badge": "Template"}, {"name": "Text Extract", "desc_vi": "Tách từ khóa bằng regex siêu tốc không tốn token", "desc_en": "Fast regex extraction without spending tokens", "badge": "Parser"}, {"name": "Text Overlay", "desc_vi": "Chèn phụ đề, watermark tự động lên video", "desc_en": "Auto burn captions & watermarks to video/image", "badge": "Render"}, {"name": "Xuất file SRT/JSON", "desc_vi": "Lưu file kịch bản kèm metadata thời gian", "desc_en": "Export scripts & metadata with timestamps", "badge": "Export"}]}, {"id": "output", "icon": "📤", "title_vi": "Đầu ra & Tích hợp", "title_en": "Output & Sinks", "nodes": [{"name": "Download Manager", "desc_vi": "Tự động tải về phân thư mục theo dự án", "desc_en": "Auto save to categorized local folders", "badge": "Local"}, {"name": "Telegram Notify", "desc_vi": "Bắn thông báo kèm ảnh khi chạy xong mẻ", "desc_en": "Instant Telegram alert with generated media", "badge": "Webhook"}, {"name": "Humanized Delay", "desc_vi": "Mô phỏng nhịp nghỉ ngẫu nhiên tránh rate limit", "desc_en": "Random human-like delays to bypass rate-limits", "badge": "Safety"}, {"name": "Ghi chú Canvas", "desc_vi": "Gắn nhãn và sơ đồ hóa quy trình sáng tạo", "desc_en": "Add visual documentation on workflow canvas", "badge": "Doc"}]}];
 
-    // 2. Audio Synthesizer (Web Audio API Cyber FX)
+    // 2. Bilingual Dictionary
+    const I18N_DICT = {
+      "vi": {
+        "nav_gallery": "Thư viện mẫu",
+        "nav_sim": "Mô phỏng",
+        "nav_nodes": "26 Node Workflow",
+        "nav_compare": "So sánh",
+        "nav_prompts": "Kho Prompts",
+        "nav_faq": "FAQ",
+        "btn_download": "Tải Extension .zip",
+        "hero_pill": "CHROME MANIFEST V3 · 100% LOCAL-FIRST AUTOMATION",
+        "hero_title": "Tự Động Hóa Ảnh & Video AI<br><span class='gradient-cyan'>Ngay Trong Trình Duyệt Của Bạn</span>",
+        "hero_desc": "Điều khiển <strong>Google Flow, ChatGPT, Gemini, Grok</strong> sinh nội dung hàng loạt theo mẻ. Không tốn phí API, không server trung gian, không bước build phức tạp — mở Chrome là chạy.",
+        "hero_cta_sim": "⚡ Trải Nghiệm Mô Phỏng Ngay",
+        "hero_cta_guide": "📖 Hướng Dẫn Cài Đặt (30s)",
+        "stat_1_l": "Nền tảng AI hỗ trợ",
+        "stat_1_s": "Google Flow, ChatGPT, Gemini, Grok",
+        "stat_2_l": "Loại Node Workflow",
+        "stat_2_s": "Dựng pipeline tự động từ A-Z",
+        "stat_3_l": "Prompt & Skill có sẵn",
+        "stat_3_s": "Tối ưu sẵn cho từng dòng model",
+        "stat_4_l": "Chi phí phát sinh",
+        "stat_4_s": "Dùng trực tiếp quota tài khoản bạn",
+        "gal_eyebrow": "Production Showcase",
+        "gal_title": "Mẫu Thật Do Chính Extension Tạo Ra",
+        "gal_desc": "12 bộ mẫu điển hình được sinh tự động qua SEOSONA Flow: từ concept nhân vật, lookbook thời trang, kiến trúc tới hình ảnh thương mại.",
+        "tab_all": "Tất cả (12)",
+        "tab_char": "Nhân vật & Thời trang",
+        "tab_concept": "Kiến trúc & Concept",
+        "tab_prod": "Sản phẩm & Thương mại",
+        "btn_use_tpl": "Thử mẫu này ↗",
+        "sim_eyebrow": "Interactive Live Simulator",
+        "sim_title": "Thử Nghiệm Bảng Điều Khiển Batch Run",
+        "sim_desc": "Chọn nền tảng AI, chọn prompt mẫu hoặc nhập tuỳ ý, sau đó bấm <strong>Chạy Batch</strong> để xem tiến trình tự động tải về máy.",
+        "sim_step_1": "1. Chọn Nhà Cung Cấp AI",
+        "sim_step_2": "2. Prompt Hoặc Danh Sách Mẻ (Mỗi dòng 1 prompt)",
+        "sim_ratio": "Tỉ lệ khung hình",
+        "sim_batch_count": "Số lượng batch",
+        "sim_btn_run": "⚡ Bắt Đầu Chạy Mẻ Batch",
+        "sim_hud_title": "TIẾN TRÌNH THỰC THI (SIDE-PANEL HUD)",
+        "nodes_eyebrow": "Modular Architecture",
+        "nodes_title": "26 Loại Node Xây Dựng Quy Trình Tự Động",
+        "nodes_desc": "Kết nối các node như xếp Lego: từ tiếp nhận prompt, khóa phong cách nhân vật, kiểm soát chất lượng QA tới lưu file và bắn tin Telegram.",
+        "comp_eyebrow": "Why SEOSONA Flow",
+        "comp_title": "Khác Biệt Vượt Trội So Với Làm Thủ Công",
+        "comp_desc": "Tối ưu hóa thời gian và quy trình sản xuất media cho creator, agency và studio.",
+        "th_task": "Tác Vụ",
+        "th_manual": "Thao Tác Thủ Công",
+        "th_flow": "SEOSONA Flow Extension",
+        "prompt_eyebrow": "Offline Bundled Library",
+        "prompt_title": "Kho 410+ Prompt Đóng Gói Sẵn",
+        "prompt_desc": "Được phân loại theo 7 danh mục chuyên sâu: Prompt ảnh điện ảnh, video chuyển động, kịch bản ngắn, SEO, thương mại điện tử.",
+        "btn_copy": "Sao Chép Prompt",
+        "faq_eyebrow": "Clear Answers",
+        "faq_title": "Câu Hỏi Thường Gặp",
+        "bot_welcome": "Xin chào! Tôi là FlowBot. Bạn cần hỗ trợ gì về extension SEOSONA Flow?",
+        "bot_q1": "Cách cài đặt extension?",
+        "bot_q2": "Có cần nạp phí API không?",
+        "bot_q3": "Bảo mật dữ liệu thế nào?",
+        "toast_copied": "Đã sao chép prompt vào bộ nhớ tạm!",
+        "footer_sub": "Phát triển độc lập · Mã nguồn mở MIT License · Không lưu cookie hoặc telemetry",
+        "footer_port": "Trở về Portfolio Chính ↗"
+      },
+      "en": {
+        "nav_gallery": "Showcase Gallery",
+        "nav_sim": "Live Simulator",
+        "nav_nodes": "26 Workflow Nodes",
+        "nav_compare": "Comparison",
+        "nav_prompts": "Prompt Library",
+        "nav_faq": "FAQ",
+        "btn_download": "Download .zip",
+        "hero_pill": "CHROME MANIFEST V3 · 100% LOCAL-FIRST AUTOMATION",
+        "hero_title": "Automate AI Images & Videos<br><span class='gradient-cyan'>Right Inside Your Browser</span>",
+        "hero_desc": "Direct <strong>Google Flow, ChatGPT, Gemini, Grok</strong> to batch generate media. Zero API fees, zero backend servers, zero build steps — open Chrome and start creating.",
+        "hero_cta_sim": "⚡ Experience Live Simulator",
+        "hero_cta_guide": "📖 30s Install Guide",
+        "stat_1_l": "Supported AI Platforms",
+        "stat_1_s": "Google Flow, ChatGPT, Gemini, Grok",
+        "stat_2_l": "Workflow Node Types",
+        "stat_2_s": "Build custom end-to-end pipelines",
+        "stat_3_l": "Bundled Prompts & Skills",
+        "stat_3_s": "Optimized across top AI models",
+        "stat_4_l": "Additional Server Fees",
+        "stat_4_s": "Directly uses your active account quota",
+        "gal_eyebrow": "Production Showcase",
+        "gal_title": "Real Media Generated by Extension",
+        "gal_desc": "12 flagship templates generated via SEOSONA Flow: character concepts, fashion lookbooks, architecture & commercial ads.",
+        "tab_all": "All (12)",
+        "tab_char": "Character & Fashion",
+        "tab_concept": "Architecture & Concept",
+        "tab_prod": "Product & Commercial",
+        "btn_use_tpl": "Try Template ↗",
+        "sim_eyebrow": "Interactive Live Simulator",
+        "sim_title": "Test Drive the Batch HUD Controller",
+        "sim_desc": "Select an AI provider, choose a prompt or type your own, then click <strong>Run Batch</strong> to watch real-time automated generation & download.",
+        "sim_step_1": "1. Select AI Provider",
+        "sim_step_2": "2. Prompt Or Batch List (One prompt per line)",
+        "sim_ratio": "Aspect Ratio",
+        "sim_batch_count": "Batch Size",
+        "sim_btn_run": "⚡ Start Batch Execution",
+        "sim_hud_title": "EXECUTION QUEUE (SIDE-PANEL HUD)",
+        "nodes_eyebrow": "Modular Architecture",
+        "nodes_title": "26 Node Types to Build Custom Workflows",
+        "nodes_desc": "Snap nodes together like Lego: prompt ingestion, style anchoring, automated QA gates, and instant local downloads.",
+        "comp_eyebrow": "Why SEOSONA Flow",
+        "comp_title": "Superior Efficiency Over Manual Work",
+        "comp_desc": "Accelerate production timelines for creators, marketing agencies, and media studios.",
+        "th_task": "Workflow Task",
+        "th_manual": "Manual Effort",
+        "th_flow": "SEOSONA Flow Extension",
+        "prompt_eyebrow": "Offline Bundled Library",
+        "prompt_title": "410+ Production-Ready Prompts",
+        "prompt_desc": "Categorized into 7 domains: cinematic visuals, video motion, viral hooks, SEO marketing, and e-commerce ads.",
+        "btn_copy": "Copy Prompt",
+        "faq_eyebrow": "Clear Answers",
+        "faq_title": "Frequently Asked Questions",
+        "bot_welcome": "Hello! I am FlowBot. How can I assist you with SEOSONA Flow?",
+        "bot_q1": "How to install?",
+        "bot_q2": "Are there API costs?",
+        "bot_q3": "Is my data secure?",
+        "toast_copied": "Prompt copied to clipboard!",
+        "footer_sub": "Independently built · MIT Open Source · Zero cookies or telemetry",
+        "footer_port": "Back to Main Portfolio ↗"
+      }
+    };
+
+    let currentLang = localStorage.getItem('flow_lang') || 'vi';
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem('flow_lang', lang);
+      document.documentElement.lang = lang;
+
+      // Update switcher UI
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+      });
+
+      // Update static data-i18n elements
+      const dict = I18N_DICT[lang];
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        if (dict[key]) el.innerHTML = dict[key];
+      });
+
+      // Update dynamic elements with data-vi and data-en
+      document.querySelectorAll('[data-vi]').forEach(el => {
+        el.textContent = el.dataset[lang] || el.dataset.vi;
+      });
+
+      // Re-render nodes tab
+      const activeGroup = document.querySelector('.node-tab-btn.active')?.dataset.group || 'gen';
+      renderNodes(activeGroup);
+    }
+
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        playCyberSound('click');
+        setLanguage(this.dataset.lang);
+      });
+    });
+
+    // 3. Audio Synthesizer (Web Audio API Cyber FX)
     let soundEnabled = false;
     let audioCtx = null;
 
@@ -1593,7 +2540,23 @@
       if (soundEnabled) playCyberSound('click');
     });
 
-    // 3. Cinematic Loader HUD
+    // 4. 3D Dashboard Mockup Tilt Effect
+    const mockup = document.getElementById('heroDashMockup');
+    if (mockup) {
+      mockup.addEventListener('mousemove', (e) => {
+        const rect = mockup.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        const rotX = -(y / rect.height) * 12;
+        const rotY = (x / rect.width) * 12;
+        mockup.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) scale3d(1.02, 1.02, 1.02)`;
+      });
+      mockup.addEventListener('mouseleave', () => {
+        mockup.style.transform = `rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+      });
+    }
+
+    // 5. Cinematic Loader HUD
     window.addEventListener('DOMContentLoaded', () => {
       let pct = 0;
       const fill = document.getElementById('loaderFill');
@@ -1604,13 +2567,13 @@
       const statuses = [
         "Nạp module WebExtension...",
         "Khởi tạo 26 Node Catalog...",
-        "Tải 410+ Prompt Offline...",
+        "Tải 12 Gallery Thư Viện...",
         "Kết nối Side-Panel HUD...",
         "Hệ thống sẵn sàng!"
       ];
 
       const interval = setInterval(() => {
-        pct += Math.floor(Math.random() * 14) + 6;
+        pct += Math.floor(Math.random() * 14) + 8;
         if (pct > 100) pct = 100;
         fill.style.width = pct + '%';
         pctEl.textContent = pct + '%';
@@ -1622,10 +2585,13 @@
             loader.classList.add('loaded');
           }, 300);
         }
-      }, 35);
+      }, 30);
+
+      // Initialize language
+      setLanguage(currentLang);
     });
 
-    // 4. Top Scroll Progress & Back to Top
+    // 6. Top Scroll Progress & Back to Top
     window.addEventListener('scroll', () => {
       const winScroll = document.documentElement.scrollTop;
       const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
@@ -1645,12 +2611,12 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
-    // 5. Background 3D Particles Canvas
+    // 7. Background 3D Particles Canvas
     (function initCyberCanvas() {
       const canvas = document.getElementById('cyberCanvas');
       const ctx = canvas.getContext('2d');
       let w, h, particles = [];
-      const particleCount = 45;
+      const particleCount = 50;
 
       function resize() {
         w = canvas.width = window.innerWidth;
@@ -1663,10 +2629,10 @@
         particles.push({
           x: Math.random() * w,
           y: Math.random() * h,
-          vx: (Math.random() - 0.5) * 0.6,
-          vy: (Math.random() - 0.5) * 0.6,
+          vx: (Math.random() - 0.5) * 0.5,
+          vy: (Math.random() - 0.5) * 0.5,
           size: Math.random() * 2 + 1,
-          color: Math.random() > 0.4 ? 'rgba(0, 242, 254, 0.4)' : 'rgba(121, 40, 202, 0.4)'
+          color: Math.random() > 0.4 ? 'rgba(0, 242, 254, 0.45)' : 'rgba(168, 85, 247, 0.45)'
         });
       }
 
@@ -1702,7 +2668,36 @@
       draw();
     })();
 
-    // 6. Interactive Simulator Logic
+    // 8. Gallery Filter
+    document.querySelectorAll('.gal-tab-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        playCyberSound('click');
+        document.querySelectorAll('.gal-tab-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        const filter = this.dataset.filter;
+
+        document.querySelectorAll('.gal-card').forEach(card => {
+          if (filter === 'all' || card.dataset.cat === filter) {
+            card.style.display = 'flex';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    });
+
+    function loadSampleToSim(text) {
+      playCyberSound('click');
+      const input = document.getElementById('simPromptInput');
+      if (input) {
+        input.value = text;
+        window.location.hash = 'simulator';
+        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        input.focus();
+      }
+    }
+
+    // 9. Interactive Simulator Logic
     let activeProvider = "Google Flow";
     document.querySelectorAll('.provider-btn').forEach(btn => {
       btn.addEventListener('click', function() {
@@ -1722,7 +2717,7 @@
       const status = document.getElementById('simOverallStatus');
 
       queue.innerHTML = '';
-      status.textContent = `Đang chạy ${count} batch trên ${activeProvider}...`;
+      status.textContent = currentLang === 'vi' ? `Đang chạy ${count} batch trên ${activeProvider}...` : `Running ${count} batches on ${activeProvider}...`;
       status.style.color = "var(--cyan)";
 
       for (let i = 1; i <= count; i++) {
@@ -1733,7 +2728,7 @@
           <div class="queue-info">
             <div class="queue-name">
               <span>Job #${i}: ${activeProvider} · [${ratio}]</span>
-              <span id="badge-${i}" style="font-size:11px;color:var(--cyan);">[ĐANG XỬ LÝ DOM...]</span>
+              <span id="badge-${i}" style="font-size:11px;color:var(--cyan);">[INJECTING DOM...]</span>
             </div>
             <div class="queue-progress-bar"><div class="queue-progress-fill" id="fill-${i}"></div></div>
           </div>
@@ -1741,7 +2736,6 @@
         `;
         queue.appendChild(item);
 
-        // Simulation timer
         setTimeout(() => {
           const fill = document.getElementById(`fill-${i}`);
           if (fill) fill.style.width = '100%';
@@ -1750,19 +2744,19 @@
             const badge = document.getElementById(`badge-${i}`);
             const timeEl = document.getElementById(`time-${i}`);
             if (dot) { dot.classList.remove('active'); dot.classList.add('done'); }
-            if (badge) { badge.textContent = '[XUẤT FILE 4K HOÀN TẤT]'; badge.style.color = 'var(--emerald)'; }
+            if (badge) { badge.textContent = currentLang === 'vi' ? '[XUẤT FILE 4K XONG]' : '[4K SAVED COMPLETED]'; badge.style.color = 'var(--emerald)'; }
             if (timeEl) timeEl.textContent = 'Saved .webp';
             playCyberSound('success');
             if (i === count) {
-              status.textContent = `Hoàn thành xuất sắc ${count}/${count} tác vụ!`;
+              status.textContent = currentLang === 'vi' ? `Hoàn thành xuất sắc ${count}/${count} tác vụ!` : `Completed ${count}/${count} jobs successfully!`;
               status.style.color = 'var(--emerald)';
             }
-          }, 800);
-        }, i * 900);
+          }, 750);
+        }, i * 850);
       }
     });
 
-    // 7. Render 26 Nodes Catalog Tabs
+    // 10. Render 26 Nodes Catalog Tabs
     function renderNodes(groupId) {
       const group = NODE_DATA.find(g => g.id === groupId);
       const container = document.getElementById('nodesGridContainer');
@@ -1774,7 +2768,7 @@
             <span class="node-name">${n.name}</span>
             <span class="node-badge">${n.badge}</span>
           </div>
-          <p class="node-desc">${n.desc}</p>
+          <p class="node-desc">${currentLang === 'vi' ? n.desc_vi : n.desc_en}</p>
         </div>
       `).join('');
     }
@@ -1789,7 +2783,7 @@
       });
     });
 
-    // 8. Prompt Search Filter
+    // 11. Prompt Search Filter
     document.getElementById('promptSearchInput').addEventListener('input', function(e) {
       const query = e.target.value.toLowerCase().trim();
       document.querySelectorAll('.prompt-card').forEach(card => {
@@ -1803,14 +2797,15 @@
       });
     });
 
-    // 9. 1-Click Copy Toast
+    // 12. 1-Click Copy Toast
     function copyPromptText(text, btn) {
       playCyberSound('success');
       navigator.clipboard.writeText(text).then(() => {
         const toast = document.getElementById('toast');
+        document.getElementById('toastMsg').textContent = I18N_DICT[currentLang].toast_copied;
         toast.classList.add('show');
         const origText = btn.innerHTML;
-        btn.innerHTML = '✓ Đã Copy!';
+        btn.innerHTML = '✓ Copied!';
         setTimeout(() => {
           toast.classList.remove('show');
           btn.innerHTML = origText;
@@ -1818,7 +2813,7 @@
       });
     }
 
-    // 10. FAQ Accordion
+    // 13. FAQ Accordion
     document.querySelectorAll('.faq-question').forEach(q => {
       q.addEventListener('click', function() {
         playCyberSound('click');
@@ -1836,7 +2831,7 @@
       });
     });
 
-    // 11. FlowBot Assistant Widget
+    // 14. FlowBot Assistant Widget
     const botTrigger = document.getElementById('botTrigger');
     const botWindow = document.getElementById('botWindow');
     const botCloseBtn = document.getElementById('botCloseBtn');
@@ -1852,27 +2847,37 @@
     });
 
     const botAnswers = {
-      "Cách cài đặt extension?": "Rất đơn giản: Tải file .zip từ nút Download -> Mở Chrome vào chrome://extensions -> Bật Developer Mode ở góc phải -> Nhấn 'Load unpacked' và chọn thư mục seosona-flow!",
-      "Có cần trả phí API không?": "Không tốn 1 đồng nào! SEOSONA Flow chạy trực tiếp trên các tab Google Flow, ChatGPT, Gemini, Grok mà bạn đang đăng nhập trong trình duyệt.",
-      "Bảo mật dữ liệu ra sao?": "Thiết kế Local-First tuyệt đối: Không server backend, không thu thập prompt, dữ liệu lưu cục bộ trong trình duyệt của bạn."
+      "install": {
+        "vi": "Rất đơn giản: Tải file .zip từ nút Download -> Mở Chrome vào chrome://extensions -> Bật Developer Mode ở góc phải -> Nhấn 'Load unpacked' và chọn thư mục seosona-flow!",
+        "en": "Very easy: Download the .zip -> Open chrome://extensions -> Enable Developer Mode in the top right -> Click 'Load unpacked' and select the seosona-flow folder!"
+      },
+      "cost": {
+        "vi": "Không tốn 1 đồng nào! SEOSONA Flow chạy trực tiếp trên các tab Google Flow, ChatGPT, Gemini, Grok mà bạn đang đăng nhập trong trình duyệt.",
+        "en": "Zero extra cost! SEOSONA Flow uses your existing browser logins on Google Flow, ChatGPT, Gemini, and Grok."
+      },
+      "safety": {
+        "vi": "Thiết kế Local-First tuyệt đối: Không server backend, không thu thập prompt, toàn bộ dữ liệu lưu cục bộ trong máy tính của bạn.",
+        "en": "Strictly Local-First: Zero remote backend servers, no prompt telemetry, 100% stored securely on your machine."
+      }
     };
 
-    function askBot(question) {
+    function askBot(topic) {
       playCyberSound('click');
+      const qText = topic === 'install' ? I18N_DICT[currentLang].bot_q1 : (topic === 'cost' ? I18N_DICT[currentLang].bot_q2 : I18N_DICT[currentLang].bot_q3);
       const userBubble = document.createElement('div');
       userBubble.className = 'bot-bubble';
       userBubble.style.alignSelf = 'flex-end';
       userBubble.style.background = 'var(--cyan-dim)';
       userBubble.style.borderColor = 'rgba(0, 242, 254, 0.3)';
       userBubble.style.color = 'var(--cyan)';
-      userBubble.textContent = question;
+      userBubble.textContent = qText;
       botChatBody.appendChild(userBubble);
 
       setTimeout(() => {
         playCyberSound('success');
         const botBubble = document.createElement('div');
         botBubble.className = 'bot-bubble';
-        botBubble.textContent = botAnswers[question] || "Bạn có thể xem chi tiết trong tài liệu GitHub của repo!";
+        botBubble.textContent = botAnswers[topic] ? botAnswers[topic][currentLang] : "See GitHub docs for more!";
         botChatBody.appendChild(botBubble);
         botChatBody.scrollTop = botChatBody.scrollHeight;
       }, 400);
