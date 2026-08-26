@@ -2392,82 +2392,61 @@
         <p class="section-desc" data-i18n="canvas_desc">Từ một ảnh gốc, tự động truyền nhận dạng sang ChatGPT, Google Flow và Grok để sinh video 4K và bộ ảnh đồng nhất 100%.</p>
       </div>
 
-      <div class="dot-grid-canvas">
-        <!-- Glowing SVG Bézier Spline Overlay with animated photons -->
-        <svg class="canvas-svg-overlay" viewBox="0 0 1140 680" fill="none" preserveAspectRatio="none">
-          <defs>
-            <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#a855f7" stop-opacity="0.8" />
-              <stop offset="100%" stop-color="#00f2fe" stop-opacity="0.9" />
-            </linearGradient>
-            <filter id="glowFilt" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="3" result="blur" />
-              <feComposite in="SourceGraphic" in2="blur" operator="over" />
-            </filter>
-          </defs>
-
-          <!-- Cable 1: Ref Image (Right Port) -> Prompt Top (Left Port) -->
-          <path class="cable-path" d="M 240 180 C 275 180, 270 70, 310 70" />
-          <path class="cable-path-pulse" d="M 240 180 C 275 180, 270 70, 310 70" />
-
-          <!-- Cable 2: Ref Image (Right Port) -> ChatGPT Center (Left Port) -->
-          <path class="cable-path" d="M 240 180 C 275 180, 270 240, 310 240" />
-          <path class="cable-path-pulse" d="M 240 180 C 275 180, 270 240, 310 240" />
-
-          <!-- Cable 3: Ref Image (Right Port) -> Prompt Bottom (Left Port) -->
-          <path class="cable-path" d="M 240 180 C 275 180, 270 510, 310 510" />
-          <path class="cable-path-pulse" d="M 240 180 C 275 180, 270 510, 310 510" />
-
-          <!-- Cable 4: Prompt Top (Right Port) -> Flow Video (Left Port) -->
-          <path class="cable-path" d="M 610 70 C 650 70, 640 100, 680 100" />
-          <path class="cable-path-pulse" d="M 610 70 C 650 70, 640 100, 680 100" />
-
-          <!-- Cable 5: ChatGPT (Right Port 1) -> Flow Video (Left Port) -->
-          <path class="cable-path" d="M 610 230 C 650 230, 640 150, 680 150" />
-          <path class="cable-path-pulse" d="M 610 230 C 650 230, 640 150, 680 150" />
-
-          <!-- Cable 6: ChatGPT (Right Port 2) -> Grok Poster (Left Port) -->
-          <path class="cable-path" d="M 610 260 C 650 260, 640 430, 680 430" />
-          <path class="cable-path-pulse" d="M 610 260 C 650 260, 640 430, 680 430" />
-
-          <!-- Cable 7: Prompt Bottom (Right Port) -> Grok Poster (Left Port) -->
-          <path class="cable-path" d="M 610 510 C 650 510, 640 490, 680 490" />
-          <path class="cable-path-pulse" d="M 610 510 C 650 510, 640 490, 680 490" />
-        </svg>
+      <div class="dot-grid-canvas" id="nodeCanvasContainer">
+        <!-- Glowing Dynamic SVG Bézier Spline Overlay -->
+        <svg class="canvas-svg-overlay" id="dynamicCanvasSvg"></svg>
 
         <div class="node-graph-grid">
-          <!-- Col 1: Reference Node -->
-          <div class="n-node-card">
-            <div class="n-node-port n-port-r n-port-purple" title="Output: Identity Embeddings">🖼️</div>
-            <div class="n-node-head">
-              <span style="display:flex;align-items:center;gap:6px;">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                Reference Image
-              </span>
-              <span class="n-node-tag" style="color:#c084fc;border-color:rgba(168,85,247,0.3);">SOURCE</span>
+          <!-- Col 1: Reference Node + Prompt ChatGPT -->
+          <div style="display:flex;flex-direction:column;gap:24px;">
+            <!-- Node 1: Reference Image -->
+            <div class="n-node-card" id="node-ref">
+              <div class="n-node-port n-port-r n-port-purple" id="port-ref-out" title="Output: Identity Embeddings">🖼️</div>
+              <div class="n-node-head">
+                <span style="display:flex;align-items:center;gap:6px;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  Reference Image
+                </span>
+                <span class="n-node-tag" style="color:#c084fc;border-color:rgba(168,85,247,0.3);">SOURCE</span>
+              </div>
+              <div class="n-node-img-box" style="aspect-ratio: 3/4;">
+                <img src="assets/workflow-ref-img.jpg" onerror="this.src='landing/assets/workflow-ref-img.jpg'" alt="Character Reference" loading="lazy" width="240" height="320" />
+                <div class="n-node-zoom-btn">🔍</div>
+              </div>
+              <div class="n-node-footer">
+                <span style="color:#a3e635;" class="node-status-dot">● Active Lock</span>
+                <span>Entity #OID-Boy</span>
+              </div>
             </div>
-            <div class="n-node-img-box" style="aspect-ratio: 3/4;">
-              <img src="assets/char_ref.webp" onerror="this.src='landing/assets/char_ref.webp'" alt="Character Reference" loading="lazy" width="240" height="320" />
-              <div class="n-node-zoom-btn">🔍</div>
-            </div>
-            <div class="n-node-footer">
-              <span style="color:#a3e635;">● Active Lock</span>
-              <span>Entity #OID-Boy</span>
+
+            <!-- Node 2: Prompt for ChatGPT -->
+            <div class="n-node-card" id="node-p-chatgpt">
+              <div class="n-node-port n-port-r" id="port-pchatgpt-out" style="top:50%;">T</div>
+              <div class="n-node-head">
+                <span>📝 Prompt (ChatGPT)</span>
+                <span class="n-node-tag">571/40,000</span>
+              </div>
+              <div class="n-node-prompt-body">
+                Use the uploaded reference image to preserve the subject's identity, outfit and proportions. Restyle it into a cinematic editorial portrait with 35mm film look.
+              </div>
+              <div class="n-node-footer">
+                <span style="color:var(--cyan);">Plain</span>
+                <span>I2P Vision Engine</span>
+              </div>
             </div>
           </div>
 
           <!-- Col 2: Prompts & ChatGPT Node -->
-          <div style="display:flex;flex-direction:column;gap:18px;">
-            <!-- Prompt Top -->
-            <div class="n-node-card">
-              <div class="n-node-port n-port-l" style="top:50%;">T</div>
-              <div class="n-node-port n-port-r" style="top:50%;">T</div>
+          <div style="display:flex;flex-direction:column;gap:24px;">
+            <!-- Node 3: Prompt Flow Video -->
+            <div class="n-node-card" id="node-p-flow">
+              <div class="n-node-port n-port-r" id="port-pflow-out" style="top:50%;">T</div>
               <div class="n-node-head">
-                <span>📝 Prompt (Motion)</span>
+                <span>📝 Prompt (Video Motion)</span>
                 <span class="n-node-tag">484/40,000</span>
               </div>
               <div class="n-node-prompt-body">
-                Animate the reference character into an 8-second cinematic video. Slow dolly-in toward the subject with smooth gimbal motion. Hair and fabric react gently to a soft breeze. Warm golden-hour lighting with volumetric light rays.
+                Animate the reference character into an 8-second cinematic video. Slow dolly-in toward the subject with smooth gimbal motion. Hair and fabric react gently to a soft breeze.
               </div>
               <div class="n-node-footer">
                 <span style="color:var(--cyan);">Plain</span>
@@ -2475,11 +2454,12 @@
               </div>
             </div>
 
-            <!-- ChatGPT Center -->
-            <div class="n-node-card">
-              <div class="n-node-port n-port-l n-port-purple" style="top:50%;">🖼️</div>
-              <div class="n-node-port n-port-r" style="top:35%;">🎬</div>
-              <div class="n-node-port n-port-r n-port-purple" style="top:65%;">🖼️</div>
+            <!-- Node 4: ChatGPT Center -->
+            <div class="n-node-card" id="node-chatgpt">
+              <div class="n-node-port n-port-l n-port-purple" id="port-chatgpt-in-img" style="top:35%;">🖼️</div>
+              <div class="n-node-port n-port-l" id="port-chatgpt-in-txt" style="top:65%;">T</div>
+              <div class="n-node-port n-port-r" id="port-chatgpt-out-flow" style="top:35%;">🎬</div>
+              <div class="n-node-port n-port-r n-port-purple" id="port-chatgpt-out-grok" style="top:65%;">🖼️</div>
               <div class="n-node-head">
                 <span style="display:flex;align-items:center;gap:6px;">
                   <span style="color:#10a37f;">🧠</span> ChatGPT
@@ -2487,7 +2467,7 @@
                 <span class="n-node-tag" style="color:#10a37f;border-color:rgba(16,163,127,0.3);">GPT-4o</span>
               </div>
               <div class="n-node-img-box" style="aspect-ratio: 16/9;">
-                <img src="assets/char_nyc.webp" onerror="this.src='landing/assets/char_nyc.webp'" alt="ChatGPT Scene" loading="lazy" width="300" height="170" />
+                <img src="assets/workflow-chatgpt-result.jpeg" onerror="this.src='landing/assets/workflow-chatgpt-result.jpeg'" alt="ChatGPT Scene" loading="lazy" width="300" height="170" />
                 <div class="n-node-zoom-btn">🔍</div>
               </div>
               <div class="n-node-footer">
@@ -2496,16 +2476,15 @@
               </div>
             </div>
 
-            <!-- Prompt Bottom -->
-            <div class="n-node-card">
-              <div class="n-node-port n-port-l" style="top:50%;">T</div>
-              <div class="n-node-port n-port-r" style="top:50%;">T</div>
+            <!-- Node 5: Prompt Grok Poster -->
+            <div class="n-node-card" id="node-p-grok">
+              <div class="n-node-port n-port-r" id="port-pgrok-out" style="top:50%;">T</div>
               <div class="n-node-head">
                 <span>📝 Prompt (Poster)</span>
                 <span class="n-node-tag">490/40,000</span>
               </div>
               <div class="n-node-prompt-body">
-                Reimagine the reference subject as a bold poster shot. High-contrast studio lighting with dramatic shadows. Vibrant accent colors and crisp clean edges. Confident pose with a direct gaze to camera. Sharp focus and fine detail on textures.
+                Reimagine the reference subject as a bold poster shot. High-contrast studio lighting with dramatic shadows. Vibrant accent colors and crisp clean edges in Times Square.
               </div>
               <div class="n-node-footer">
                 <span style="color:var(--amber);">Plain</span>
@@ -2515,11 +2494,11 @@
           </div>
 
           <!-- Col 3: Final Video & Poster Render -->
-          <div style="display:flex;flex-direction:column;gap:18px;">
-            <!-- Flow Video -->
-            <div class="n-node-card">
-              <div class="n-node-port n-port-l" style="top:30%;">🎬</div>
-              <div class="n-node-port n-port-l" style="top:70%;">T</div>
+          <div style="display:flex;flex-direction:column;gap:24px;">
+            <!-- Node 6: Flow Video (Real HTML5 MP4 Video Player) -->
+            <div class="n-node-card" id="node-flow">
+              <div class="n-node-port n-port-l" id="port-flow-in-img" style="top:30%;">🎬</div>
+              <div class="n-node-port n-port-l" id="port-flow-in-txt" style="top:70%;">T</div>
               <div class="n-node-head">
                 <span style="display:flex;align-items:center;gap:6px;">
                   <span style="color:var(--cyan);">📹</span> Flow — Video
@@ -2527,21 +2506,21 @@
                 <span class="n-node-tag" style="color:var(--cyan);border-color:rgba(0,242,254,0.3);">Google Flow · Veo 3.1</span>
               </div>
               <div class="n-node-img-box" style="aspect-ratio: 16/9;position:relative;">
-                <img src="assets/char_nyc.webp" onerror="this.src='landing/assets/char_nyc.webp'" alt="Veo 3.1 Video Render" loading="lazy" width="560" height="315" />
-                <div style="position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,0.25);">
-                  <div style="width:48px;height:48px;border-radius:50%;background:rgba(0,242,254,0.9);color:#030712;display:grid;place-items:center;font-size:18px;box-shadow:0 0 25px var(--cyan);cursor:pointer;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">▶</div>
-                </div>
+                <video class="n-node-video" autoplay loop muted playsinline preload="auto" poster="assets/workflow-chatgpt-result.jpeg">
+                  <source src="assets/workflow-flow-video-result.mp4" type="video/mp4">
+                  <source src="landing/assets/workflow-flow-video-result.mp4" type="video/mp4">
+                </video>
               </div>
               <div class="n-node-footer">
-                <span style="color:var(--cyan);">● 1080P · 60FPS · 8s</span>
-                <span>Output Ready</span>
+                <span style="color:var(--cyan);">● 1080P · 60FPS · 8s Video</span>
+                <span>Playing Loop</span>
               </div>
             </div>
 
-            <!-- Grok Poster -->
-            <div class="n-node-card">
-              <div class="n-node-port n-port-l n-port-purple" style="top:35%;">🖼️</div>
-              <div class="n-node-port n-port-l" style="top:65%;">T</div>
+            <!-- Node 7: Grok Poster -->
+            <div class="n-node-card" id="node-grok">
+              <div class="n-node-port n-port-l n-port-purple" id="port-grok-in-img" style="top:35%;">🖼️</div>
+              <div class="n-node-port n-port-l" id="port-grok-in-txt" style="top:65%;">T</div>
               <div class="n-node-head">
                 <span style="display:flex;align-items:center;gap:6px;">
                   <span style="color:var(--amber);">⚡</span> Grok — Image
@@ -2549,7 +2528,7 @@
                 <span class="n-node-tag" style="color:var(--amber);border-color:rgba(251,191,36,0.3);">xAI · Flux 1.1 Pro</span>
               </div>
               <div class="n-node-img-box" style="aspect-ratio: 16/9;">
-                <img src="assets/char_ts.webp" onerror="this.src='landing/assets/char_ts.webp'" alt="Grok Times Square Render" loading="lazy" width="560" height="315" />
+                <img src="assets/workflow-grok-result.jpeg" onerror="this.src='landing/assets/workflow-grok-result.jpeg'" alt="Grok Times Square Render" loading="lazy" width="560" height="315" />
                 <div class="n-node-zoom-btn">🔍</div>
               </div>
               <div class="n-node-footer">
@@ -4054,42 +4033,96 @@
       botWindow.classList.remove('active');
     });
 
-    const botAnswers = {
-      "install": {
-        "vi": "Rất đơn giản: Tải file .zip từ nút Download -> Mở Chrome vào chrome://extensions -> Bật Developer Mode ở góc phải -> Nhấn 'Load unpacked' và chọn thư mục seosona-flow!",
-        "en": "Very easy: Download the .zip -> Open chrome://extensions -> Enable Developer Mode in the top right -> Click 'Load unpacked' and select the seosona-flow folder!"
-      },
-      "cost": {
-        "vi": "Không tốn 1 đồng nào! SEOSONA Flow chạy trực tiếp trên các tab Google Flow, ChatGPT, Gemini, Grok mà bạn đang đăng nhập trong trình duyệt.",
-        "en": "Zero extra cost! SEOSONA Flow uses your existing browser logins on Google Flow, ChatGPT, Gemini, and Grok."
-      },
-      "safety": {
-        "vi": "Thiết kế Local-First tuyệt đối: Không server backend, không thu thập prompt, toàn bộ dữ liệu lưu cục bộ trong máy tính của bạn.",
-        "en": "Strictly Local-First: Zero remote backend servers, no prompt telemetry, 100% stored securely on your machine."
-      }
-    };
+    // 15. Dynamic SVG Cable Renderer & Workflow Simulation
+    const CABLE_EDGES = [
+      { from: 'port-ref-out', to: 'port-chatgpt-in-img', color: 'purple', class: 'cable-e1' },
+      { from: 'port-pchatgpt-out', to: 'port-chatgpt-in-txt', color: 'cyan', class: 'cable-e2' },
+      { from: 'port-chatgpt-out-flow', to: 'port-flow-in-img', color: 'purple', class: 'cable-e3' },
+      { from: 'port-chatgpt-out-grok', to: 'port-grok-in-img', color: 'purple', class: 'cable-e4' },
+      { from: 'port-pflow-out', to: 'port-flow-in-txt', color: 'cyan', class: 'cable-e5' },
+      { from: 'port-pgrok-out', to: 'port-grok-in-txt', color: 'cyan', class: 'cable-e6' }
+    ];
 
-    function askBot(topic) {
-      playCyberSound('click');
-      const qText = topic === 'install' ? I18N_DICT[currentLang].bot_q1 : (topic === 'cost' ? I18N_DICT[currentLang].bot_q2 : I18N_DICT[currentLang].bot_q3);
-      const userBubble = document.createElement('div');
-      userBubble.className = 'bot-bubble';
-      userBubble.style.alignSelf = 'flex-end';
-      userBubble.style.background = 'var(--cyan-dim)';
-      userBubble.style.borderColor = 'rgba(0, 242, 254, 0.3)';
-      userBubble.style.color = 'var(--cyan)';
-      userBubble.textContent = qText;
-      botChatBody.appendChild(userBubble);
+    function updateDynamicCables() {
+      const container = document.getElementById('nodeCanvasContainer');
+      const svg = document.getElementById('dynamicCanvasSvg');
+      if (!container || !svg) return;
 
-      setTimeout(() => {
-        playCyberSound('success');
-        const botBubble = document.createElement('div');
-        botBubble.className = 'bot-bubble';
-        botBubble.textContent = botAnswers[topic] ? botAnswers[topic][currentLang] : "See GitHub docs for more!";
-        botChatBody.appendChild(botBubble);
-        botChatBody.scrollTop = botChatBody.scrollHeight;
-      }, 400);
+      const cRect = container.getBoundingClientRect();
+      if (cRect.width <= 0 || cRect.height <= 0) return;
+
+      svg.setAttribute('viewBox', `0 0 ${cRect.width} ${cRect.height}`);
+
+      let pathsHtml = `
+        <defs>
+          <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#a855f7" stop-opacity="0.85" />
+            <stop offset="100%" stop-color="#00f2fe" stop-opacity="0.95" />
+          </linearGradient>
+          <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#00f2fe" stop-opacity="0.85" />
+            <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.95" />
+          </linearGradient>
+        </defs>
+      `;
+
+      CABLE_EDGES.forEach(edge => {
+        const fromEl = document.getElementById(edge.from);
+        const toEl = document.getElementById(edge.to);
+        if (!fromEl || !toEl) return;
+
+        const fRect = fromEl.getBoundingClientRect();
+        const tRect = toEl.getBoundingClientRect();
+
+        const x1 = fRect.left + fRect.width / 2 - cRect.left;
+        const y1 = fRect.top + fRect.height / 2 - cRect.top;
+        const x2 = tRect.left + tRect.width / 2 - cRect.left;
+        const y2 = tRect.top + tRect.height / 2 - cRect.top;
+
+        const dx = Math.max(40, Math.abs(x2 - x1) * 0.55);
+        const d = `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`;
+
+        const grad = edge.color === 'purple' ? 'url(#purpleGrad)' : 'url(#cyanGrad)';
+        const pulseColor = edge.color === 'purple' ? '#c084fc' : '#00f2fe';
+
+        pathsHtml += `
+          <path d="${d}" fill="none" stroke="${grad}" stroke-width="2.6" opacity="0.5" stroke-linecap="round" />
+          <path class="cable-path-pulse" d="${d}" fill="none" stroke="${pulseColor}" stroke-width="2.6" stroke-linecap="round" />
+        `;
+      });
+
+      svg.innerHTML = pathsHtml;
     }
+
+    // Listeners for cable recalculation
+    window.addEventListener('resize', updateDynamicCables);
+    window.addEventListener('load', () => setTimeout(updateDynamicCables, 400));
+    setTimeout(updateDynamicCables, 600);
+    setTimeout(updateDynamicCables, 1500);
+
+    // 16. Simulated Workflow Node Execution Cycling
+    const SIM_NODES = ['node-ref', 'node-p-chatgpt', 'node-chatgpt', 'node-p-flow', 'node-flow', 'node-p-grok', 'node-grok'];
+    let simNodeIdx = 0;
+
+    function runWorkflowCycle() {
+      SIM_NODES.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+          el.style.boxShadow = '0 16px 40px rgba(0, 0, 0, 0.6)';
+        }
+      });
+
+      const activeEl = document.getElementById(SIM_NODES[simNodeIdx]);
+      if (activeEl) {
+        activeEl.style.borderColor = 'var(--cyan)';
+        activeEl.style.boxShadow = '0 0 35px rgba(0, 242, 254, 0.35)';
+      }
+
+      simNodeIdx = (simNodeIdx + 1) % SIM_NODES.length;
+    }
+
+    setInterval(runWorkflowCycle, 1600);
 
     // 15. Mobile Menu Drawer Toggle
     const menuToggle = document.getElementById('menuToggle');
