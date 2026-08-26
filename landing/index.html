@@ -773,7 +773,7 @@
     }
 
     /* ==========================================================================
-       INTERACTIVE CHARACTER CONSISTENCY NODE CANVAS (N8N / HIGGSFIELD / MAGNIFIC STYLE)
+       INTERACTIVE CHARACTER CONSISTENCY NODE CANVAS (DRAGGABLE & PANNABLE WORKSPACE)
        ========================================================================== */
     .node-canvas-section {
       padding: 40px 0 100px;
@@ -781,90 +781,144 @@
     .dot-grid-canvas {
       background-color: #05070c;
       background-image: 
-        radial-gradient(rgba(255, 255, 255, 0.12) 1.2px, transparent 1.2px),
+        radial-gradient(rgba(255, 255, 255, 0.13) 1.2px, transparent 1.2px),
         radial-gradient(circle at 50% 30%, rgba(0, 242, 254, 0.04) 0%, transparent 60%);
       background-size: 24px 24px, 100% 100%;
       border: 1px solid rgba(255, 255, 255, 0.09);
       border-radius: 24px;
-      padding: 40px 30px;
+      height: 720px;
       position: relative;
       overflow: hidden;
       box-shadow: 0 30px 90px rgba(0, 0, 0, 0.85), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+      cursor: grab;
+      user-select: none;
+      touch-action: none;
+    }
+    .dot-grid-canvas:active {
+      cursor: grabbing;
+    }
+    .canvas-hud-badge {
+      position: absolute;
+      top: 18px;
+      left: 20px;
+      z-index: 30;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      background: rgba(14, 19, 31, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+    .canvas-hud-badge .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--emerald);
+      box-shadow: 0 0 8px var(--emerald);
+    }
+    .canvas-controls {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px;
+      border-radius: var(--radius-full);
+      background: rgba(14, 19, 31, 0.9);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+    }
+    .canvas-ctrl-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      color: #f1f5f9;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all var(--dur-fast);
+    }
+    .canvas-ctrl-btn:hover {
+      background: var(--cyan);
+      color: #04060a;
+      box-shadow: 0 0 10px var(--cyan);
+    }
+    .canvas-world {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1400px;
+      height: 800px;
+      transform-origin: 0 0;
     }
     .canvas-svg-overlay {
       position: absolute;
-      inset: 0;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
       pointer-events: none;
-      z-index: 1;
-    }
-    .cable-path {
-      fill: none;
-      stroke: rgba(168, 85, 247, 0.45);
-      stroke-width: 2.2;
-      stroke-linecap: round;
-      filter: drop-shadow(0 0 5px rgba(168, 85, 247, 0.6));
-    }
-    .cable-path-pulse {
-      fill: none;
-      stroke: #00f2fe;
-      stroke-width: 2.4;
-      stroke-dasharray: 8 20;
-      stroke-linecap: round;
-      filter: drop-shadow(0 0 8px #00f2fe);
-      animation: cablePhoton 2.4s linear infinite;
-    }
-    @keyframes cablePhoton {
-      0% { stroke-dashoffset: 56; }
-      100% { stroke-dashoffset: 0; }
-    }
-
-    .node-graph-grid {
-      display: grid;
-      grid-template-columns: 240px 300px 1fr;
-      gap: 36px;
-      align-items: start;
-      position: relative;
       z-index: 2;
     }
-    @media (max-width: 1080px) {
-      .node-graph-grid {
-        grid-template-columns: 1fr;
-        gap: 24px;
-      }
-      .canvas-svg-overlay { display: none; }
+    .cable-path-pulse {
+      stroke-dasharray: 8 18;
+      animation: cablePhoton 2s linear infinite;
     }
-
+    @keyframes cablePhoton {
+      0% { stroke-dashoffset: 52; }
+      100% { stroke-dashoffset: 0; }
+    }
     .n-node-card {
-      background: rgba(14, 19, 31, 0.94);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      position: absolute;
+      background: rgba(14, 19, 31, 0.96);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 16px;
-      padding: 14px;
+      padding: 12px;
       backdrop-filter: blur(20px);
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
-      position: relative;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
       text-align: left;
-      transition: all var(--dur-norm) var(--ease-hud);
+      cursor: grab;
+      user-select: none;
+      z-index: 10;
+      transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
+    }
+    .n-node-card.is-dragging {
+      cursor: grabbing;
+      border-color: var(--cyan) !important;
+      box-shadow: 0 25px 60px rgba(0, 242, 254, 0.35) !important;
+      z-index: 25 !important;
     }
     .n-node-card:hover {
       border-color: rgba(0, 242, 254, 0.6);
-      transform: translateY(-3px);
-      box-shadow: 0 20px 50px rgba(0, 242, 254, 0.15);
+      box-shadow: 0 20px 50px rgba(0, 242, 254, 0.18);
     }
     .n-node-head {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 10px;
-      font-size: 13px;
+      margin-bottom: 8px;
+      font-size: 12.5px;
       font-weight: 700;
       color: #f1f5f9;
+      cursor: grab;
     }
     .n-node-tag {
       font-family: var(--font-mono);
-      font-size: 10px;
-      padding: 2px 7px;
+      font-size: 9.5px;
+      padding: 2px 6px;
       border-radius: var(--radius-sm);
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.1);
@@ -882,30 +936,32 @@
       height: 100%;
       object-fit: cover;
       display: block;
+      pointer-events: none;
     }
     .n-node-zoom-btn {
       position: absolute;
       bottom: 8px;
       right: 8px;
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
       border-radius: 50%;
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0, 0, 0, 0.65);
       backdrop-filter: blur(6px);
       border: 1px solid rgba(255, 255, 255, 0.2);
       color: #fff;
       display: grid;
       place-items: center;
-      font-size: 12px;
+      font-size: 11px;
       cursor: pointer;
+      z-index: 5;
     }
     .n-node-prompt-body {
       font-family: var(--font-mono);
-      font-size: 11.5px;
+      font-size: 11px;
       color: #cbd5e1;
-      line-height: 1.5;
+      line-height: 1.45;
       background: rgba(0, 0, 0, 0.35);
-      padding: 10px 12px;
+      padding: 8px 10px;
       border-radius: 8px;
       border-left: 2px solid var(--cyan);
     }
@@ -913,41 +969,34 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 8px;
+      margin-top: 6px;
       font-family: var(--font-mono);
-      font-size: 10px;
+      font-size: 9.5px;
       color: var(--text-dim);
     }
     .n-node-port {
       position: absolute;
-      width: 24px;
-      height: 24px;
+      width: 22px;
+      height: 22px;
       border-radius: 50%;
       background: #090e1a;
       border: 2px solid #00f2fe;
       color: #00f2fe;
-      font-size: 10px;
+      font-size: 9.5px;
       font-weight: 800;
       display: grid;
       place-items: center;
       box-shadow: 0 0 10px rgba(0, 242, 254, 0.6);
-      z-index: 6;
-      cursor: pointer;
-      transition: all var(--dur-fast);
+      z-index: 15;
+      cursor: crosshair;
+      pointer-events: auto;
     }
-    .n-node-port:hover {
-      transform: translateY(-50%) scale(1.15);
-      box-shadow: 0 0 16px #00f2fe;
-    }
-    .n-port-r { right: -12px; top: 50%; transform: translateY(-50%); }
-    .n-port-l { left: -12px; top: 50%; transform: translateY(-50%); }
+    .n-port-r { right: -11px; transform: translateY(-50%); }
+    .n-port-l { left: -11px; transform: translateY(-50%); }
     .n-port-purple {
       border-color: #a855f7;
       color: #c084fc;
       box-shadow: 0 0 10px rgba(168, 85, 247, 0.6);
-    }
-    .n-port-purple:hover {
-      box-shadow: 0 0 16px #a855f7;
     }
 
     /* ==========================================================================
@@ -2376,157 +2425,163 @@
       </div>
     </div>
 
-    <!-- 2. INTERACTIVE CHARACTER CONSISTENCY NODE CANVAS -->
+    <!-- 2. INTERACTIVE CHARACTER CONSISTENCY NODE CANVAS (DRAGGABLE & PANNABLE WORKSPACE) -->
     <section class="node-canvas-section wrap" id="node-canvas">
       <div class="section-head">
         <span class="section-eyebrow" data-i18n="canvas_eyebrow">Visual Consistency Engine</span>
         <h2 class="section-title" data-i18n="canvas_title">Khóa Nhất Quán Nhân Vật Đa Nền Tảng</h2>
-        <p class="section-desc" data-i18n="canvas_desc">Từ một ảnh gốc, tự động truyền nhận dạng sang ChatGPT, Google Flow và Grok để sinh video 4K và bộ ảnh đồng nhất 100%.</p>
+        <p class="section-desc" data-i18n="canvas_desc">Kéo thả các Node để sắp xếp lại workflow. Giữ chuột để di chuyển canvas tự do trên lưới toạ độ vô cực.</p>
       </div>
 
       <div class="dot-grid-canvas" id="nodeCanvasContainer">
-        <!-- Glowing Dynamic SVG Bézier Spline Overlay -->
-        <svg class="canvas-svg-overlay" id="dynamicCanvasSvg"></svg>
+        <!-- Floating HUD Status Badge -->
+        <div class="canvas-hud-badge">
+          <span class="pulse-dot"></span>
+          <span>SEOSONA FLOW CANVAS // KÉO THẢ NODE · CUỘN PAN WORKSPACE</span>
+        </div>
 
-        <div class="node-graph-grid">
-          <!-- Col 1: Reference Node + Prompt ChatGPT -->
-          <div style="display:flex;flex-direction:column;gap:24px;">
-            <!-- Node 1: Reference Image -->
-            <div class="n-node-card" id="node-ref">
-              <div class="n-node-port n-port-r n-port-purple" id="port-ref-out" title="Output: Identity Embeddings">🖼️</div>
-              <div class="n-node-head">
-                <span style="display:flex;align-items:center;gap:6px;">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                  Reference Image
-                </span>
-                <span class="n-node-tag" style="color:#c084fc;border-color:rgba(168,85,247,0.3);">SOURCE</span>
-              </div>
-              <div class="n-node-img-box" style="aspect-ratio: 3/4;">
-                <img src="assets/workflow-ref-img.jpg" onerror="this.src='landing/assets/workflow-ref-img.jpg'" alt="Character Reference" loading="lazy" width="240" height="320" />
-                <div class="n-node-zoom-btn">🔍</div>
-              </div>
-              <div class="n-node-footer">
-                <span style="color:#a3e635;" class="node-status-dot">● Active Lock</span>
-                <span>Entity #OID-Boy</span>
-              </div>
+        <!-- Floating Zoom & Reset Controls -->
+        <div class="canvas-controls">
+          <button class="canvas-ctrl-btn" id="btnZoomIn" title="Phóng to (+)">+</button>
+          <button class="canvas-ctrl-btn" id="btnZoomOut" title="Thu nhỏ (-)">−</button>
+          <button class="canvas-ctrl-btn" id="btnFitView" title="Vừa màn hình (Fit)">⛶</button>
+          <button class="canvas-ctrl-btn" id="btnResetLayout" title="Khôi phục vị trí ban đầu">⟲</button>
+        </div>
+
+        <!-- Infinite Canvas World (Pannable & Zoomable) -->
+        <div class="canvas-world" id="canvasWorld">
+          <!-- Dynamic SVG Bézier Spline Cables -->
+          <svg class="canvas-svg-overlay" id="dynamicCanvasSvg"></svg>
+
+          <!-- Node 1: Reference Character Image -->
+          <div class="n-node-card" id="node-ref" style="left: 40px; top: 40px; width: 250px;">
+            <div class="n-node-port n-port-r n-port-purple" id="port-ref-out" title="Output: Identity Embeddings">🖼️</div>
+            <div class="n-node-head">
+              <span style="display:flex;align-items:center;gap:6px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                Reference Image
+              </span>
+              <span class="n-node-tag" style="color:#c084fc;border-color:rgba(168,85,247,0.3);">SOURCE</span>
             </div>
-
-            <!-- Node 2: Prompt for ChatGPT -->
-            <div class="n-node-card" id="node-p-chatgpt">
-              <div class="n-node-port n-port-r" id="port-pchatgpt-out" style="top:50%;">T</div>
-              <div class="n-node-head">
-                <span>📝 Prompt (ChatGPT)</span>
-                <span class="n-node-tag">571/40,000</span>
-              </div>
-              <div class="n-node-prompt-body">
-                Use the uploaded reference image to preserve the subject's identity, outfit and proportions. Restyle it into a cinematic editorial portrait with 35mm film look.
-              </div>
-              <div class="n-node-footer">
-                <span style="color:var(--cyan);">Plain</span>
-                <span>I2P Vision Engine</span>
-              </div>
+            <div class="n-node-img-box" style="aspect-ratio: 3/4;">
+              <img src="assets/seosona_char_ref.webp" onerror="this.src='landing/assets/seosona_char_ref.webp'" alt="SEOSONA Character Reference" loading="lazy" width="240" height="320" />
+              <div class="n-node-zoom-btn">🔍</div>
+            </div>
+            <div class="n-node-footer">
+              <span style="color:#a3e635;">● Identity Locked</span>
+              <span>SEOSONA #Cyber-Boy</span>
             </div>
           </div>
 
-          <!-- Col 2: Prompts & ChatGPT Node -->
-          <div style="display:flex;flex-direction:column;gap:24px;">
-            <!-- Node 3: Prompt Flow Video -->
-            <div class="n-node-card" id="node-p-flow">
-              <div class="n-node-port n-port-r" id="port-pflow-out" style="top:50%;">T</div>
-              <div class="n-node-head">
-                <span>📝 Prompt (Video Motion)</span>
-                <span class="n-node-tag">484/40,000</span>
-              </div>
-              <div class="n-node-prompt-body">
-                Animate the reference character into an 8-second cinematic video. Slow dolly-in toward the subject with smooth gimbal motion. Hair and fabric react gently to a soft breeze.
-              </div>
-              <div class="n-node-footer">
-                <span style="color:var(--cyan);">Plain</span>
-                <span>Veo 3.1 Syntax</span>
-              </div>
+          <!-- Node 2: Prompt Master Style -->
+          <div class="n-node-card" id="node-p-master" style="left: 40px; top: 460px; width: 250px;">
+            <div class="n-node-port n-port-r" id="port-pmaster-out" style="top:50%;">T</div>
+            <div class="n-node-head">
+              <span>📝 Prompt (Identity)</span>
+              <span class="n-node-tag">571/40,000</span>
             </div>
-
-            <!-- Node 4: ChatGPT Center -->
-            <div class="n-node-card" id="node-chatgpt">
-              <div class="n-node-port n-port-l n-port-purple" id="port-chatgpt-in-img" style="top:35%;">🖼️</div>
-              <div class="n-node-port n-port-l" id="port-chatgpt-in-txt" style="top:65%;">T</div>
-              <div class="n-node-port n-port-r" id="port-chatgpt-out-flow" style="top:35%;">🎬</div>
-              <div class="n-node-port n-port-r n-port-purple" id="port-chatgpt-out-grok" style="top:65%;">🖼️</div>
-              <div class="n-node-head">
-                <span style="display:flex;align-items:center;gap:6px;">
-                  <span style="color:#10a37f;">🧠</span> ChatGPT
-                </span>
-                <span class="n-node-tag" style="color:#10a37f;border-color:rgba(16,163,127,0.3);">GPT-4o</span>
-              </div>
-              <div class="n-node-img-box" style="aspect-ratio: 16/9;">
-                <img src="assets/workflow-chatgpt-result.jpeg" onerror="this.src='landing/assets/workflow-chatgpt-result.jpeg'" alt="ChatGPT Scene" loading="lazy" width="300" height="170" />
-                <div class="n-node-zoom-btn">🔍</div>
-              </div>
-              <div class="n-node-footer">
-                <span style="color:#10a37f;">● Direct Identity Pass</span>
-                <span>NYC Day Scene</span>
-              </div>
+            <div class="n-node-prompt-body">
+              Use uploaded reference image to preserve subject identity, SEOSONA cyberpunk jacket and proportions. Restyle into a cinematic editorial portrait with 35mm film look.
             </div>
-
-            <!-- Node 5: Prompt Grok Poster -->
-            <div class="n-node-card" id="node-p-grok">
-              <div class="n-node-port n-port-r" id="port-pgrok-out" style="top:50%;">T</div>
-              <div class="n-node-head">
-                <span>📝 Prompt (Poster)</span>
-                <span class="n-node-tag">490/40,000</span>
-              </div>
-              <div class="n-node-prompt-body">
-                Reimagine the reference subject as a bold poster shot. High-contrast studio lighting with dramatic shadows. Vibrant accent colors and crisp clean edges in Times Square.
-              </div>
-              <div class="n-node-footer">
-                <span style="color:var(--amber);">Plain</span>
-                <span>Flux 1.1 Pro</span>
-              </div>
+            <div class="n-node-footer">
+              <span style="color:var(--cyan);">Plain</span>
+              <span>I2P Vision Engine</span>
             </div>
           </div>
 
-          <!-- Col 3: Final Video & Poster Render -->
-          <div style="display:flex;flex-direction:column;gap:24px;">
-            <!-- Node 6: Flow Video (Real HTML5 MP4 Video Player) -->
-            <div class="n-node-card" id="node-flow">
-              <div class="n-node-port n-port-l" id="port-flow-in-img" style="top:30%;">🎬</div>
-              <div class="n-node-port n-port-l" id="port-flow-in-txt" style="top:70%;">T</div>
-              <div class="n-node-head">
-                <span style="display:flex;align-items:center;gap:6px;">
-                  <span style="color:var(--cyan);">📹</span> Flow — Video
-                </span>
-                <span class="n-node-tag" style="color:var(--cyan);border-color:rgba(0,242,254,0.3);">Google Flow · Veo 3.1</span>
-              </div>
-              <div class="n-node-img-box" style="aspect-ratio: 16/9;position:relative;">
-                <video class="n-node-video" autoplay loop muted playsinline preload="auto" poster="assets/workflow-chatgpt-result.jpeg">
-                  <source src="assets/workflow-flow-video-result.mp4" type="video/mp4">
-                  <source src="landing/assets/workflow-flow-video-result.mp4" type="video/mp4">
-                </video>
-              </div>
-              <div class="n-node-footer">
-                <span style="color:var(--cyan);">● 1080P · 60FPS · 8s Video</span>
-                <span>Playing Loop</span>
+          <!-- Node 3: Prompt Video Motion -->
+          <div class="n-node-card" id="node-p-flow" style="left: 330px; top: 40px; width: 290px;">
+            <div class="n-node-port n-port-r" id="port-pflow-out" style="top:50%;">T</div>
+            <div class="n-node-head">
+              <span>📝 Prompt (Video Motion)</span>
+              <span class="n-node-tag">484/40,000</span>
+            </div>
+            <div class="n-node-prompt-body">
+              Animate the SEOSONA cyber boy into an 8-second cinematic video. Slow dolly-in with smooth gimbal motion, hovering cyber drone and volumetric sun rays.
+            </div>
+            <div class="n-node-footer">
+              <span style="color:var(--cyan);">Plain</span>
+              <span>Veo 3.1 Syntax</span>
+            </div>
+          </div>
+
+          <!-- Node 4: ChatGPT Center (Vision Pass) -->
+          <div class="n-node-card" id="node-chatgpt" style="left: 330px; top: 220px; width: 290px;">
+            <div class="n-node-port n-port-l n-port-purple" id="port-chatgpt-in-img" style="top:35%;">🖼️</div>
+            <div class="n-node-port n-port-l" id="port-chatgpt-in-txt" style="top:65%;">T</div>
+            <div class="n-node-port n-port-r" id="port-chatgpt-out-flow" style="top:35%;">🎬</div>
+            <div class="n-node-port n-port-r n-port-purple" id="port-chatgpt-out-grok" style="top:65%;">🖼️</div>
+            <div class="n-node-head">
+              <span style="display:flex;align-items:center;gap:6px;">
+                <span style="color:#10a37f;">🧠</span> ChatGPT
+              </span>
+              <span class="n-node-tag" style="color:#10a37f;border-color:rgba(16,163,127,0.3);">GPT-4o</span>
+            </div>
+            <div class="n-node-img-box" style="aspect-ratio: 16/9;">
+              <img src="assets/seosona_char_gpt.webp" onerror="this.src='landing/assets/seosona_char_gpt.webp'" alt="ChatGPT Scene Pass" loading="lazy" width="290" height="163" />
+              <div class="n-node-zoom-btn">🔍</div>
+            </div>
+            <div class="n-node-footer">
+              <span style="color:#10a37f;">● Direct Identity Pass</span>
+              <span>Cyber Boulevard Scene</span>
+            </div>
+          </div>
+
+          <!-- Node 5: Prompt Poster (Times Square Grok) -->
+          <div class="n-node-card" id="node-p-grok" style="left: 330px; top: 460px; width: 290px;">
+            <div class="n-node-port n-port-r" id="port-pgrok-out" style="top:50%;">T</div>
+            <div class="n-node-head">
+              <span>📝 Prompt (Poster)</span>
+              <span class="n-node-tag">490/40,000</span>
+            </div>
+            <div class="n-node-prompt-body">
+              Reimagine reference subject as a bold poster shot in Times Square night scene. Massive glowing SEOSONA LED billboards, wet asphalt reflections, bold neon look.
+            </div>
+            <div class="n-node-footer">
+              <span style="color:var(--amber);">Plain</span>
+              <span>Flux 1.1 Pro</span>
+            </div>
+          </div>
+
+          <!-- Node 6: Flow Video Render -->
+          <div class="n-node-card" id="node-flow" style="left: 660px; top: 40px; width: 420px;">
+            <div class="n-node-port n-port-l" id="port-flow-in-img" style="top:30%;">🎬</div>
+            <div class="n-node-port n-port-l" id="port-flow-in-txt" style="top:70%;">T</div>
+            <div class="n-node-head">
+              <span style="display:flex;align-items:center;gap:6px;">
+                <span style="color:var(--cyan);">📹</span> Flow — Video
+              </span>
+              <span class="n-node-tag" style="color:var(--cyan);border-color:rgba(0,242,254,0.3);">Google Flow · Veo 3.1</span>
+            </div>
+            <div class="n-node-img-box" style="aspect-ratio: 16/9;position:relative;">
+              <img src="assets/seosona_char_gpt.webp" onerror="this.src='landing/assets/seosona_char_gpt.webp'" alt="Veo 3.1 Video Render" loading="lazy" width="420" height="236" style="filter:contrast(1.05);" />
+              <div style="position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,0.25);">
+                <div style="width:52px;height:52px;border-radius:50%;background:rgba(0,242,254,0.9);color:#030712;display:grid;place-items:center;font-size:20px;box-shadow:0 0 25px var(--cyan);cursor:pointer;">▶</div>
               </div>
             </div>
+            <div class="n-node-footer">
+              <span style="color:var(--cyan);">● 1080P · 60FPS · 8s Video</span>
+              <span>Ready to Export</span>
+            </div>
+          </div>
 
-            <!-- Node 7: Grok Poster -->
-            <div class="n-node-card" id="node-grok">
-              <div class="n-node-port n-port-l n-port-purple" id="port-grok-in-img" style="top:35%;">🖼️</div>
-              <div class="n-node-port n-port-l" id="port-grok-in-txt" style="top:65%;">T</div>
-              <div class="n-node-head">
-                <span style="display:flex;align-items:center;gap:6px;">
-                  <span style="color:var(--amber);">⚡</span> Grok — Image
-                </span>
-                <span class="n-node-tag" style="color:var(--amber);border-color:rgba(251,191,36,0.3);">xAI · Flux 1.1 Pro</span>
-              </div>
-              <div class="n-node-img-box" style="aspect-ratio: 16/9;">
-                <img src="assets/workflow-grok-result.jpeg" onerror="this.src='landing/assets/workflow-grok-result.jpeg'" alt="Grok Times Square Render" loading="lazy" width="560" height="315" />
-                <div class="n-node-zoom-btn">🔍</div>
-              </div>
-              <div class="n-node-footer">
-                <span style="color:var(--amber);">● Times Square Neon 4K</span>
-                <span>Poster Complete</span>
-              </div>
+          <!-- Node 7: Grok Poster Render -->
+          <div class="n-node-card" id="node-grok" style="left: 660px; top: 380px; width: 420px;">
+            <div class="n-node-port n-port-l n-port-purple" id="port-grok-in-img" style="top:35%;">🖼️</div>
+            <div class="n-node-port n-port-l" id="port-grok-in-txt" style="top:65%;">T</div>
+            <div class="n-node-head">
+              <span style="display:flex;align-items:center;gap:6px;">
+                <span style="color:var(--amber);">⚡</span> Grok — Image
+              </span>
+              <span class="n-node-tag" style="color:var(--amber);border-color:rgba(251,191,36,0.3);">xAI · Flux 1.1 Pro</span>
+            </div>
+            <div class="n-node-img-box" style="aspect-ratio: 16/9;">
+              <img src="assets/seosona_char_grok.webp" onerror="this.src='landing/assets/seosona_char_grok.webp'" alt="Grok Times Square Render" loading="lazy" width="420" height="236" />
+              <div class="n-node-zoom-btn">🔍</div>
+            </div>
+            <div class="n-node-footer">
+              <span style="color:var(--amber);">● Times Square Neon 4K</span>
+              <span>Poster Complete</span>
             </div>
           </div>
         </div>
@@ -4029,25 +4084,39 @@
       botWindow.classList.remove('active');
     });
 
-    // 15. Dynamic SVG Cable Renderer & Workflow Simulation
+    // 15. Dynamic SVG Cable Renderer & Interactive Draggable/Pannable Workspace
     const CABLE_EDGES = [
-      { from: 'port-ref-out', to: 'port-chatgpt-in-img', color: 'purple', class: 'cable-e1' },
-      { from: 'port-pchatgpt-out', to: 'port-chatgpt-in-txt', color: 'cyan', class: 'cable-e2' },
-      { from: 'port-chatgpt-out-flow', to: 'port-flow-in-img', color: 'purple', class: 'cable-e3' },
-      { from: 'port-chatgpt-out-grok', to: 'port-grok-in-img', color: 'purple', class: 'cable-e4' },
-      { from: 'port-pflow-out', to: 'port-flow-in-txt', color: 'cyan', class: 'cable-e5' },
-      { from: 'port-pgrok-out', to: 'port-grok-in-txt', color: 'cyan', class: 'cable-e6' }
+      { from: 'port-ref-out', to: 'port-chatgpt-in-img', color: 'purple' },
+      { from: 'port-pmaster-out', to: 'port-chatgpt-in-txt', color: 'cyan' },
+      { from: 'port-pflow-out', to: 'port-flow-in-txt', color: 'cyan' },
+      { from: 'port-chatgpt-out-flow', to: 'port-flow-in-img', color: 'purple' },
+      { from: 'port-chatgpt-out-grok', to: 'port-grok-in-img', color: 'purple' },
+      { from: 'port-pgrok-out', to: 'port-grok-in-txt', color: 'cyan' }
     ];
 
+    const canvasContainer = document.getElementById('nodeCanvasContainer');
+    const canvasWorld = document.getElementById('canvasWorld');
+    const dynamicSvg = document.getElementById('dynamicCanvasSvg');
+
+    let currentZoom = 1;
+    let panX = 0, panY = 0;
+    let isPanning = false, startPanX = 0, startPanY = 0;
+
+    function applyCanvasTransform() {
+      if (!canvasWorld) return;
+      canvasWorld.style.transform = `translate(${panX}px, ${panY}px) scale(${currentZoom})`;
+      updateDynamicCables();
+    }
+
     function updateDynamicCables() {
-      const container = document.getElementById('nodeCanvasContainer');
-      const svg = document.getElementById('dynamicCanvasSvg');
-      if (!container || !svg) return;
+      if (!canvasWorld || !dynamicSvg) return;
 
-      const cRect = container.getBoundingClientRect();
-      if (cRect.width <= 0 || cRect.height <= 0) return;
+      const wRect = canvasWorld.getBoundingClientRect();
+      if (wRect.width <= 0) return;
 
-      svg.setAttribute('viewBox', `0 0 ${cRect.width} ${cRect.height}`);
+      const worldW = 1400;
+      const worldH = 800;
+      dynamicSvg.setAttribute('viewBox', `0 0 ${worldW} ${worldH}`);
 
       let pathsHtml = `
         <defs>
@@ -4070,47 +4139,159 @@
         const fRect = fromEl.getBoundingClientRect();
         const tRect = toEl.getBoundingClientRect();
 
-        const x1 = fRect.left + fRect.width / 2 - cRect.left;
-        const y1 = fRect.top + fRect.height / 2 - cRect.top;
-        const x2 = tRect.left + tRect.width / 2 - cRect.left;
-        const y2 = tRect.top + tRect.height / 2 - cRect.top;
+        const x1 = (fRect.left + fRect.width / 2 - wRect.left) / currentZoom;
+        const y1 = (fRect.top + fRect.height / 2 - wRect.top) / currentZoom;
+        const x2 = (tRect.left + tRect.width / 2 - wRect.left) / currentZoom;
+        const y2 = (tRect.top + tRect.height / 2 - wRect.top) / currentZoom;
 
-        const dx = Math.max(40, Math.abs(x2 - x1) * 0.55);
+        const dx = Math.max(50, Math.abs(x2 - x1) * 0.55);
         const d = `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`;
 
         const grad = edge.color === 'purple' ? 'url(#purpleGrad)' : 'url(#cyanGrad)';
         const pulseColor = edge.color === 'purple' ? '#c084fc' : '#00f2fe';
 
         pathsHtml += `
-          <path d="${d}" fill="none" stroke="${grad}" stroke-width="2.6" opacity="0.5" stroke-linecap="round" />
+          <path d="${d}" fill="none" stroke="${grad}" stroke-width="2.6" opacity="0.45" stroke-linecap="round" />
           <path class="cable-path-pulse" d="${d}" fill="none" stroke="${pulseColor}" stroke-width="2.6" stroke-linecap="round" />
         `;
       });
 
-      svg.innerHTML = pathsHtml;
+      dynamicSvg.innerHTML = pathsHtml;
     }
 
-    // Listeners for cable recalculation
+    // Make Node Cards Draggable
+    let activeDragNode = null;
+    let dragStartX = 0, dragStartY = 0, origNodeLeft = 0, origNodeTop = 0;
+
+    const initialNodePositions = {
+      'node-ref': { left: 40, top: 40 },
+      'node-p-master': { left: 40, top: 460 },
+      'node-p-flow': { left: 330, top: 40 },
+      'node-chatgpt': { left: 330, top: 220 },
+      'node-p-grok': { left: 330, top: 460 },
+      'node-flow': { left: 660, top: 40 },
+      'node-grok': { left: 660, top: 380 }
+    };
+
+    document.querySelectorAll('.n-node-card').forEach(card => {
+      card.addEventListener('pointerdown', function(e) {
+        if (e.target.closest('.n-node-zoom-btn') || e.target.closest('button')) return;
+        activeDragNode = card;
+        card.classList.add('is-dragging');
+        dragStartX = e.clientX;
+        dragStartY = e.clientY;
+        origNodeLeft = parseFloat(card.style.left) || initialNodePositions[card.id]?.left || 0;
+        origNodeTop = parseFloat(card.style.top) || initialNodePositions[card.id]?.top || 0;
+        card.setPointerCapture(e.pointerId);
+        e.stopPropagation();
+      });
+
+      card.addEventListener('pointermove', function(e) {
+        if (!activeDragNode || activeDragNode !== card) return;
+        const dx = (e.clientX - dragStartX) / currentZoom;
+        const dy = (e.clientY - dragStartY) / currentZoom;
+        card.style.left = `${origNodeLeft + dx}px`;
+        card.style.top = `${origNodeTop + dy}px`;
+        updateDynamicCables();
+      });
+
+      const endDrag = function(e) {
+        if (activeDragNode === card) {
+          card.classList.remove('is-dragging');
+          activeDragNode = null;
+          try { card.releasePointerCapture(e.pointerId); } catch(err) {}
+          updateDynamicCables();
+        }
+      };
+      card.addEventListener('pointerup', endDrag);
+      card.addEventListener('pointercancel', endDrag);
+    });
+
+    // Canvas Background Panning
+    if (canvasContainer) {
+      canvasContainer.addEventListener('pointerdown', function(e) {
+        if (e.target.closest('.n-node-card') || e.target.closest('.canvas-controls')) return;
+        isPanning = true;
+        startPanX = e.clientX - panX;
+        startPanY = e.clientY - panY;
+      });
+
+      window.addEventListener('pointermove', function(e) {
+        if (!isPanning) return;
+        panX = e.clientX - startPanX;
+        panY = e.clientY - startPanY;
+        applyCanvasTransform();
+      });
+
+      window.addEventListener('pointerup', function() {
+        isPanning = false;
+      });
+
+      // Mouse Wheel Zoom
+      canvasContainer.addEventListener('wheel', function(e) {
+        e.preventDefault();
+        const zoomDelta = e.deltaY < 0 ? 0.08 : -0.08;
+        currentZoom = Math.min(1.5, Math.max(0.6, currentZoom + zoomDelta));
+        applyCanvasTransform();
+      }, { passive: false });
+    }
+
+    // Canvas Zoom & Reset Controls
+    document.getElementById('btnZoomIn')?.addEventListener('click', () => {
+      playCyberSound('click');
+      currentZoom = Math.min(1.5, currentZoom + 0.15);
+      applyCanvasTransform();
+    });
+    document.getElementById('btnZoomOut')?.addEventListener('click', () => {
+      playCyberSound('click');
+      currentZoom = Math.max(0.6, currentZoom - 0.15);
+      applyCanvasTransform();
+    });
+    document.getElementById('btnFitView')?.addEventListener('click', () => {
+      playCyberSound('click');
+      if (canvasContainer) {
+        const cWidth = canvasContainer.clientWidth;
+        currentZoom = Math.min(1, Math.max(0.65, (cWidth - 40) / 1120));
+        panX = 20;
+        panY = 20;
+        applyCanvasTransform();
+      }
+    });
+    document.getElementById('btnResetLayout')?.addEventListener('click', () => {
+      playCyberSound('click');
+      currentZoom = 1;
+      panX = 0;
+      panY = 0;
+      Object.keys(initialNodePositions).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.style.left = `${initialNodePositions[id].left}px`;
+          el.style.top = `${initialNodePositions[id].top}px`;
+        }
+      });
+      applyCanvasTransform();
+    });
+
     window.addEventListener('resize', updateDynamicCables);
-    window.addEventListener('load', () => setTimeout(updateDynamicCables, 400));
-    setTimeout(updateDynamicCables, 600);
-    setTimeout(updateDynamicCables, 1500);
+    window.addEventListener('load', () => setTimeout(updateDynamicCables, 300));
+    setTimeout(updateDynamicCables, 500);
+    setTimeout(updateDynamicCables, 1200);
 
     // 16. Simulated Workflow Node Execution Cycling
-    const SIM_NODES = ['node-ref', 'node-p-chatgpt', 'node-chatgpt', 'node-p-flow', 'node-flow', 'node-p-grok', 'node-grok'];
+    const SIM_NODES = ['node-ref', 'node-p-master', 'node-chatgpt', 'node-p-flow', 'node-flow', 'node-p-grok', 'node-grok'];
     let simNodeIdx = 0;
 
     function runWorkflowCycle() {
       SIM_NODES.forEach(id => {
         const el = document.getElementById(id);
-        if (el) {
-          el.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-          el.style.boxShadow = '0 16px 40px rgba(0, 0, 0, 0.6)';
+        if (el && !el.classList.contains('is-dragging')) {
+          el.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+          el.style.boxShadow = '0 16px 40px rgba(0, 0, 0, 0.7)';
         }
       });
 
       const activeEl = document.getElementById(SIM_NODES[simNodeIdx]);
-      if (activeEl) {
+      if (activeEl && !activeEl.classList.contains('is-dragging')) {
         activeEl.style.borderColor = 'var(--cyan)';
         activeEl.style.boxShadow = '0 0 35px rgba(0, 242, 254, 0.35)';
       }
@@ -4118,7 +4299,7 @@
       simNodeIdx = (simNodeIdx + 1) % SIM_NODES.length;
     }
 
-    setInterval(runWorkflowCycle, 1600);
+    setInterval(runWorkflowCycle, 1800);
 
     // 15. Mobile Menu Drawer Toggle
     const menuToggle = document.getElementById('menuToggle');
