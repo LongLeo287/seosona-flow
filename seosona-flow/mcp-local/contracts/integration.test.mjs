@@ -18,6 +18,7 @@ import { dirname, join } from 'node:path';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const SERVER = join(__dirname, '..', 'server.mjs');
 const PORT = 8791; // avoid the default 8765 in case a real server is running
+const TOKEN = 'integration-token-at-least-16-characters';
 // Isolated, always-fresh cache so idempotency/persist state never leaks between runs.
 const CACHE_DIR = join(__dirname, '.cache-test');
 try { rmSync(CACHE_DIR, { recursive: true, force: true }); } catch {}
@@ -31,7 +32,7 @@ const stats = { genImage: 0 };
 function fakeExtension() {
   return new Promise((resolve, reject) => {
     const ws = new WebSocket(`ws://127.0.0.1:${PORT}/`);
-    ws.on('open', () => ws.send(JSON.stringify({ type: 'hello', role: 'extension', ext: 'fake-test' })));
+    ws.on('open', () => ws.send(JSON.stringify({ type: 'hello', role: 'extension', ext: 'fake-test', token: TOKEN, nonce: 'integration-nonce' })));
     ws.on('message', (raw) => {
       let m; try { m = JSON.parse(raw.toString()); } catch { return; }
       if (m.type === 'hello_ack') resolve(ws);
@@ -64,7 +65,7 @@ function fakeExtension() {
 }
 
 async function main() {
-  const transport = new StdioClientTransport({ command: process.execPath, args: [SERVER], env: { ...process.env, SEOSONA_LOCAL_MCP_PORT: String(PORT), SEOSONA_LOCAL_MCP_TOKEN: '', SEOSONA_LOCAL_MCP_CACHE_DIR: CACHE_DIR } });
+  const transport = new StdioClientTransport({ command: process.execPath, args: [SERVER], env: { ...process.env, SEOSONA_LOCAL_MCP_PORT: String(PORT), SEOSONA_LOCAL_MCP_TOKEN: TOKEN, SEOSONA_LOCAL_MCP_CACHE_DIR: CACHE_DIR } });
   const client = new Client({ name: 'integration-test', version: '1.0.0' }, { capabilities: {} });
   await client.connect(transport);
 
@@ -136,6 +137,7 @@ async function main() {
   const health = JSON.parse(healthRes.content[0].text);
   assert.equal(health.ok, true);
   assert.equal(health.data.extension_connected, true);
+  assert.equal(health.data.auth, 'token');
   assert.ok(health.data.server_version && health.data.contract_version, 'health missing versions');
   console.error('ok   call health → connected + versions');
 
