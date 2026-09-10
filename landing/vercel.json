@@ -1,11 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "installCommand": "echo 'khong can cai dat'",
-  "buildCommand": "echo 'trang tinh, khong can build'",
+  "buildCommand": null,
   "outputDirectory": ".",
-  "cleanUrls": true,
-  "trailingSlash": false,
   "headers": [
     {
       "source": "/(.*)",
@@ -15,14 +12,38 @@
           "value": "nosniff"
         },
         {
-          "key": "X-Frame-Options",
-          "value": "SAMEORIGIN"
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
         },
         {
-          "key": "X-XSS-Protection",
-          "value": "1; mode=block"
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
         }
       ]
+    },
+    {
+      "source": "/data/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, s-maxage=60, stale-while-revalidate=300"
+        }
+      ]
+    },
+    {
+      "source": "/webgl-stage.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/health",
+      "destination": "/api/health"
     }
   ]
 }
