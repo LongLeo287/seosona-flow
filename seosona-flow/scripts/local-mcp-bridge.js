@@ -34,6 +34,7 @@
     _reconnectTimer: null,
     _retry: 0,
     _resultListenerBound: false,
+    _storageListenerBound: false,
     _started: false,
     _nonce: null,
     _serverTrusted: false,   // only honor ai_command once the server side is trusted
@@ -69,12 +70,13 @@
         try {
           chrome.storage.local.get(['seosonaLocalMcp'], function (res) {
             var c = (res && res.seosonaLocalMcp) || {};
-            resolve({
-              enabled: c.enabled !== false,
-              port: Number(c.port) || DEFAULTS.port,
-              host: c.host || DEFAULTS.host,
-              token: c.token || DEFAULTS.token,
-            });
+            var host = c.host || DEFAULTS.host;
+            var port = c.port == null || c.port === '' ? DEFAULTS.port : Number(c.port);
+            var token = c.token || DEFAULTS.token;
+            var valid = host === DEFAULTS.host
+              && Number.isInteger(port) && port >= 1 && port <= 65535
+              && (!token || String(token).length >= 16);
+            resolve({ enabled: valid && c.enabled !== false, port: port, host: host, token: String(token) });
           });
         } catch (_) { resolve(Object.assign({}, DEFAULTS)); }
       });
@@ -83,10 +85,11 @@
     init: async function () {
       if (this._started) return;
       if (!this.isLocal()) { console.log('[LocalMcpBridge] online mode → bỏ qua (dùng backend SSE)'); return; }
-      this._cfg = await this._loadCfg();
-      if (!this._cfg.enabled) { console.log('[LocalMcpBridge] đã tắt qua setting seosonaLocalMcp.enabled=false'); return; }
       this._started = true;
       this._bindResultListener();
+      this._bindStorageListener();
+      this._cfg = await this._loadCfg();
+      if (!this._cfg.enabled) { console.log('[LocalMcpBridge] đã tắt qua setting seosonaLocalMcp.enabled=false'); return; }
       this._connect();
       console.log('[LocalMcpBridge] khởi tạo — sẽ nối ws://' + this._cfg.host + ':' + this._cfg.port);
     },
@@ -103,6 +106,36 @@
       window.eventBus && window.eventBus.on('mcp:local_progress', function (body) {
         self_._send({ type: 'progress', payload: body });
       });
+    },
+
+    _bindStorageListener: function () {
+      if (this._storageListenerBound || !chrome.storage || !chrome.storage.onChanged) return;
+      this._storageListenerBound = true;
+      var self_ = this;
+      chrome.storage.onChanged.addListener(function (changes, areaName) {
+        if (areaName !== 'local' || !changes || !Object.prototype.hasOwnProperty.call(changes, 'seosonaLocalMcp')) return;
+        self_.restartFromStorage().catch(function () {
+          self_._serverTrusted = false;
+        });
+      });
+    },
+
+    restartFromStorage: async function () {
+      this._serverTrusted = false;
+      this._nonce = null;
+      this._retry = 0;
+      if (this._reconnectTimer) {
+        clearTimeout(this._reconnectTimer);
+        this._reconnectTimer = null;
+      }
+      var old = this._ws;
+      this._ws = null;
+      if (old) {
+        old.onclose = null;
+        try { old.close(1000, 'local MCP configuration changed'); } catch (_) { globalThis.SEOSONA_swallow?.('local-mcp-bridge#restartFromStorage', _); }
+      }
+      this._cfg = await this._loadCfg();
+      if (this._cfg.enabled) this._connect();
     },
 
     _connect: function () {
@@ -131,7 +164,11 @@
         self_._onMessage(msg);
       };
 
-      ws.onclose = function () { self_._ws = null; self_._scheduleReconnect(); };
+      ws.onclose = function () {
+        if (self_._ws !== ws) return;
+        self_._ws = null;
+        self_._scheduleReconnect();
+      };
       ws.onerror = function () { try { ws.close(); } catch (_) { globalThis.SEOSONA_swallow?.('local-mcp-bridge#onerror', _); } };
     },
 

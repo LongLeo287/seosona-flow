@@ -12,10 +12,11 @@
     "test": "node contracts/normalize.test.mjs && node contracts/validate.mjs --self-test && node contracts/quality.test.mjs && node contracts/integration.test.mjs && node contracts/persist.test.mjs && node contracts/quality-backfill.test.mjs"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.0",
-    "ws": "^8.18.0"
+    "@modelcontextprotocol/sdk": "1.30.0",
+    "seosona-flow": "file:..",
+    "ws": "8.21.3"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   }
 }
