@@ -175,6 +175,7 @@
       "../src/shared/CustomDialog.js",
       "../src/core/ImageStore.js",
       "../src/storage/BackupService.js",
+      "../src/core/LocalMcpPairing.js",
       "../scripts/settings-page.js"
     ],
     "pages/sidebar.html": [

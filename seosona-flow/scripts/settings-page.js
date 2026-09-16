@@ -1111,7 +1111,7 @@
   async function _createLocalMcpToken(label) {
     try {
       const token = 'sk-local-' + _randToken(40);
-      const res = await chrome.storage.local.get(['local_mcp_tokens']);
+      const res = await chrome.storage.local.get(['local_mcp_tokens', 'seosonaLocalMcp']);
       const list = Array.isArray(res.local_mcp_tokens) ? res.local_mcp_tokens : [];
       list.push({
         id: 'local_' + Date.now().toString(36) + _randToken(6),
@@ -1122,7 +1122,12 @@
         expires_at: null,
         _local: true,
       });
-      await chrome.storage.local.set({ local_mcp_tokens: list });
+      if (!window.SEOSONA_LocalMcpPairing) throw new Error('Local MCP pairing module is unavailable.');
+      await window.SEOSONA_LocalMcpPairing.activate(chrome.storage.local, {
+        list,
+        token,
+        current: res.seosonaLocalMcp,
+      });
       return token;
     } catch (_) { return null; }
   }
@@ -1131,7 +1136,7 @@
   function _applyLocalMcpConnectConfig() {
     const code = document.getElementById('mcpConnectConfig');
     if (code) {
-      code.textContent = 'claude mcp add seosona-flow-local -- node "D:\\SEOSONA AI\\SEOSONA Workflow\\seosona-flow\\mcp-local\\server.mjs"';
+      code.textContent = 'claude mcp add seosona-flow-local -- node "${SEOSONA_FLOW_ROOT}/seosona-flow/mcp-local/server.mjs"';
     }
     const desc = document.getElementById('mcpConnectDesc');
     if (desc) {
